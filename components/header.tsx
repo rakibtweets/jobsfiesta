@@ -27,7 +27,7 @@ export default function Header() {
           <div className="from-primary to-accent text-primary-foreground rounded-lg bg-linear-to-br p-2 shadow-lg">
             <Briefcase size={20} />
           </div>
-          <span className="gradient-text">Jobi</span>
+          <span className="gradient-text">jobsfiesta</span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
