@@ -3,7 +3,6 @@
 import { Users } from "lucide-react";
 import { useState } from "react";
 
-import Footer from "@/components/footer";
 import TalentFilters from "@/components/talents/talent-filters";
 import TalentListings from "@/components/talents/talent-listings";
 
@@ -17,7 +16,7 @@ export default function TalentsPage() {
   });
 
   return (
-    <main className="from-background to-card/30 min-h-screen bg-linear-to-b">
+    <section className="from-background to-card/30 min-h-screen bg-linear-to-b">
       {/* Animated header section */}
       <div className="border-border/50 relative overflow-hidden border-b py-12">
         <div className="from-primary/10 to-accent/10 absolute inset-0 bg-linear-to-r via-transparent" />
@@ -53,6 +52,6 @@ export default function TalentsPage() {
           </div>
         </div>
       </div>
-    </main>
+    </section>
   );
 }

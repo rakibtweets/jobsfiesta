@@ -1,5 +1,3 @@
-import Footer from "@/components/footer";
-import Header from "@/components/header";
 import FeaturedJobs from "@/components/home/featured-jobs";
 import HeroBanner from "@/components/home/hero-banner";
 import Services from "@/components/home/services";
@@ -10,6 +8,8 @@ export const metadata = {
 };
 
 export default function Home() {
+  const a = false;
+
   return (
     <>
       <HeroBanner />

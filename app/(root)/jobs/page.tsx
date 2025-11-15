@@ -16,7 +16,7 @@ export default function JobsPage() {
   });
 
   return (
-    <main className="from-background to-card/30 min-h-screen bg-linear-to-b">
+    <section className="from-background to-card/30 min-h-screen bg-linear-to-b">
       {/* Animated header section */}
       <div className="border-border/50 relative overflow-hidden border-b py-12">
         <div className="from-primary/10 to-accent/10 absolute inset-0 bg-linear-to-r via-transparent" />
@@ -52,6 +52,6 @@ export default function JobsPage() {
           </div>
         </div>
       </div>
-    </main>
+    </section>
   );
 }
