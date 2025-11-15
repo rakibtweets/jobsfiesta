@@ -101,17 +101,25 @@ export default function TalentListings({ filters }: any) {
         filteredTalents.map((talent) => (
           <Link key={talent.id} href={`/talents/${talent.id}`}>
             <Card className="group mt-4 h-full cursor-pointer p-6 transition-shadow hover:shadow-lg">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex flex-1 gap-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                {/* LEFT — Avatar + Info */}
+                <div className="flex flex-col gap-4 sm:flex-row">
                   <Avatar className="h-12 w-12 shrink-0">
                     <AvatarFallback>{talent.avatar}</AvatarFallback>
                   </Avatar>
 
-                  <div className="flex-1">
-                    <h3 className="group-hover:text-primary text-lg font-semibold transition-colors">{talent.name}</h3>
-                    <p className="text-muted-foreground mb-3 text-sm">{talent.title}</p>
+                  <div>
+                    <div className="flex w-full flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h3 className="group-hover:text-primary text-lg font-semibold transition-colors">
+                          {talent.name}
+                        </h3>
+                        <p className="text-muted-foreground mb-3 text-sm">{talent.title}</p>
+                      </div>
+                    </div>
 
-                    <div className="mb-4 grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                    {/* Details (Location + Experience) */}
+                    <div className="mb-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                       <div className="text-muted-foreground flex items-center gap-2">
                         <MapPin size={16} />
                         {talent.location}
@@ -122,6 +130,7 @@ export default function TalentListings({ filters }: any) {
                       </div>
                     </div>
 
+                    {/* Skills */}
                     <div className="mb-4 flex flex-wrap gap-2">
                       {talent.skills.map((skill, idx) => (
                         <span
@@ -135,19 +144,14 @@ export default function TalentListings({ filters }: any) {
                   </div>
                 </div>
 
-                <div className="flex flex-col items-end gap-2">
+                {/* RIGHT — Rating + View Profile */}
+                <div className="flex flex-row-reverse items-center justify-between gap-3 md:flex-col md:items-end md:justify-start">
                   <div className="flex items-center gap-1 text-sm font-semibold">
                     <Star size={16} className="fill-yellow-500 text-yellow-500" />
                     {talent.rating}
                   </div>
-                  <Button
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
-                    View Profile
-                  </Button>
+
+                  <Button size="sm">View Profile</Button>
                 </div>
               </div>
             </Card>

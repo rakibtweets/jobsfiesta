@@ -46,7 +46,6 @@ export default function Header() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
-              console.log("[v0] Toggling theme from:", theme);
               setTheme(theme === "dark" ? "light" : "dark");
             }}
             className="hover:bg-secondary rounded-lg p-2 transition-all duration-200 hover:scale-110"
