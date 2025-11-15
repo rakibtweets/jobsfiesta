@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // import FooterSection from '@/components/shared/Footer';
 // import Navbar from '@/components/shared/Navbar';
