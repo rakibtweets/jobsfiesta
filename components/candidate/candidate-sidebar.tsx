@@ -70,7 +70,7 @@ export function CandidateDashboardSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Button>Log Out</Button>
+            <Button className="w-full">Log Out</Button>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -1,4 +1,4 @@
-import { Users, Home, LayoutDashboard, Layers, Heart } from "lucide-react";
+import { Users, Home, LayoutDashboard, Layers, Heart, CirclePlus } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,13 @@ const items = [
     icon: Layers,
   },
   {
-    title: "Save candidates",
-    url: "/dashboard/candidate/save-candiates",
+    title: "Post Job",
+    url: "/dashboard/employee/jobs/new",
+    icon: CirclePlus,
+  },
+  {
+    title: "Saved candidates",
+    url: "/dashboard/employee/saved-candidates",
     icon: Heart,
   },
   {
@@ -70,7 +75,7 @@ export function EmployeeDashboardSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Button>Log Out</Button>
+            <Button className="w-full">Log Out</Button>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
