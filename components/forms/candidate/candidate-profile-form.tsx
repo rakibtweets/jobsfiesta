@@ -23,12 +23,12 @@ const profileSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.email(),
   phone: z.string().refine(isValidPhoneNumber, { message: "Invalid phone number" }),
-  gender: z.string(),
+  gender: z.string().min(1, "Gender is required"),
   dateOfBirth: z.date().optional(),
-  location: z.tuple([
-    z.string().min(1, { message: "Country is required" }),
-    z.string().optional(), // State name, optional
-  ]),
+  location: z.object({
+    country: z.string().min(1, "Country is required"),
+    state: z.string().optional(),
+  }),
   bio: z.string().min(1, "Bio is required"),
 });
 
@@ -41,7 +41,10 @@ const defaultValues: ProfileFormValues = {
   phone: "",
   gender: "",
   dateOfBirth: undefined,
-  location: ["", undefined],
+  location: {
+    country: "",
+    state: "",
+  },
   bio: "",
 };
 
@@ -109,46 +112,6 @@ export function CandidateProfileForm() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <FormField
             control={form.control}
-            name="gender"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Gender</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Gender" />
-                  </SelectTrigger>
-                  <SelectContent className="w-full">
-                    <SelectGroup>
-                      {genders.map((g) => (
-                        <SelectItem key={g.value} value={g.value}>
-                          {g.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="dateOfBirth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date of Birth</FormLabel>
-                <FormControl>
-                  <DateInput value={field.value} onChange={field.onChange} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <FormField
-            control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -190,24 +153,84 @@ export function CandidateProfileForm() {
           />
         </div>
 
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gender</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {genders.map((g) => (
+                        <SelectItem key={g.value} value={g.value}>
+                          {g.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormControl>
+                  <DateInput className="w-full" value={field.value} onChange={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={form.control}
           name="location"
           render={({ field }) => (
             <FormItem>
               <FormLabel htmlFor="location" className="text-foreground font-semibold">
-                Location(Country,State)
+                Location (Country,State)
               </FormLabel>
               <FormControl>
                 <FormItem className="flex flex-col flex-wrap">
                   <LocationSelector
                     onCountryChange={(country) => {
-                      setCountryName(country?.name || "");
-                      form.setValue(field.name, [country?.name || "", stateName || ""]);
+                      const selectedCountry = country?.name || "";
+                      setCountryName(selectedCountry);
+
+                      // Update form value
+                      form.setValue(field.name, {
+                        country: selectedCountry,
+                        state: stateName || "",
+                      });
+
+                      // Clear error when country is selected
+                      if (selectedCountry) {
+                        form.clearErrors(`location.country`);
+                      }
                     }}
                     onStateChange={(state) => {
-                      setStateName(state?.name || "");
-                      form.setValue(field.name, [countryName || "", state?.name || ""]);
+                      const selectedState = state?.name || "";
+                      setStateName(selectedState);
+
+                      form.setValue(field.name, {
+                        country: countryName || "",
+                        state: selectedState,
+                      });
+
+                      if (selectedState) {
+                        form.clearErrors(`location.state`);
+                      }
                     }}
                   />
                   <FormDescription>Please select state after selecting your country</FormDescription>
