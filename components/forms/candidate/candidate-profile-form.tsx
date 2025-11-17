@@ -2,18 +2,33 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Mail, Phone } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { DateInput } from "@/components/ui/date-input";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import LocationSelector from "@/components/ui/location-input";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { genders } from "@/constants/data";
 
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.email(),
-  phone: z.string().min(1, "Phone is required"),
-  location: z.string().min(1, "Location is required"),
+  phone: z.string().refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+  gender: z.string(),
+  dateOfBirth: z.date().optional(),
+  location: z.tuple([
+    z.string().min(1, { message: "Country is required" }),
+    z.string().optional(), // State name, optional
+  ]),
   bio: z.string().min(1, "Bio is required"),
 });
 
@@ -24,18 +39,26 @@ const defaultValues: ProfileFormValues = {
   lastName: "",
   email: "",
   phone: "",
-  location: "",
+  gender: "",
+  dateOfBirth: undefined,
+  location: ["", undefined],
   bio: "",
 };
 
 export function CandidateProfileForm() {
+  const [countryName, setCountryName] = useState<string>("");
+  const [stateName, setStateName] = useState<string>("");
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues,
   });
 
   const onSubmit = (data: ProfileFormValues) => {
-    console.log("Form data:", data);
+    toast(
+      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+      </pre>
+    );
   };
 
   return (
@@ -52,7 +75,7 @@ export function CandidateProfileForm() {
                   First Name
                 </FormLabel>
                 <FormControl>
-                  <input
+                  <Input
                     {...field}
                     id="firstName"
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
@@ -71,11 +94,51 @@ export function CandidateProfileForm() {
                   Last Name
                 </FormLabel>
                 <FormControl>
-                  <input
+                  <Input
                     {...field}
                     id="lastName"
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gender</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Gender" />
+                  </SelectTrigger>
+                  <SelectContent className="w-full">
+                    <SelectGroup>
+                      {genders.map((g) => (
+                        <SelectItem key={g.value} value={g.value}>
+                          {g.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Date of Birth</FormLabel>
+                <FormControl>
+                  <DateInput value={field.value} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -93,7 +156,7 @@ export function CandidateProfileForm() {
                   <Mail size={16} /> Email
                 </FormLabel>
                 <FormControl>
-                  <input
+                  <Input
                     {...field}
                     id="email"
                     type="email"
@@ -113,10 +176,12 @@ export function CandidateProfileForm() {
                   <Phone size={16} /> Phone
                 </FormLabel>
                 <FormControl>
-                  <input
+                  <PhoneInput
+                    international
+                    defaultCountry="BD"
+                    className="py-2"
+                    placeholder="Enter a phone number"
                     {...field}
-                    id="phone"
-                    className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
                 </FormControl>
                 <FormMessage />
@@ -131,14 +196,23 @@ export function CandidateProfileForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel htmlFor="location" className="text-foreground font-semibold">
-                Location
+                Location(Country,State)
               </FormLabel>
               <FormControl>
-                <input
-                  {...field}
-                  id="location"
-                  className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
-                />
+                <FormItem className="flex flex-col flex-wrap">
+                  <LocationSelector
+                    onCountryChange={(country) => {
+                      setCountryName(country?.name || "");
+                      form.setValue(field.name, [country?.name || "", stateName || ""]);
+                    }}
+                    onStateChange={(state) => {
+                      setStateName(state?.name || "");
+                      form.setValue(field.name, [countryName || "", state?.name || ""]);
+                    }}
+                  />
+                  <FormDescription>Please select state after selecting your country</FormDescription>
+                  <FormMessage />
+                </FormItem>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -154,7 +228,7 @@ export function CandidateProfileForm() {
                 Professional Bio
               </FormLabel>
               <FormControl>
-                <textarea
+                <Textarea
                   {...field}
                   id="bio"
                   className="border-border/50 bg-card/50 hover:border-border focus:ring-ring mt-1 min-h-24 w-full resize-none rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"

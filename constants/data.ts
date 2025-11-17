@@ -46,3 +46,9 @@ export const savedJobs = [
     savedDate: "1 week ago",
   },
 ];
+
+export const genders = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "other", label: "Other" },
+] as const;
