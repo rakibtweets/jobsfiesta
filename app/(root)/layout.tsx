@@ -1,10 +1,16 @@
-import React from 'react';
+import React from "react";
 
-// import FooterSection from '@/components/shared/Footer';
-// import Navbar from '@/components/shared/Navbar';
+import Footer from "@/components/footer";
+import Header from "@/components/header";
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
-  return <div className="relative">{children}</div>;
+  return (
+    <div className="bg-background min-h-screen">
+      <Header />
+      {children}
+      <Footer />
+    </div>
+  );
 };
 
 export default Layout;
