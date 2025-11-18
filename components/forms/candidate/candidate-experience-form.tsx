@@ -1,19 +1,33 @@
 "use client";
 
+import { type } from "os";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
+import { DateInput } from "@/components/ui/date-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const experienceSchema = z.object({
   experiences: z.object({
     position: z.string().min(1, "Position is required"),
     company: z.string().min(1, "Company is required"),
-    startDate: z.string().min(1, "Start date is required"),
-    endDate: z.string().min(1, "End date is required"),
+    startDate: z
+      .date({
+        error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
+      })
+      .optional(),
+    endDate: z
+      .date({
+        error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
+      })
+      .optional(),
     description: z.string().optional(),
   }),
 });
@@ -24,8 +38,8 @@ const defaultExperiences: ExperienceFormValues = {
   experiences: {
     position: "",
     company: "",
-    startDate: "",
-    endDate: "",
+    startDate: undefined,
+    endDate: undefined,
     description: "",
   },
 };
@@ -37,7 +51,12 @@ export function CandidateExperienceForm() {
   });
 
   const onSubmit = (data: ExperienceFormValues) => {
-    console.log("Form data:", data);
+    console.log(data.experiences);
+    toast(
+      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+      </pre>
+    );
   };
 
   return (
@@ -52,7 +71,7 @@ export function CandidateExperienceForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Position</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       {...field}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
@@ -68,7 +87,7 @@ export function CandidateExperienceForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Company</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       {...field}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
@@ -87,9 +106,10 @@ export function CandidateExperienceForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Start Date</FormLabel>
                   <FormControl>
-                    <input
+                    <DateInput
                       {...field}
-                      type="date"
+                      value={field.value}
+                      onChange={field.onChange}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>
@@ -104,9 +124,10 @@ export function CandidateExperienceForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">End Date</FormLabel>
                   <FormControl>
-                    <input
+                    <DateInput
                       {...field}
-                      type="date"
+                      value={field.value}
+                      onChange={field.onChange}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>
@@ -124,7 +145,7 @@ export function CandidateExperienceForm() {
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Description</FormLabel>
                   <FormControl>
-                    <textarea
+                    <Textarea
                       {...field}
                       placeholder="Describe your responsibilities and achievements..."
                       className="border-border/50 bg-card/50 hover:border-border focus:ring-ring min-h-20 w-full resize-none rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"

@@ -1,56 +1,23 @@
 "use client";
 
-import { Briefcase, Mail, Lock, Users } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Briefcase, Users } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 
 import Footer from "@/components/footer";
+import SignUpForm from "@/components/forms/auth/signup-form";
 import Header from "@/components/header";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function SignupPage() {
-  const router = useRouter();
-  const [role, setRole] = useState<"candidate" | "employee">("candidate");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [loading, setLoading] = useState(false);
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match");
-      return;
-    }
-
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        role,
-      })
-    );
-
-    router.push(role === "candidate" ? "/dashboard/candidate" : "/dashboard/employee");
-  };
+  const [accountType, setAccountType] = useState<"candidate" | "employee">("candidate");
 
   return (
     <section className="bg-background min-h-screen">
       <Header />
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
           {/* Left side - Info */}
           <div className="space-y-8">
             <div>
@@ -88,16 +55,20 @@ export default function SignupPage() {
 
           {/* Right side - Signup Form */}
           <Card className="border-2 p-8">
-            <form onSubmit={handleSignup} className="space-y-6">
+            <div className="space-y-6">
               {/* Role Selection */}
               <div>
-                <Label className="mb-4 block text-base font-semibold">I&apos;m a...</Label>
+                <Label className="mb-4 block text-base font-semibold">
+                  I&apos;m a {accountType ? accountType : "..."}
+                </Label>
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     type="button"
-                    onClick={() => setRole("candidate")}
+                    onClick={() => setAccountType("candidate")}
                     className={`rounded-lg border-2 p-4 transition-all ${
-                      role === "candidate" ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                      accountType === "candidate"
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
                     }`}
                   >
                     <div className="font-semibold">Candidate</div>
@@ -105,9 +76,11 @@ export default function SignupPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setRole("employee")}
+                    onClick={() => setAccountType("employee")}
                     className={`rounded-lg border-2 p-4 transition-all ${
-                      role === "employee" ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
+                      accountType === "employee"
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/50"
                     }`}
                   >
                     <div className="font-semibold">Employer</div>
@@ -116,99 +89,8 @@ export default function SignupPage() {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="name" className="mb-2 block text-base font-semibold">
-                  Full Name
-                </Label>
-                <Input
-                  id="name"
-                  placeholder="John Doe"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="h-12"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="signup-email" className="mb-2 block text-base font-semibold">
-                  Email Address
-                </Label>
-                <div className="relative">
-                  <Mail className="text-muted-foreground absolute top-3 left-3" size={20} />
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="h-12 pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="signup-password" className="mb-2 block text-base font-semibold">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="text-muted-foreground absolute top-3 left-3" size={20} />
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="h-12 pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="confirm-password" className="mb-2 block text-base font-semibold">
-                  Confirm Password
-                </Label>
-                <div className="relative">
-                  <Lock className="text-muted-foreground absolute top-3 left-3" size={20} />
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="h-12 pl-10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <label className="flex cursor-pointer items-start gap-2">
-                <input type="checkbox" className="mt-1 h-4 w-4" required />
-                <span className="text-muted-foreground text-sm">
-                  I agree to the{" "}
-                  <Link href="#" className="text-primary hover:underline">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="#" className="text-primary hover:underline">
-                    Privacy Policy
-                  </Link>
-                </span>
-              </label>
-
-              <Button type="submit" size="lg" className="w-full" disabled={loading}>
-                {loading ? "Creating account..." : "Create Account"}
-              </Button>
-
-              <p className="text-muted-foreground text-center text-sm">
-                Already have an account?{" "}
-                <Link href="/login" className="text-primary font-semibold hover:underline">
-                  Sign in
-                </Link>
-              </p>
-            </form>
+              <SignUpForm accountType={accountType} />
+            </div>
           </Card>
         </div>
       </div>
