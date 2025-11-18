@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { signUpWithEmailPassword } from "@/lib/actions/auth.action";
 import { signupFormSchema } from "@/lib/validations/auth";
 
 interface ISignUpFormProps {
@@ -17,14 +18,16 @@ interface ISignUpFormProps {
 }
 
 export default function SignUpForm({ accountType }: ISignUpFormProps) {
+  console.log(accountType);
   const form = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
+      accountType: accountType,
       confirmPassword: "",
-      agree: false,
+      agreeOnTerms: false,
     },
   });
 
@@ -32,14 +35,20 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
     formState: { isSubmitting },
   } = form;
 
-  function onSubmit(values: z.infer<typeof signupFormSchema>) {
+  async function onSubmit(values: z.infer<typeof signupFormSchema>) {
     try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify({ ...values, accountType }, null, 2)}</code>
-        </pre>
-      );
+      // console.log(values);
+
+      const { success } = await signUpWithEmailPassword({ ...values, accountType });
+      if (success) {
+        toast.success("You have successfully signed up.");
+        form.reset();
+      }
+      // toast(
+      //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+      //     <code className="text-white">{JSON.stringify({ ...values, accountType }, null, 2)}</code>
+      //   </pre>
+      // );
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -111,7 +120,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
 
         <FormField
           control={form.control}
-          name="agree"
+          name="agreeOnTerms"
           render={({ field }) => (
             <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
               <FormControl>
@@ -136,7 +145,9 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button disabled={isSubmitting} type="submit">
+          {isSubmitting ? "Signing up...." : "Sign Up"}
+        </Button>
       </form>
     </Form>
   );
