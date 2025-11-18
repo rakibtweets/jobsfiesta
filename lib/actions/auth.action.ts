@@ -1,11 +1,13 @@
 "use server";
 
+import { APIError } from "better-auth";
+import { headers } from "next/headers";
+
 import { auth } from "@/lib/auth";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
-import dbConnect from "../mongoose";
-import { signupFormSchema } from "../validations/auth";
+import { signInFormSchema, signupFormSchema } from "../validations/auth";
 
 export const signUpWithEmailPassword = async (
   params: ISignUpEmailParams
@@ -41,8 +43,6 @@ export const signUpWithEmailPassword = async (
       },
     });
 
-    console.log(data);
-
     return {
       success: true,
       status: 201,
@@ -52,13 +52,63 @@ export const signUpWithEmailPassword = async (
       },
     };
   } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message,
+        },
+      };
+    }
     return handleError(error) as ErrorResponse;
   }
 };
 
-export const createUser = async () => {
-  await dbConnect();
-  return {
-    user: "rakib",
-  };
+export const loginWithEmailPassword = async (
+  params: ISignInEmailParams
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<ActionResponse<{ user: any; token: string | null }>> => {
+  const validationResult = await action({
+    params,
+    schema: signInFormSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { email, password, rememberMe } = validationResult.params!;
+
+  try {
+    const data = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+        rememberMe,
+      },
+      headers: await headers(),
+    });
+
+    return {
+      success: true,
+      status: 200,
+      data: {
+        user: data.user,
+        token: data.token,
+      },
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message,
+        },
+      };
+    }
+
+    return handleError(error) as ErrorResponse;
+  }
 };

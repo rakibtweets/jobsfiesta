@@ -7,6 +7,8 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
+import ProfileMenu from "./shared/profile-menu";
+
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -57,6 +59,8 @@ export default function Header() {
               <Moon size={20} className="text-blue-600" />
             )}
           </button>
+
+          <ProfileMenu />
 
           <div className="hidden gap-2 sm:flex">
             <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">

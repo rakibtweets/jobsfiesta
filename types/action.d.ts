@@ -6,3 +6,9 @@ interface ISignUpEmailParams {
   agreeOnTerms: boolean;
   accountType: "candidate" | "employee";
 }
+
+interface ISignInEmailParams {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}

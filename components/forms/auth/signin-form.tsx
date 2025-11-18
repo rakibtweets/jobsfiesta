@@ -1,5 +1,8 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LoaderCircleIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -9,9 +12,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
+import { loginWithEmailPassword } from "@/lib/actions/auth.action";
 import { signInFormSchema } from "@/lib/validations/auth";
 
 const SignInForm = () => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
@@ -25,17 +31,25 @@ const SignInForm = () => {
     formState: { isSubmitting },
   } = form;
 
-  function onSubmit(values: z.infer<typeof signInFormSchema>) {
+  async function onSubmit(values: z.infer<typeof signInFormSchema>) {
     try {
       console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      const { success, error } = await loginWithEmailPassword(values);
+      if (success) {
+        toast.success("Login successful");
+        router.push("/");
+      } else {
+        toast.error(error?.message);
+      }
+
+      // toast(
+      //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+      //     <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+      //   </pre>
+      // );
     } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+      console.log("sign up form error", error);
+      toast.error("Fail to login please try again");
     }
   }
   return (
@@ -89,7 +103,10 @@ const SignInForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button disabled={isSubmitting} type="submit">
+          <LoaderCircleIcon className="-ms-1 animate-spin" size={16} aria-hidden="true" />{" "}
+          {isSubmitting ? "Loging..." : "Login"}
+        </Button>
       </form>
     </Form>
   );
