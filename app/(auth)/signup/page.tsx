@@ -17,7 +17,7 @@ export default function SignupPage() {
     <section className="bg-background min-h-screen">
       <Header />
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
           {/* Left side - Info */}
           <div className="space-y-8">
             <div>
