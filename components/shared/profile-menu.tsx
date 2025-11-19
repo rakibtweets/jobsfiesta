@@ -9,7 +9,7 @@ import {
   UserPenIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -22,37 +22,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
-import { authClient } from "@/lib/auth-client";
 
-// interface IProfileMenuProps {
-//   name: string;
-//   email: string;
-//   image?: string | undefined;
-//   accountType: "candidate" | "employee";
-//   role: "admin" | "editor" | "modarator" | undefined;
-// }
+interface IProfileMenuProps {
+  name: string | undefined;
+  email: string | undefined;
+  image?: string | undefined;
+  accountType: "candidate" | "employee" | undefined;
+  role: "admin" | "editor" | "modarator" | undefined;
+}
 
-export default function ProfileMenu() {
-  const router = useRouter();
+export default function ProfileMenu({ name, email, role }: IProfileMenuProps) {
+  // const router = useRouter();
 
-  // const { isPending, data } = authClient.useSession();
-
-  // if (isPending) {
-  //   return <Skeleton className="size-4" />;
-  // }
-
-  // console.log(data);
-
-  const handleLogOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/login");
-        },
-      },
-    });
-  };
+  // const handleLogOut = async () => {
+  //   await authClient.signOut({
+  //     fetchOptions: {
+  //       onSuccess: () => {
+  //         router.push("/login");
+  //       },
+  //     },
+  //   });
+  // };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -66,9 +56,10 @@ export default function ProfileMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-w-64">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
-          <span className="text-foreground truncate text-sm font-medium">{"unknown"}</span>
-          <span className="text-muted-foreground truncate text-xs font-normal">{"unnown"}</span>
+          <span className="text-foreground truncate text-sm font-medium">{name || "unknown"}</span>
+          <span className="text-muted-foreground truncate text-xs font-normal">{email || "unnown"}</span>
         </DropdownMenuLabel>
+
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
@@ -83,10 +74,12 @@ export default function ProfileMenu() {
               Profile
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <BookOpenIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Applications</span>
-          </DropdownMenuItem>
+          {role === "admin" && (
+            <DropdownMenuItem>
+              <BookOpenIcon size={16} className="opacity-60" aria-hidden="true" />
+              <span>Admin Panel</span>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -101,7 +94,7 @@ export default function ProfileMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive">
-          <LogOutIcon onClick={handleLogOut} size={16} className="opacity-60" aria-hidden="true" />
+          <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

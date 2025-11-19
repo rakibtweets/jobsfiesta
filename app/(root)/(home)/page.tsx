@@ -1,9 +1,9 @@
-import { headers } from "next/headers";
+// import { headers } from "next/headers";
 
 import FeaturedJobs from "@/components/home/featured-jobs";
 import HeroBanner from "@/components/home/hero-banner";
 import Services from "@/components/home/services";
-import { auth } from "@/lib/auth";
+// import { auth } from "@/lib/auth";
 
 export const metadata = {
   title: "Jobsfiesta - Find Your Dream Job",
@@ -11,11 +11,11 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
 
-  console.log(session?.user);
+  // console.log(session?.user);
 
   return (
     <>

@@ -6,12 +6,16 @@ import { useTheme } from "next-themes";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 
 import ProfileMenu from "./shared/profile-menu";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { data } = authClient.useSession();
+
+  console.log(data);
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -60,7 +64,16 @@ export default function Header() {
             )}
           </button>
 
-          <ProfileMenu />
+          {data?.user && (
+            <ProfileMenu
+              name={data?.user?.name}
+              email={data?.user.email}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              role={(data?.user as any)?.role}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              accountType={(data?.user as any)?.accountType}
+            />
+          )}
 
           <div className="hidden gap-2 sm:flex">
             <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
