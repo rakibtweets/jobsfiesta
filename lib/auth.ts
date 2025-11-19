@@ -1,15 +1,14 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { nextCookies } from "better-auth/next-js";
+import { customSession } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
-import { z } from "zod";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
 const client = new MongoClient(MONGODB_URI);
 const db = client.db();
-
-const roles = z.enum(["admin", "editor", "moderator"]);
 
 // Auth for server
 export const auth = betterAuth({
@@ -36,13 +35,35 @@ export const auth = betterAuth({
         required: false,
       },
       role: {
-        type: ["admin", "editor", "moderator"],
+        type: "string",
         required: false,
-        validator: {
-          input: roles,
-        },
+      },
+      employeeId: {
+        type: "string",
+        required: false,
       },
     },
+  },
+  session: {
+    additionalFields: {
+      agreeOnTerms: {
+        type: "boolean",
+        required: true,
+      },
+      accountType: {
+        type: "string",
+        required: false,
+      },
+      role: {
+        type: "string",
+        required: false,
+      },
+      employeeId: {
+        type: "string",
+        required: false,
+      },
+    },
+    storeSessionInDatabase: true,
   },
   databaseHooks: {
     user: {
@@ -62,5 +83,25 @@ export const auth = betterAuth({
     },
   },
   //...your config
-  plugins: [nextCookies()], // make sure nextCookie() is the last plugin in the array
+  plugins: [
+    customSession(async ({ user, session }) => {
+      let employeeId = "";
+
+      //@ts-ignore
+      if (user?.accountType === "employee") {
+        employeeId = "askdjhkasdf";
+      }
+      return {
+        user: {
+          ...user,
+          employeeId: employeeId || "",
+        },
+        session,
+      };
+    }),
+    nextCookies(),
+  ], // make sure nextCookie() is the last plugin in the array
 });
+
+export type Session = typeof auth.$Infer.Session;
+export type User = typeof auth.$Infer.Session.user;
