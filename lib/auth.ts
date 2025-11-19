@@ -48,28 +48,6 @@ export const auth = betterAuth({
     },
   },
   session: {
-    additionalFields: {
-      agreeOnTerms: {
-        type: "boolean",
-        required: true,
-      },
-      accountType: {
-        type: "string",
-        required: false,
-      },
-      role: {
-        type: "string",
-        required: false,
-      },
-      employee: {
-        type: "string",
-        required: false,
-      },
-      candidate: {
-        type: "string",
-        required: false,
-      },
-    },
     storeSessionInDatabase: true,
   },
   databaseHooks: {

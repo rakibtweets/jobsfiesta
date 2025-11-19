@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Mail, Phone } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { isValidPhoneNumber } from "react-phone-number-input";
@@ -17,8 +18,9 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { genders } from "@/constants/data";
+import { createCandidateProfile } from "@/lib/actions/candidate.action";
 
-const profileSchema = z.object({
+const createCandidateProfileSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.email().optional(),
   phone: z.string().refine(isValidPhoneNumber, { message: "Invalid phone number" }),
@@ -32,36 +34,68 @@ const profileSchema = z.object({
   bio: z.string().min(1, "Bio is required"),
 });
 
-type ProfileFormValues = z.infer<typeof profileSchema>;
-
-const defaultValues: ProfileFormValues = {
-  name: "",
-  email: "",
-  phone: "",
-  gender: "",
-  headline: "",
-  dateOfBirth: undefined,
-  location: {
-    country: "",
-    state: "",
-  },
-  bio: "",
-};
-
-export function CandidateProfileForm() {
+interface ICandidateProfileFromProps {
+  name?: string | undefined;
+  email?: string | undefined;
+  accountType?: string | undefined;
+  userMongoId?: string | undefined;
+  onBoarding?: boolean | undefined;
+}
+export function CandidateProfileForm({
+  email,
+  name,
+  accountType,
+  userMongoId,
+  onBoarding,
+}: ICandidateProfileFromProps) {
+  const router = useRouter();
   const [countryName, setCountryName] = useState<string>("");
   const [stateName, setStateName] = useState<string>("");
+
+  type ProfileFormValues = z.infer<typeof createCandidateProfileSchema>;
+
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues,
+    resolver: zodResolver(createCandidateProfileSchema),
+    defaultValues: {
+      name: name || "",
+      email: email || "",
+      phone: "",
+      gender: "",
+      headline: "",
+      dateOfBirth: undefined,
+      location: {
+        country: "",
+        state: "",
+      },
+      bio: "",
+    },
   });
 
-  const onSubmit = (data: ProfileFormValues) => {
-    toast(
-      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    );
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  const onSubmit = async (data: ProfileFormValues) => {
+    if (onBoarding && userMongoId && accountType) {
+      // first time create
+      try {
+        const { success, error } = await createCandidateProfile(userMongoId, accountType, { ...data });
+        if (success) {
+          toast.success(`Your ${accountType} is created successfully`);
+          router.push("/dashboard/candidate");
+        } else {
+          toast.error(error?.message);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("Fail to create your profile. Try again");
+      }
+    }
+    // toast(
+    //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //     <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //   </pre>
+    // );
   };
 
   return (
@@ -72,6 +106,7 @@ export function CandidateProfileForm() {
           <FormField
             control={form.control}
             name="name"
+            defaultValue={name || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="name" className="text-foreground font-semibold">
@@ -80,7 +115,8 @@ export function CandidateProfileForm() {
                 <FormControl>
                   <Input
                     {...field}
-                    id="firstName"
+                    id="name"
+                    disabled={onBoarding}
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
                 </FormControl>
@@ -91,16 +127,19 @@ export function CandidateProfileForm() {
           <FormField
             control={form.control}
             name="headline"
+            defaultValue={""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="headline" className="text-foreground font-semibold">
-                  First Name
+                  Headline
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     id="headline"
+                    disabled={isSubmitting}
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
+                    placeholder="e.g Senior Full-Stack Developer at Google"
                   />
                 </FormControl>
                 <FormMessage />
@@ -113,6 +152,7 @@ export function CandidateProfileForm() {
           <FormField
             control={form.control}
             name="email"
+            defaultValue={email || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="email" className="text-foreground flex items-center gap-2 font-semibold">
@@ -123,7 +163,7 @@ export function CandidateProfileForm() {
                     {...field}
                     id="email"
                     type="email"
-                    disabled
+                    disabled={onBoarding}
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
                 </FormControl>
@@ -134,6 +174,7 @@ export function CandidateProfileForm() {
           <FormField
             control={form.control}
             name="phone"
+            defaultValue={""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="phone" className="text-foreground flex items-center gap-2 font-semibold">
@@ -144,6 +185,7 @@ export function CandidateProfileForm() {
                     international
                     defaultCountry="BD"
                     className="py-2"
+                    disabled={isSubmitting}
                     placeholder="Enter a phone number"
                     {...field}
                   />
@@ -255,6 +297,7 @@ export function CandidateProfileForm() {
                 <Textarea
                   {...field}
                   id="bio"
+                  disabled={isSubmitting}
                   className="border-border/50 bg-card/50 hover:border-border focus:ring-ring mt-1 min-h-24 w-full resize-none rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                 />
               </FormControl>
@@ -263,8 +306,12 @@ export function CandidateProfileForm() {
           )}
         />
 
-        <Button type="submit" className="w-full shadow-lg transition-all hover:opacity-90 hover:shadow-xl sm:w-auto">
-          <Save size={16} className="mr-2" /> Save Changes
+        <Button
+          disabled={isSubmitting}
+          type="submit"
+          className="w-full shadow-lg transition-all hover:opacity-90 hover:shadow-xl sm:w-auto"
+        >
+          <Save size={16} className="mr-2" /> {isSubmitting ? "Submitting..." : "Submit"}
         </Button>
       </form>
     </Form>

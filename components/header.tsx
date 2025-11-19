@@ -15,7 +15,7 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
   const { data } = authClient.useSession();
 
-  console.log(data);
+  // console.log(data);
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -76,10 +76,10 @@ export default function Header() {
           ) : (
             <div className="hidden gap-2 sm:flex">
               <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
-                <Link href="/sign-in">Sign In</Link>
+                <Link href="/auth/sign-in">Sign In</Link>
               </Button>
               <Button asChild className="from-primary to-accent bg-linear-to-r transition-opacity hover:opacity-90">
-                <Link href="/sign-up">Sign Up</Link>
+                <Link href="/auth/sign-up">Sign Up</Link>
               </Button>
             </div>
           )}

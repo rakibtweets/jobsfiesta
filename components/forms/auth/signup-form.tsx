@@ -1,6 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -49,7 +48,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
       }
       if (data?.user) {
         toast.success("You have successfully signed up.");
-        router.push("/");
+        router.push("/onboarding/profile");
       }
       // toast(
       //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
