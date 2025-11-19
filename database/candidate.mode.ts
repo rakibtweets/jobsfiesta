@@ -27,8 +27,9 @@ export interface IResume {
 
 export interface ICandidateProfile extends Document {
   user: mongoose.Types.ObjectId;
-  firstName: string;
-  lastName: string;
+  name: string;
+  email: string;
+  accountType?: string;
   headline?: string;
   location?: string;
   bio?: string;
@@ -51,8 +52,9 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
       required: true,
       unique: true,
     },
-    firstName: { type: String, required: true, trim: true },
-    lastName: { type: String, required: true, trim: true },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true },
+    accountType: { type: String, default: "candidate" },
     headline: { type: String, trim: true },
     location: { type: String, trim: true },
     bio: { type: String },

@@ -10,6 +10,9 @@ export interface ICompanyLogo {
 
 export interface IEmployerProfile extends Document {
   user: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  accountType?: string;
   companyName: string;
   companyLogo?: ICompanyLogo;
   website?: string;
@@ -32,6 +35,9 @@ const employerProfileSchema = new Schema<IEmployerProfile>(
       required: true,
       unique: true,
     },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true },
+    accountType: { type: String, default: "employee" },
 
     companyName: {
       type: String,

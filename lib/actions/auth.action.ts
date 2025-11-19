@@ -114,12 +114,10 @@ export const loginWithEmailPassword = async (
 };
 
 export const logoutUser = async (): Promise<ActionResponse> => {
-  console.log("server action logout");
   try {
     await auth.api.signOut({
       headers: await headers(),
     });
-    console.log("server action logout inside");
 
     return {
       success: true,

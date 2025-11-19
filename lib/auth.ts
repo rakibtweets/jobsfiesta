@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { nextCookies } from "better-auth/next-js";
@@ -38,7 +37,11 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
-      employeeId: {
+      employee: {
+        type: "string",
+        required: false,
+      },
+      candidate: {
         type: "string",
         required: false,
       },
@@ -58,7 +61,11 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
-      employeeId: {
+      employee: {
+        type: "string",
+        required: false,
+      },
+      candidate: {
         type: "string",
         required: false,
       },
@@ -85,17 +92,14 @@ export const auth = betterAuth({
   //...your config
   plugins: [
     customSession(async ({ user, session }) => {
-      let employeeId = "";
+      // let employeeId = "";
 
-      //@ts-ignore
-      if (user?.accountType === "employee") {
-        employeeId = "askdjhkasdf";
-      }
+      // //@ts-ignore
+      // if (user?.accountType === "employee") {
+      //   employeeId = "askdjhkasdf";
+      // }
       return {
-        user: {
-          ...user,
-          employeeId: employeeId || "",
-        },
+        user,
         session,
       };
     }),
