@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoaderCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -12,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { loginWithEmailPassword } from "@/lib/actions/auth.action";
+import { authClient } from "@/lib/auth-client";
 import { signInFormSchema } from "@/lib/validations/auth";
 
 const SignInForm = () => {
@@ -33,13 +32,15 @@ const SignInForm = () => {
 
   async function onSubmit(values: z.infer<typeof signInFormSchema>) {
     try {
-      console.log(values);
-      const { success, error } = await loginWithEmailPassword(values);
-      if (success) {
-        toast.success("Login successful");
+      // console.log(values);
+      const { error, data } = await authClient.signIn.email(values);
+      if (error) {
+        toast.error(error.message);
+      }
+
+      if (data?.user) {
+        toast.success("Login Successful");
         router.push("/");
-      } else {
-        toast.error(error?.message);
       }
 
       // toast(
@@ -52,63 +53,78 @@ const SignInForm = () => {
       toast.error("Fail to login please try again");
     }
   }
+
+  const signInWithGoogle = async () => {
+    const { error } = await authClient.signIn.social({
+      provider: "google",
+    });
+
+    if (error) {
+      return toast.error(error.message);
+    }
+
+    toast.success("Google sign successful");
+  };
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-10">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input disabled={isSubmitting} placeholder="email@exaple.com" type="email" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput disabled={isSubmitting} placeholder="Enter Password" {...field} />
-              </FormControl>
-              <FormDescription>Enter your password.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="rememberMe"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
-              <FormControl>
-                <Checkbox disabled={isSubmitting} checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className="flex cursor-pointer items-start gap-2">
-                  <span className="text-muted-foreground text-sm">Remember Me</span>
-                </FormLabel>
+    <div className="flex w-full flex-col items-center justify-center gap-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 p-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input disabled={isSubmitting} placeholder="email@exaple.com" type="email" {...field} />
+                </FormControl>
 
                 <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
-        <Button disabled={isSubmitting} type="submit">
-          <LoaderCircleIcon className="-ms-1 animate-spin" size={16} aria-hidden="true" />{" "}
-          {isSubmitting ? "Loging..." : "Login"}
-        </Button>
-      </form>
-    </Form>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <PasswordInput disabled={isSubmitting} placeholder="Enter Password" {...field} />
+                </FormControl>
+                <FormDescription>Enter your password.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="rememberMe"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
+                <FormControl>
+                  <Checkbox disabled={isSubmitting} checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="flex cursor-pointer items-start gap-2">
+                    <span className="text-muted-foreground text-sm">Remember Me</span>
+                  </FormLabel>
+
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting ? "Loging..." : "Login"}
+          </Button>
+        </form>
+      </Form>
+
+      <Button onClick={signInWithGoogle}>Sign In With Google</Button>
+    </div>
   );
 };
 export default SignInForm;

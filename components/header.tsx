@@ -64,7 +64,7 @@ export default function Header() {
             )}
           </button>
 
-          {data?.user && (
+          {data?.user ? (
             <ProfileMenu
               name={data?.user?.name}
               email={data?.user.email}
@@ -73,16 +73,16 @@ export default function Header() {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               accountType={(data?.user as any)?.accountType}
             />
+          ) : (
+            <div className="hidden gap-2 sm:flex">
+              <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild className="from-primary to-accent bg-linear-to-r transition-opacity hover:opacity-90">
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
           )}
-
-          <div className="hidden gap-2 sm:flex">
-            <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild className="from-primary to-accent bg-linear-to-r transition-opacity hover:opacity-90">
-              <Link href="/signup">Sign Up</Link>
-            </Button>
-          </div>
 
           <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -102,12 +102,16 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-2 pt-4">
-              <Button variant="outline" className="w-full bg-transparent">
-                Login
-              </Button>
-              <Button className="from-primary to-accent w-full bg-linear-to-r">Sign Up</Button>
-            </div>
+            {!data?.user ? (
+              <div className="flex flex-col gap-2 pt-4">
+                <Button variant="outline" className="w-full bg-transparent">
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button className="from-primary to-accent w-full bg-linear-to-r">
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

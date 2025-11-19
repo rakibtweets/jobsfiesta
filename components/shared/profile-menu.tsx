@@ -9,7 +9,8 @@ import {
   UserPenIcon,
 } from "lucide-react";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { authClient } from "@/lib/auth-client";
 
 interface IProfileMenuProps {
   name: string | undefined;
@@ -32,17 +34,23 @@ interface IProfileMenuProps {
 }
 
 export default function ProfileMenu({ name, email, role }: IProfileMenuProps) {
-  // const router = useRouter();
+  const router = useRouter();
 
-  // const handleLogOut = async () => {
-  //   await authClient.signOut({
-  //     fetchOptions: {
-  //       onSuccess: () => {
-  //         router.push("/login");
-  //       },
-  //     },
-  //   });
-  // };
+  const handleLogOut = async () => {
+    console.log("logout....");
+    try {
+      const { error } = await authClient.signOut();
+
+      if (error) {
+        toast.error(error.message);
+      }
+
+      return router.push("/login");
+    } catch (error) {
+      console.log("Logut error", error);
+      toast.error("Unknown Logut unsuccessfull");
+    }
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -93,7 +101,7 @@ export default function ProfileMenu({ name, email, role }: IProfileMenuProps) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem onClick={() => handleLogOut()} variant="destructive">
           <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
           <span>Logout</span>
         </DropdownMenuItem>

@@ -1,6 +1,8 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -10,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { signUpWithEmailPassword } from "@/lib/actions/auth.action";
+import { authClient } from "@/lib/auth-client";
 import { signupFormSchema } from "@/lib/validations/auth";
 
 interface ISignUpFormProps {
@@ -18,6 +20,7 @@ interface ISignUpFormProps {
 }
 
 export default function SignUpForm({ accountType }: ISignUpFormProps) {
+  const router = useRouter();
   console.log(accountType);
   const form = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
@@ -38,11 +41,15 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
   async function onSubmit(values: z.infer<typeof signupFormSchema>) {
     try {
       // console.log(values);
-
-      const { success } = await signUpWithEmailPassword({ ...values, accountType });
-      if (success) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
+      const { data, error } = await authClient.signUp.email({ ...values, accountType });
+      if (error) {
+        toast.error(error.message);
+      }
+      if (data?.user) {
         toast.success("You have successfully signed up.");
-        form.reset();
+        router.push("/");
       }
       // toast(
       //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">

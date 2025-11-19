@@ -112,3 +112,29 @@ export const loginWithEmailPassword = async (
     return handleError(error) as ErrorResponse;
   }
 };
+
+export const logoutUser = async (): Promise<ActionResponse> => {
+  console.log("server action logout");
+  try {
+    await auth.api.signOut({
+      headers: await headers(),
+    });
+    console.log("server action logout inside");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message,
+        },
+      };
+    }
+
+    return handleError(error) as ErrorResponse;
+  }
+};
