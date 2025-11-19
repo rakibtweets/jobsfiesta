@@ -31,7 +31,11 @@ export interface ICandidateProfile extends Document {
   email: string;
   accountType?: string;
   headline?: string;
-  location?: string;
+  location?: {
+    country?: string;
+    state?: string;
+  };
+  dateOfBirth?: Date;
   bio?: string;
   resume?: IResume;
   skills: string[];
@@ -54,9 +58,13 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
     },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
+    dateOfBirth: { type: Date },
     accountType: { type: String, default: "candidate" },
     headline: { type: String, trim: true },
-    location: { type: String, trim: true },
+    location: {
+      country: { type: String },
+      state: { type: String },
+    },
     bio: { type: String },
 
     resume: {

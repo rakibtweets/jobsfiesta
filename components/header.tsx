@@ -76,10 +76,10 @@ export default function Header() {
           ) : (
             <div className="hidden gap-2 sm:flex">
               <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
-                <Link href="/login">Login</Link>
+                <Link href="/sign-in">Sign In</Link>
               </Button>
               <Button asChild className="from-primary to-accent bg-linear-to-r transition-opacity hover:opacity-90">
-                <Link href="/signup">Sign Up</Link>
+                <Link href="/sign-up">Sign Up</Link>
               </Button>
             </div>
           )}

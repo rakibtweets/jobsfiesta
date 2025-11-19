@@ -3,6 +3,7 @@
 import FeaturedJobs from "@/components/home/featured-jobs";
 import HeroBanner from "@/components/home/hero-banner";
 import Services from "@/components/home/services";
+import { getCandidates } from "@/lib/actions/candidate.action";
 // import { auth } from "@/lib/auth";
 
 export const metadata = {
@@ -16,6 +17,9 @@ export default async function Home() {
   // });
 
   // console.log(session?.user);
+
+  const candidate = await getCandidates();
+  console.log("🚀 ~ Home ~ candidate:", candidate);
 
   return (
     <>

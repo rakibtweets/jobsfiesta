@@ -19,10 +19,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { genders } from "@/constants/data";
 
 const profileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.email(),
+  name: z.string().min(1, "Name is required"),
+  email: z.email().optional(),
   phone: z.string().refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+  headline: z.string().min(1, "Headline is required"),
   gender: z.string().min(1, "Gender is required"),
   dateOfBirth: z.date().optional(),
   location: z.object({
@@ -35,11 +35,11 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const defaultValues: ProfileFormValues = {
-  firstName: "",
-  lastName: "",
+  name: "",
   email: "",
   phone: "",
   gender: "",
+  headline: "",
   dateOfBirth: undefined,
   location: {
     country: "",
@@ -71,10 +71,10 @@ export function CandidateProfileForm() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <FormField
             control={form.control}
-            name="firstName"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="firstName" className="text-foreground font-semibold">
+                <FormLabel htmlFor="name" className="text-foreground font-semibold">
                   First Name
                 </FormLabel>
                 <FormControl>
@@ -90,16 +90,16 @@ export function CandidateProfileForm() {
           />
           <FormField
             control={form.control}
-            name="lastName"
+            name="headline"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="lastName" className="text-foreground font-semibold">
-                  Last Name
+                <FormLabel htmlFor="headline" className="text-foreground font-semibold">
+                  First Name
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    id="lastName"
+                    id="headline"
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
                 </FormControl>
@@ -123,6 +123,7 @@ export function CandidateProfileForm() {
                     {...field}
                     id="email"
                     type="email"
+                    disabled
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
                 </FormControl>
