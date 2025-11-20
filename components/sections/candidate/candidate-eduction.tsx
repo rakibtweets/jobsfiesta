@@ -16,7 +16,6 @@ type EducationDisplayListProps = {
 };
 
 export function CandidateEducationDisplayList({ educations = [], userId }: EducationDisplayListProps) {
-  console.log("🚀 ~ CandidateEducationDisplayList ~ educations:", educations);
   return (
     <div className="space-y-4">
       {educations?.length > 0 ? (
