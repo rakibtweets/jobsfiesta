@@ -3,6 +3,7 @@ import { BookOpen, Briefcase, Camera, FileText, MapPin, Plus, User } from "lucid
 import { CandidateEducationForm } from "@/components/forms/candidate/candidate-education-form";
 import { CandidateExperienceForm } from "@/components/forms/candidate/candidate-experience-form";
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
+import { CandidateEducationDisplayList } from "@/components/sections/candidate/candidate-eduction";
 import { CandidateExperienceDisplayList } from "@/components/sections/candidate/candidate-experiece";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -160,13 +161,41 @@ const CandidateProfilePage = () => {
                   <h3 className="text-xl font-bold">Education</h3>
                   <p className="text-muted-foreground mt-1 text-sm">Add your educational background</p>
                 </div>
-                <Button variant="outline">
-                  <Plus size={16} /> Add Education
-                </Button>
+                <div>
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button variant={"outline"}>
+                        <Plus size={24} />
+                        Add Educatoin
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Education</DialogTitle>
+                      </DialogHeader>
+                      <CandidateEducationForm type="add" />
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               <div className="space-y-6">
-                <CandidateEducationForm />
+                <CandidateEducationDisplayList
+                  educations={[
+                    {
+                      institution: "Hatimara School",
+                      degree: "Secondary School Certificate",
+                      fieldOfStudy: "Science",
+                      graduationYear: "2023",
+                    },
+                    {
+                      institution: "Hatimara College",
+                      degree: "Secondary School Certificate",
+                      fieldOfStudy: "Science",
+                      graduationYear: "2023",
+                    },
+                  ]}
+                />
               </div>
             </Card>
           </TabsContent>

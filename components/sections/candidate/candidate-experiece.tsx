@@ -25,7 +25,7 @@ export function CandidateExperienceDisplayList({ experiences }: ExperienceListPr
   const serverAction = async () => {
     // Simulate a server action
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    return { error: false };
+    return { error: false, message: "Action Successful" };
   };
   return (
     <div className="space-y-4">
@@ -84,7 +84,7 @@ export function CandidateExperienceDisplayList({ experiences }: ExperienceListPr
 
             <ActionButton
               action={serverAction}
-              areYouSureDescription="This task can not to revierse."
+              areYouSureDescription="This action cannot be undone."
               requireAreYouSure
               variant={"destructive"}
             >

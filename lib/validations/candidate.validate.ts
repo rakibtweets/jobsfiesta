@@ -53,3 +53,12 @@ export const experienceSchema = z.object({
 });
 
 export type ExperienceFormValues = z.infer<typeof experienceSchema>;
+
+export const educationSchema = z.object({
+  institution: z.string().min(1, "institution/University is required"),
+  degree: z.string().min(1, "Degree is required"),
+  fieldOfStudy: z.string().min(1, "Field of study is required"),
+  graduationYear: z.string().min(4, "Graduation year is required"),
+});
+
+export type EducationFormValues = z.infer<typeof educationSchema>;
