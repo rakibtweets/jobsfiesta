@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -28,4 +29,13 @@ export const getTimeStamp = (createdAt: Date): string => {
   const diffDays = Math.round(diffHours / 24);
 
   return `${diffDays} days ago`;
+};
+
+export const formatDate = (date: string | Date | null | undefined): string => {
+  if (!date) return "";
+
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+
+  return format(d, "dd MMM yyyy");
 };

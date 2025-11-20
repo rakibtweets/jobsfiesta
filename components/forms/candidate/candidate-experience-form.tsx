@@ -8,48 +8,66 @@ import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import { DateInput } from "@/components/ui/date-input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { IExperience } from "@/database/candidate.model";
+import { addExperienceToCandidateProfile, updateExperienceInCandidateProfile } from "@/lib/actions/candidate.action";
 import { ExperienceFormValues, experienceSchema } from "@/lib/validations/candidate.validate";
-
-type Experience = {
-  position: string;
-  company: string;
-  startDate?: Date;
-  endDate?: Date;
-  description?: string;
-};
 
 interface IExperienceFromProps {
   type: "add" | "edit";
-  experience?: Experience;
+  experience?: IExperience;
+  userId?: string | undefined;
+  experienceId?: string | undefined;
 }
 
-export function CandidateExperienceForm({ type, experience }: IExperienceFromProps) {
+export function CandidateExperienceForm({ type, experience, userId, experienceId }: IExperienceFromProps) {
+  console.log("🚀 ~ CandidateExperienceForm ~ experience:", experience);
   const form = useForm<ExperienceFormValues>({
     resolver: zodResolver(experienceSchema),
     defaultValues: {
       position: experience?.position || "",
       company: experience?.company || "",
-      startDate: experience?.startDate || undefined,
-      endDate: experience?.endDate || undefined,
+      startDate: experience?.startDate ? new Date(experience?.startDate) : undefined,
+      endDate: experience?.endDate ? new Date(experience?.endDate) : undefined,
       description: experience?.description || "",
     },
   });
 
-  const onSubmit = (data: ExperienceFormValues) => {
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  const onSubmit = async (data: ExperienceFormValues) => {
     console.log(data);
-    if (type === "add") {
+    if (type === "add" && userId) {
       //todo: Add experience
+      const { success, error } = await addExperienceToCandidateProfile(userId, { ...data });
+      if (success) {
+        toast.success("New experiece added successfuly");
+        form.reset();
+      } else {
+        toast.error(error?.message);
+      }
     } else {
       //todo: edite experience
+      const { success, error } = await updateExperienceInCandidateProfile(String(userId), String(experienceId), {
+        ...data,
+      });
+      if (success) {
+        toast.success("Update experiece  successfuly");
+        form.reset();
+      } else {
+        toast.error(error?.message);
+      }
     }
-    toast(
-      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    );
+    // toast(
+    //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //     <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //   </pre>
+    // );
   };
 
   return (
@@ -61,7 +79,7 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
               control={form.control}
               name={`position`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Position</FormLabel>
                   <FormControl>
                     <Input
@@ -77,7 +95,7 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
               control={form.control}
               name={`company`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Company</FormLabel>
                   <FormControl>
                     <Input
@@ -96,7 +114,7 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
               control={form.control}
               name={`startDate`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Start Date</FormLabel>
                   <FormControl>
                     <DateInput
@@ -106,6 +124,7 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>
+                  <FormDescription>starting date</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -114,7 +133,7 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
               control={form.control}
               name={`endDate`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">End Date</FormLabel>
                   <FormControl>
                     <DateInput
@@ -124,6 +143,7 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>
+                  <FormDescription>No need if you are still working</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -135,7 +155,7 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
               control={form.control}
               name={`description`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Description</FormLabel>
                   <FormControl>
                     <Textarea
@@ -151,8 +171,18 @@ export function CandidateExperienceForm({ type, experience }: IExperienceFromPro
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" size="sm">
-              <Save size={14} /> Save
+            <Button disabled={isSubmitting} type="submit" size="default">
+              {isSubmitting ? (
+                <>
+                  <Spinner />
+                  saving...
+                </>
+              ) : (
+                <>
+                  <Save size={14} />
+                  save
+                </>
+              )}
             </Button>
           </div>
         </div>

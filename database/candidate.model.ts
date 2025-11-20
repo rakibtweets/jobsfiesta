@@ -4,15 +4,16 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 // 1. INTERFACES
 // ------------------------------
 export interface IExperience {
-  title: string;
+  _id?: mongoose.Types.ObjectId;
+  position: string;
   company: string;
-  location?: string;
-  startDate: Date;
+  startDate?: Date;
   endDate?: Date | null;
   description?: string;
 }
 
 export interface IEducation {
+  _id?: mongoose.Types.ObjectId;
   institution: string;
   degree: string;
   fieldOfStudy?: string;
@@ -82,9 +83,9 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
 
     experience: [
       {
-        title: { type: String },
-        company: { type: String },
-        location: { type: String },
+        _id: { type: Schema.Types.ObjectId, auto: true },
+        position: { type: String, required: true },
+        company: { type: String, required: true },
         startDate: { type: Date },
         endDate: { type: Date },
         description: { type: String },
@@ -93,6 +94,7 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
 
     education: [
       {
+        _id: { type: Schema.Types.ObjectId, auto: true },
         institution: { type: String },
         degree: { type: String },
         fieldOfStudy: { type: String },

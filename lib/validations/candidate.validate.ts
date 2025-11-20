@@ -39,11 +39,9 @@ export const deleteCandidateProfileSchema = z.object({
 export const experienceSchema = z.object({
   position: z.string().min(1, "Position is required"),
   company: z.string().min(1, "Company is required"),
-  startDate: z
-    .date({
-      error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
-    })
-    .optional(),
+  startDate: z.date({
+    error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
+  }),
   endDate: z
     .date({
       error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),

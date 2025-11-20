@@ -10,8 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getCandidateProfileByUserId } from "@/lib/actions/candidate.action";
+import { getServerSession } from "@/lib/get-session";
 
-const CandidateProfilePage = () => {
+const CandidateProfilePage = async () => {
+  const data = await getServerSession();
+  const user = data?.user;
+  const { data: candidateData } = await getCandidateProfileByUserId(String(user?.id));
+  const candidate = candidateData?.candidate;
   return (
     <>
       {/* Profile Summary Start */}
@@ -27,11 +33,11 @@ const CandidateProfilePage = () => {
 
             <div className="flex flex-col gap-4">
               <div>
-                <h1 className="text-xl font-bold sm:text-2xl">John Doe</h1>
-                <p className="text-muted-foreground text-sm sm:text-base">Senior Product Designer</p>
+                <h1 className="text-xl font-bold sm:text-2xl">{candidate?.name}</h1>
+                <p className="text-muted-foreground text-sm sm:text-base">{candidate?.headline}</p>
 
                 <p className="text-muted-foreground mt-2 flex items-center gap-1 text-xs sm:text-sm">
-                  <MapPin size={14} /> San Francisco, CA
+                  <MapPin size={14} /> {`${candidate?.location?.country},${candidate?.location?.state || ""}`}
                 </p>
               </div>
               <Button className="hidden md:flex md:w-full lg:w-auto">
@@ -127,7 +133,7 @@ const CandidateProfilePage = () => {
                       <DialogHeader>
                         <DialogTitle>Add Experience</DialogTitle>
                       </DialogHeader>
-                      <CandidateExperienceForm type="add" />
+                      <CandidateExperienceForm userId={user?.id} type="add" />
                     </DialogContent>
                   </Dialog>
                 </div>
@@ -135,20 +141,8 @@ const CandidateProfilePage = () => {
 
               <div className="space-y-6">
                 <CandidateExperienceDisplayList
-                  experiences={[
-                    {
-                      company: "Google",
-                      position: "Software Developer",
-                      description: "fkjasdflasdflsadf",
-                      startDate: new Date(),
-                    },
-                    {
-                      company: "Google",
-                      position: "Software Developer",
-                      description: "fkjasdflasdflsadf",
-                      startDate: new Date(),
-                    },
-                  ]}
+                  userId={String(candidate?.user)}
+                  experiences={candidate?.experience || []}
                 />
               </div>
             </Card>
