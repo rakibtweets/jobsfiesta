@@ -55,8 +55,8 @@ export function CandidateProfileForm({
   formType,
 }: ICandidateProfileFromProps) {
   const router = useRouter();
-  const [countryName, setCountryName] = useState<string>("");
-  const [stateName, setStateName] = useState<string>("");
+  const [countryName, setCountryName] = useState<string>(candidate?.location?.country || "");
+  const [stateName, setStateName] = useState<string>(candidate?.location?.country || "");
 
   type ProfileFormValues = z.infer<typeof createCandidateProfileSchema>;
 

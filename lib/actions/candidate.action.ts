@@ -447,6 +447,7 @@ export const updateEducationInCandidateProfile = async (
 
     // 5. Save profile
     await profile.save();
+
     revalidatePath("/dashboard/candidate/profile");
     return {
       success: true,
