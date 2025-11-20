@@ -6,13 +6,13 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import z from "zod";
 
-import { Candidate, ICandidateProfile, IExperience } from "@/database/candidate.model";
+import { Candidate, ICandidateProfile, IExperience, IEducation } from "@/database/candidate.model";
 import { auth } from "@/lib/auth";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import dbConnect from "../mongoose";
-import { createCandidateProfileSchema, experienceSchema } from "../validations/candidate.validate";
+import { createCandidateProfileSchema, experienceSchema, educationSchema } from "../validations/candidate.validate";
 
 export const getCandidates = async () => {
   await dbConnect();
@@ -247,7 +247,6 @@ export const deleteExperienceFromCandidateProfile = async (
   userId: string,
   experienceId: string
 ): Promise<ActionResponse> => {
-  console.log({ userId, experienceId });
   try {
     await dbConnect();
 
@@ -267,6 +266,154 @@ export const deleteExperienceFromCandidateProfile = async (
 
     // 3. Remove experience from array
     profile.experience.splice(index, 1);
+
+    // 4. Save changes
+    await profile.save();
+
+    // 5. Revalidate UI path
+    revalidatePath("/dashboard/candidate/profile");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const addEducationToCandidateProfile = async (
+  userId: string,
+  params: z.infer<typeof educationSchema>
+): Promise<ActionResponse<{ education: IEducation }>> => {
+  // 1. Validate input
+  const validationResult = await action({
+    params,
+    schema: educationSchema,
+    authorizeRole: "candidate",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    const { institution, degree, fieldOfStudy, graduationYear } = params;
+
+    // 2. Find candidate profile
+    const profile = await Candidate.findOne({ user: userId });
+
+    if (!profile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    // 3. Build new education object
+    const newEducation = {
+      _id: new mongoose.Types.ObjectId(),
+      institution,
+      degree,
+      fieldOfStudy,
+      graduationYear,
+    };
+
+    // 4. Push education into array
+    profile.education.push(newEducation);
+
+    // 5. Save the profile
+    await profile.save();
+
+    revalidatePath("/dashboard/candidate/profile");
+
+    return {
+      success: true,
+      data: {
+        education: JSON.parse(JSON.stringify(newEducation)),
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const updateEducationInCandidateProfile = async (
+  userId: string,
+  educationId: string,
+  params: z.infer<typeof educationSchema>
+): Promise<ActionResponse<{ education: IEducation }>> => {
+  // 1. Validate input
+  const validationResult = await action({
+    params,
+    schema: educationSchema,
+    authorizeRole: "candidate",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    const { institution, degree, fieldOfStudy, graduationYear } = params;
+
+    // 2. Find candidate profile
+    const profile = await Candidate.findOne({ user: userId });
+
+    if (!profile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    // 3. Find education by _id
+    const education = profile.education.find((e) => String(e._id) === educationId);
+
+    if (!education) {
+      throw new Error("Education entry not found");
+    }
+
+    // 4. Update fields
+    education.institution = institution ?? education.institution;
+    education.degree = degree ?? education.degree;
+    education.fieldOfStudy = fieldOfStudy ?? education.fieldOfStudy;
+    education.graduationYear = graduationYear ?? education.graduationYear;
+
+    // 5. Save profile
+    await profile.save();
+    revalidatePath("/dashboard/candidate/profile");
+    return {
+      success: true,
+      data: {
+        education: JSON.parse(JSON.stringify(education)),
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const deleteEducationFromCandidateProfile = async (
+  userId: string,
+  educationId: string
+): Promise<ActionResponse> => {
+  try {
+    await dbConnect();
+
+    // 1. Find candidate profile
+    const profile = await Candidate.findOne({ user: userId });
+
+    if (!profile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    // 2. Find education index
+    const index = profile.education.findIndex((e) => String(e._id) === educationId);
+
+    if (index === -1) {
+      throw new Error("Education entry not found");
+    }
+
+    // 3. Remove education from array
+    profile.education.splice(index, 1);
 
     // 4. Save changes
     await profile.save();

@@ -1,25 +1,26 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save, Trash2 } from "lucide-react";
+import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { IEducation } from "@/database/candidate.model";
+import { addEducationToCandidateProfile, updateEducationInCandidateProfile } from "@/lib/actions/candidate.action";
 import { EducationFormValues, educationSchema } from "@/lib/validations/candidate.validate";
 
-type Education = {
-  institution: string;
-  degree: string;
-  fieldOfStudy: string;
-  graduationYear?: string | undefined;
-};
 interface IEducationFromProps {
   type: "add" | "edit";
-  education?: Education;
+  education?: IEducation;
+  userId?: string | undefined;
+  educationId?: string | undefined;
 }
 
-export function CandidateEducationForm({ type, education }: IEducationFromProps) {
+export function CandidateEducationForm({ type, education, userId, educationId }: IEducationFromProps) {
   const form = useForm<EducationFormValues>({
     resolver: zodResolver(educationSchema),
     defaultValues: {
@@ -29,13 +30,32 @@ export function CandidateEducationForm({ type, education }: IEducationFromProps)
       graduationYear: education?.graduationYear || "",
     },
   });
+  const {
+    formState: { isSubmitting },
+  } = form;
 
   const onSubmit = async (data: EducationFormValues) => {
     console.log("Form data:", data);
-    if (type == "add") {
-      //todo: add data
+    if (type === "add" && userId) {
+      //todo: Add experience
+      const { success, error } = await addEducationToCandidateProfile(userId, { ...data });
+      if (success) {
+        toast.success("New Education added successfuly");
+        form.reset();
+      } else {
+        toast.error(error?.message);
+      }
     } else {
-      //todo: update data
+      //todo: edite experience
+      const { success, error } = await updateEducationInCandidateProfile(String(userId), String(educationId), {
+        ...data,
+      });
+      if (success) {
+        toast.success("Update Education  successfuly");
+        form.reset();
+      } else {
+        toast.error(error?.message);
+      }
     }
   };
 
@@ -51,7 +71,7 @@ export function CandidateEducationForm({ type, education }: IEducationFromProps)
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">School/University</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       {...field}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
@@ -67,7 +87,7 @@ export function CandidateEducationForm({ type, education }: IEducationFromProps)
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Degree</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       {...field}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
@@ -86,7 +106,7 @@ export function CandidateEducationForm({ type, education }: IEducationFromProps)
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Field of Study</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       {...field}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
@@ -102,9 +122,9 @@ export function CandidateEducationForm({ type, education }: IEducationFromProps)
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Graduation Year</FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       {...field}
-                      type="number"
+                      type=""
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>
@@ -115,8 +135,18 @@ export function CandidateEducationForm({ type, education }: IEducationFromProps)
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" size="default">
-              <Save size={14} /> Save
+            <Button disabled={isSubmitting} type="submit" size="default">
+              {isSubmitting ? (
+                <>
+                  <Spinner />
+                  saving...
+                </>
+              ) : (
+                <>
+                  <Save size={14} />
+                  save
+                </>
+              )}
             </Button>
           </div>
         </div>

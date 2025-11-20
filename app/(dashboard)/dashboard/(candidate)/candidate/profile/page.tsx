@@ -167,29 +167,14 @@ const CandidateProfilePage = async () => {
                       <DialogHeader>
                         <DialogTitle>Add Education</DialogTitle>
                       </DialogHeader>
-                      <CandidateEducationForm type="add" />
+                      <CandidateEducationForm type="add" userId={String(candidate?.user)} />
                     </DialogContent>
                   </Dialog>
                 </div>
               </div>
 
               <div className="space-y-6">
-                <CandidateEducationDisplayList
-                  educations={[
-                    {
-                      institution: "Hatimara School",
-                      degree: "Secondary School Certificate",
-                      fieldOfStudy: "Science",
-                      graduationYear: "2023",
-                    },
-                    {
-                      institution: "Hatimara College",
-                      degree: "Secondary School Certificate",
-                      fieldOfStudy: "Science",
-                      graduationYear: "2023",
-                    },
-                  ]}
-                />
+                <CandidateEducationDisplayList userId={String(candidate?.user)} educations={candidate?.education} />
               </div>
             </Card>
           </TabsContent>

@@ -24,7 +24,6 @@ interface IExperienceFromProps {
 }
 
 export function CandidateExperienceForm({ type, experience, userId, experienceId }: IExperienceFromProps) {
-  console.log("🚀 ~ CandidateExperienceForm ~ experience:", experience);
   const form = useForm<ExperienceFormValues>({
     resolver: zodResolver(experienceSchema),
     defaultValues: {

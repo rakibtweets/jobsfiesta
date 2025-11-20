@@ -17,8 +17,7 @@ export interface IEducation {
   institution: string;
   degree: string;
   fieldOfStudy?: string;
-  startDate: Date;
-  endDate?: Date;
+  graduationYear?: string;
 }
 
 export interface IResume {
@@ -98,8 +97,7 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
         institution: { type: String },
         degree: { type: String },
         fieldOfStudy: { type: String },
-        startDate: { type: Date },
-        endDate: { type: Date },
+        graduationYear: { type: Date },
       },
     ],
   },
