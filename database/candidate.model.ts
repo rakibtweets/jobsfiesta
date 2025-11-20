@@ -29,6 +29,8 @@ export interface ICandidateProfile extends Document {
   user: mongoose.Types.ObjectId;
   name: string;
   email: string;
+  phone: string;
+  gender: string;
   accountType?: string;
   headline?: string;
   location?: {
@@ -58,6 +60,8 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
     },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
+    phone: { type: String },
+    gender: { type: String, required: true },
     dateOfBirth: { type: Date },
     accountType: { type: String, default: "candidate" },
     headline: { type: String, trim: true },

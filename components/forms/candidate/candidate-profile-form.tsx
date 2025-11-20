@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User } from "better-auth";
 import { Save, Mail, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,7 +19,8 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { genders } from "@/constants/data";
-import { createCandidateProfile } from "@/lib/actions/candidate.action";
+import { ICandidateProfile } from "@/database/candidate.model";
+import { createCandidateProfile, updateExperienceInCandidateProfile } from "@/lib/actions/candidate.action";
 
 const createCandidateProfileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -37,9 +39,11 @@ const createCandidateProfileSchema = z.object({
 interface ICandidateProfileFromProps {
   name?: string | undefined;
   email?: string | undefined;
+  candidate?: ICandidateProfile;
   accountType?: string | undefined;
   userMongoId?: string | undefined;
   onBoarding?: boolean | undefined;
+  formType?: "update" | "create";
 }
 export function CandidateProfileForm({
   email,
@@ -47,6 +51,8 @@ export function CandidateProfileForm({
   accountType,
   userMongoId,
   onBoarding,
+  candidate,
+  formType,
 }: ICandidateProfileFromProps) {
   const router = useRouter();
   const [countryName, setCountryName] = useState<string>("");
@@ -57,17 +63,17 @@ export function CandidateProfileForm({
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(createCandidateProfileSchema),
     defaultValues: {
-      name: name || "",
-      email: email || "",
-      phone: "",
-      gender: "",
-      headline: "",
-      dateOfBirth: undefined,
-      location: {
+      name: candidate?.name || name || "",
+      email: candidate?.email || email || "",
+      phone: candidate?.phone || "",
+      gender: candidate?.gender || "",
+      headline: candidate?.headline || "",
+      dateOfBirth: candidate?.dateOfBirth ? new Date(candidate.dateOfBirth) : undefined,
+      location: candidate?.location || {
         country: "",
         state: "",
       },
-      bio: "",
+      bio: candidate?.bio || "",
     },
   });
 
@@ -91,6 +97,15 @@ export function CandidateProfileForm({
         toast.error("Fail to create your profile. Try again");
       }
     }
+    if (formType === "update") {
+      const { success, error } = await updateExperienceInCandidateProfile(String(userMongoId), { ...data });
+      if (success) {
+        toast.success(`Your data is upddated successfully`);
+      } else {
+        toast.error(error?.message);
+      }
+    }
+
     // toast(
     //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
     //     <code className="text-white">{JSON.stringify(data, null, 2)}</code>
@@ -106,7 +121,6 @@ export function CandidateProfileForm({
           <FormField
             control={form.control}
             name="name"
-            defaultValue={name || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="name" className="text-foreground font-semibold">
@@ -116,7 +130,7 @@ export function CandidateProfileForm({
                   <Input
                     {...field}
                     id="name"
-                    disabled={onBoarding}
+                    disabled={onBoarding || formType === "update"}
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
                 </FormControl>
@@ -137,7 +151,6 @@ export function CandidateProfileForm({
                   <Input
                     {...field}
                     id="headline"
-                    disabled={isSubmitting}
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     placeholder="e.g Senior Full-Stack Developer at Google"
                   />
@@ -152,7 +165,6 @@ export function CandidateProfileForm({
           <FormField
             control={form.control}
             name="email"
-            defaultValue={email || ""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="email" className="text-foreground flex items-center gap-2 font-semibold">
@@ -163,7 +175,7 @@ export function CandidateProfileForm({
                     {...field}
                     id="email"
                     type="email"
-                    disabled={onBoarding}
+                    disabled={onBoarding || formType === "update"}
                     className="bg-card/50 border-border/50 hover:border-border focus:ring-ring mt-1 w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                   />
                 </FormControl>
@@ -174,7 +186,6 @@ export function CandidateProfileForm({
           <FormField
             control={form.control}
             name="phone"
-            defaultValue={""}
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="phone" className="text-foreground flex items-center gap-2 font-semibold">

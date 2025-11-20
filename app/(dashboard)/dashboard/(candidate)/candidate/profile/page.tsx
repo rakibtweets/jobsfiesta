@@ -18,6 +18,8 @@ const CandidateProfilePage = async () => {
   const user = data?.user;
   const { data: candidateData } = await getCandidateProfileByUserId(String(user?.id));
   const candidate = candidateData?.candidate;
+  console.log("🚀 ~ CandidateProfilePage ~ candidate:", candidate);
+
   return (
     <>
       {/* Profile Summary Start */}
@@ -48,13 +50,13 @@ const CandidateProfilePage = async () => {
           </div>
 
           {/* Edit Button */}
-          <div className="flex w-full flex-col gap-3 md:w-auto">
+          {/* <div className="flex w-full flex-col gap-3 md:w-auto">
             <Button className="w-full sm:w-auto md:hidden md:w-full lg:w-auto">
               <Camera size={24} />
               Upload Image
             </Button>
             <Button className="w-full sm:w-auto">Edit Profile</Button>
-          </div>
+          </div> */}
         </div>
 
         {/* Stats Section */}
@@ -110,7 +112,7 @@ const CandidateProfilePage = async () => {
               <div>
                 <h3 className="text-foreground mb-6 text-xl font-bold">Basic Information</h3>
               </div>
-              <CandidateProfileForm />
+              <CandidateProfileForm candidate={candidate} formType="update" userMongoId={String(candidate?.user)} />
             </Card>
           </TabsContent>
 

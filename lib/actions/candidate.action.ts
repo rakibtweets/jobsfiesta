@@ -44,7 +44,7 @@ export const createCandidateProfile = async (
     await dbConnect();
 
     // Extract fields from validated result
-    const { name, email, phone, headline, gender, dateOfBirth, location, bio } = params;
+    const { name, email, phone, headline, gender, dateOfBirth, location, bio } = validationResult.params!;
 
     // Ensure one user = one profile (optional if needed)
     const existing = await Candidate.findOne({ email });
@@ -99,6 +99,66 @@ export const createCandidateProfile = async (
       success: true,
       data: {
         candidate: JSON.parse(JSON.stringify(profile)),
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const updateCandidateProfile = async (
+  userId: string,
+  params: z.infer<typeof createCandidateProfileSchema>
+): Promise<ActionResponse<{ candidate: ICandidateProfile }>> => {
+  // 1. Validate input
+  const validationResult = await action({
+    params,
+    schema: createCandidateProfileSchema,
+    authorizeRole: "candidate",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    const { name, phone, headline, gender, dateOfBirth, location, bio } = validationResult.params!;
+
+    // 2. Find candidate profile
+    const profile = await Candidate.findOne({ user: userId });
+
+    if (!profile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    // 3. Update fields if they exist in params
+    if (name !== undefined) profile.name = name;
+    if (phone !== undefined) profile.phone = phone;
+    if (headline !== undefined) profile.headline = headline;
+    if (gender !== undefined) profile.gender = gender;
+    if (bio !== undefined) profile.bio = bio;
+
+    if (dateOfBirth !== undefined) profile.dateOfBirth = dateOfBirth;
+
+    if (location) {
+      profile.location = {
+        country: location.country ?? profile.location?.country,
+        state: location.state ?? profile.location?.state,
+      };
+    }
+
+    // 4. Save changes
+    const updated = await profile.save();
+
+    // 5. Revalidate UI page
+    revalidatePath("/dashboard/candidate/profile");
+
+    return {
+      success: true,
+      data: {
+        candidate: JSON.parse(JSON.stringify(updated)),
       },
     };
   } catch (error) {
@@ -164,13 +224,12 @@ export const addExperienceToCandidateProfile = async (
 
 export const updateExperienceInCandidateProfile = async (
   userId: string,
-  experienceId: string,
-  params: z.infer<typeof experienceSchema>
-): Promise<ActionResponse<{ experience: IExperience }>> => {
+  params: z.infer<typeof createCandidateProfileSchema>
+): Promise<ActionResponse<{ candidate: ICandidateProfile }>> => {
   // 1. Validate input
   const validationResult = await action({
     params,
-    schema: experienceSchema,
+    schema: createCandidateProfileSchema,
     authorizeRole: "candidate",
   });
 
@@ -181,36 +240,43 @@ export const updateExperienceInCandidateProfile = async (
   try {
     await dbConnect();
 
-    const { position, company, startDate, endDate, description } = params;
+    const { name, phone, headline, gender, dateOfBirth, location, bio } = validationResult.params!;
 
-    // 2. Find candidate profile
-    const profile = await Candidate.findOne({ user: userId });
+    // Build update object dynamically
+    const updateData: Partial<ICandidateProfile> = {};
 
-    if (!profile) {
+    if (name !== undefined) updateData.name = name;
+    if (phone !== undefined) updateData.phone = phone;
+    if (headline !== undefined) updateData.headline = headline;
+    if (gender !== undefined) updateData.gender = gender;
+    if (bio !== undefined) updateData.bio = bio;
+    if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
+
+    if (location) {
+      updateData.location = {
+        country: location.country,
+        state: location.state,
+      };
+    }
+
+    // 2. Find and update candidate profile
+    const updatedProfile = await Candidate.findOneAndUpdate(
+      { user: userId },
+      { $set: updateData },
+      { new: true } // return the updated document
+    );
+
+    if (!updatedProfile) {
       throw new Error("Candidate profile not found");
     }
 
-    // 3. Find experience by _id
-    const experience = profile.experience.find((e) => String(e._id) === experienceId);
-
-    if (!experience) {
-      throw new Error("Experience entry not found");
-    }
-
-    // 4. Update fields
-    experience.position = position ?? experience.position;
-    experience.company = company ?? experience.company;
-    experience.startDate = startDate ?? experience.startDate;
-    experience.endDate = endDate ?? experience.endDate;
-    experience.description = description ?? experience.description;
-
-    // 5. Save profile
-    await profile.save();
+    // 3. Revalidate UI
     revalidatePath("/dashboard/candidate/profile");
+
     return {
       success: true,
       data: {
-        experience: JSON.parse(JSON.stringify(experience)),
+        candidate: JSON.parse(JSON.stringify(updatedProfile)),
       },
     };
   } catch (error) {
@@ -299,7 +365,7 @@ export const addEducationToCandidateProfile = async (
   try {
     await dbConnect();
 
-    const { institution, degree, fieldOfStudy, graduationYear } = params;
+    const { institution, degree, fieldOfStudy, graduationYear } = validationResult.params!;
     console.log("🚀 ~ addEducationToCandidateProfile ~ params:", params);
 
     // 2. Find candidate profile
@@ -356,7 +422,7 @@ export const updateEducationInCandidateProfile = async (
   try {
     await dbConnect();
 
-    const { institution, degree, fieldOfStudy, graduationYear } = params;
+    const { institution, degree, fieldOfStudy, graduationYear } = validationResult.params!;
     console.log("🚀 ~ updateEducationInCandidateProfile ~ params:", params);
 
     // 2. Find candidate profile
