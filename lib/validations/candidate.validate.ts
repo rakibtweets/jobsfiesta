@@ -56,7 +56,9 @@ export const educationSchema = z.object({
   institution: z.string().min(1, "institution/University is required"),
   degree: z.string().min(1, "Degree is required"),
   fieldOfStudy: z.string().min(1, "Field of study is required"),
-  graduationYear: z.string().min(4, "Graduation year is required"),
+  graduationYear: z.date({
+    error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
+  }),
 });
 
 export type EducationFormValues = z.infer<typeof educationSchema>;

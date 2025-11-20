@@ -300,6 +300,7 @@ export const addEducationToCandidateProfile = async (
     await dbConnect();
 
     const { institution, degree, fieldOfStudy, graduationYear } = params;
+    console.log("🚀 ~ addEducationToCandidateProfile ~ params:", params);
 
     // 2. Find candidate profile
     const profile = await Candidate.findOne({ user: userId });
@@ -356,6 +357,7 @@ export const updateEducationInCandidateProfile = async (
     await dbConnect();
 
     const { institution, degree, fieldOfStudy, graduationYear } = params;
+    console.log("🚀 ~ updateEducationInCandidateProfile ~ params:", params);
 
     // 2. Find candidate profile
     const profile = await Candidate.findOne({ user: userId });

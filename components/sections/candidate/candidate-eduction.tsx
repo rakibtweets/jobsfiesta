@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { IEducation } from "@/database/candidate.model";
 import { deleteEducationFromCandidateProfile } from "@/lib/actions/candidate.action";
+import { formatDate } from "@/lib/utils";
 
 type EducationDisplayListProps = {
   educations?: IEducation[];
@@ -15,6 +16,7 @@ type EducationDisplayListProps = {
 };
 
 export function CandidateEducationDisplayList({ educations = [], userId }: EducationDisplayListProps) {
+  console.log("🚀 ~ CandidateEducationDisplayList ~ educations:", educations);
   return (
     <div className="space-y-4">
       {educations?.length > 0 ? (
@@ -40,12 +42,12 @@ export function CandidateEducationDisplayList({ educations = [], userId }: Educa
             <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-foreground text-sm font-semibold">Field of Study</p>
-                <p className="mt-1">{edu.fieldOfStudy}</p>
+                <p className="mt-1">{edu?.fieldOfStudy}</p>
               </div>
 
               <div>
                 <p className="text-foreground text-sm font-semibold">Graduation Year</p>
-                <p className="mt-1">{edu.graduationYear ?? "Not provided"}</p>
+                <p className="mt-1">{edu?.graduationYear ? formatDate(edu.graduationYear) : "Not provided"}</p>
               </div>
             </div>
 

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { DateInput } from "@/components/ui/date-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -27,7 +28,7 @@ export function CandidateEducationForm({ type, education, userId, educationId }:
       institution: education?.institution || "",
       degree: education?.degree || "",
       fieldOfStudy: education?.fieldOfStudy || "",
-      graduationYear: education?.graduationYear || "",
+      graduationYear: education?.graduationYear ? new Date(education?.graduationYear) : undefined,
     },
   });
   const {
@@ -122,9 +123,10 @@ export function CandidateEducationForm({ type, education, userId, educationId }:
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Graduation Year</FormLabel>
                   <FormControl>
-                    <Input
+                    <DateInput
                       {...field}
-                      type=""
+                      value={field.value}
+                      onChange={field.onChange}
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>

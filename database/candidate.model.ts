@@ -16,8 +16,8 @@ export interface IEducation {
   _id?: mongoose.Types.ObjectId;
   institution: string;
   degree: string;
-  fieldOfStudy?: string;
-  graduationYear?: string;
+  fieldOfStudy: string;
+  graduationYear?: Date | null;
 }
 
 export interface IResume {
@@ -94,9 +94,9 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
     education: [
       {
         _id: { type: Schema.Types.ObjectId, auto: true },
-        institution: { type: String },
-        degree: { type: String },
-        fieldOfStudy: { type: String },
+        institution: { type: String, required: true },
+        degree: { type: String, required: true },
+        fieldOfStudy: { type: String, required: true },
         graduationYear: { type: Date },
       },
     ],
