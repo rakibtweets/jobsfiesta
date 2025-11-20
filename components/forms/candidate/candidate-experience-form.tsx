@@ -1,9 +1,7 @@
 "use client";
 
-import { type } from "os";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save, Trash2 } from "lucide-react";
+import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -13,45 +11,40 @@ import { DateInput } from "@/components/ui/date-input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ExperienceFormValues, experienceSchema } from "@/lib/validations/candidate.validate";
 
-const experienceSchema = z.object({
-  experiences: z.object({
-    position: z.string().min(1, "Position is required"),
-    company: z.string().min(1, "Company is required"),
-    startDate: z
-      .date({
-        error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
-      })
-      .optional(),
-    endDate: z
-      .date({
-        error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
-      })
-      .optional(),
-    description: z.string().optional(),
-  }),
-});
-
-type ExperienceFormValues = z.infer<typeof experienceSchema>;
-
-const defaultExperiences: ExperienceFormValues = {
-  experiences: {
-    position: "",
-    company: "",
-    startDate: undefined,
-    endDate: undefined,
-    description: "",
-  },
+type Experience = {
+  position: string;
+  company: string;
+  startDate?: Date;
+  endDate?: Date;
+  description?: string;
 };
 
-export function CandidateExperienceForm() {
+interface IExperienceFromProps {
+  type: "add" | "edit";
+  experience?: Experience;
+}
+
+export function CandidateExperienceForm({ type, experience }: IExperienceFromProps) {
   const form = useForm<ExperienceFormValues>({
     resolver: zodResolver(experienceSchema),
-    defaultValues: defaultExperiences,
+    defaultValues: {
+      position: experience?.position || "",
+      company: experience?.company || "",
+      startDate: experience?.startDate || undefined,
+      endDate: experience?.endDate || undefined,
+      description: experience?.description || "",
+    },
   });
 
   const onSubmit = (data: ExperienceFormValues) => {
-    console.log(data.experiences);
+    console.log(data);
+    if (type === "add") {
+      //todo: Add experience
+    } else {
+      //todo: edite experience
+    }
     toast(
       <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
         <code className="text-white">{JSON.stringify(data, null, 2)}</code>
@@ -66,7 +59,7 @@ export function CandidateExperienceForm() {
           <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
-              name={`experiences.position`}
+              name={`position`}
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Position</FormLabel>
@@ -82,7 +75,7 @@ export function CandidateExperienceForm() {
             />
             <FormField
               control={form.control}
-              name={`experiences.company`}
+              name={`company`}
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Company</FormLabel>
@@ -101,7 +94,7 @@ export function CandidateExperienceForm() {
           <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
-              name={`experiences.startDate`}
+              name={`startDate`}
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Start Date</FormLabel>
@@ -119,7 +112,7 @@ export function CandidateExperienceForm() {
             />
             <FormField
               control={form.control}
-              name={`experiences.endDate`}
+              name={`endDate`}
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">End Date</FormLabel>
@@ -140,7 +133,7 @@ export function CandidateExperienceForm() {
           <div className="mb-4 space-y-2">
             <FormField
               control={form.control}
-              name={`experiences.description`}
+              name={`description`}
               render={({ field }) => (
                 <FormItem className="space-y-2">
                   <FormLabel className="text-foreground text-sm font-semibold">Description</FormLabel>
@@ -160,14 +153,6 @@ export function CandidateExperienceForm() {
           <div className="flex gap-2">
             <Button type="submit" size="sm">
               <Save size={14} /> Save
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="border-red-600/30 hover:bg-red-50 dark:hover:bg-red-950"
-            >
-              <Trash2 size={14} /> Delete
             </Button>
           </div>
         </div>

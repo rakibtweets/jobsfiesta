@@ -33,3 +33,23 @@ export const updateCandidateProfileSchema = z
 export const deleteCandidateProfileSchema = z.object({
   id: z.string().min(1, "Candidate profile ID is required"),
 });
+
+// Experience Schema
+
+export const experienceSchema = z.object({
+  position: z.string().min(1, "Position is required"),
+  company: z.string().min(1, "Company is required"),
+  startDate: z
+    .date({
+      error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
+    })
+    .optional(),
+  endDate: z
+    .date({
+      error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
+    })
+    .optional(),
+  description: z.string().optional(),
+});
+
+export type ExperienceFormValues = z.infer<typeof experienceSchema>;

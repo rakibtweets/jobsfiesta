@@ -1,11 +1,13 @@
-import { BookOpen, Briefcase, Camera, FileText, Mail, MapPin, Phone, Plus, Save, User } from "lucide-react";
+import { BookOpen, Briefcase, Camera, FileText, MapPin, Plus, User } from "lucide-react";
 
 import { CandidateEducationForm } from "@/components/forms/candidate/candidate-education-form";
 import { CandidateExperienceForm } from "@/components/forms/candidate/candidate-experience-form";
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
+import { CandidateExperienceDisplayList } from "@/components/sections/candidate/candidate-experiece";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const CandidateProfilePage = () => {
@@ -112,13 +114,41 @@ const CandidateProfilePage = () => {
                   <h3 className="text-xl font-bold">Work Experience</h3>
                   <p className="text-muted-foreground mt-1 text-sm">Add and manage your professional experience</p>
                 </div>
-                <Button variant="outline">
-                  <Plus size={16} /> Add Experience
-                </Button>
+                <div>
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button variant={"outline"}>
+                        <Plus size={24} />
+                        Add Experience
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Experience</DialogTitle>
+                      </DialogHeader>
+                      <CandidateExperienceForm type="add" />
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               <div className="space-y-6">
-                <CandidateExperienceForm />
+                <CandidateExperienceDisplayList
+                  experiences={[
+                    {
+                      company: "Google",
+                      position: "Software Developer",
+                      description: "fkjasdflasdflsadf",
+                      startDate: new Date(),
+                    },
+                    {
+                      company: "Google",
+                      position: "Software Developer",
+                      description: "fkjasdflasdflsadf",
+                      startDate: new Date(),
+                    },
+                  ]}
+                />
               </div>
             </Card>
           </TabsContent>
