@@ -1,5 +1,6 @@
-import { BookOpen, Briefcase, Camera, FileText, MapPin, Plus, User } from "lucide-react";
+import { BookOpen, Briefcase, FileText, MapPin, Plus, User } from "lucide-react";
 
+import UploadImagButton from "@/components/action-buttion/upload-image-button";
 import { CandidateEducationForm } from "@/components/forms/candidate/candidate-education-form";
 import { CandidateExperienceForm } from "@/components/forms/candidate/candidate-experience-form";
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
@@ -18,7 +19,6 @@ const CandidateProfilePage = async () => {
   const user = data?.user;
   const { data: candidateData } = await getCandidateProfileByUserId(String(user?.id));
   const candidate = candidateData?.candidate;
-  console.log("🚀 ~ CandidateProfilePage ~ candidate:", candidate);
 
   return (
     <>
@@ -42,10 +42,7 @@ const CandidateProfilePage = async () => {
                   <MapPin size={14} /> {`${candidate?.location?.country},${candidate?.location?.state || ""}`}
                 </p>
               </div>
-              <Button className="hidden md:flex md:w-full lg:w-auto">
-                <Camera size={24} />
-                Upload Photo
-              </Button>
+              <UploadImagButton />
             </div>
           </div>
 
