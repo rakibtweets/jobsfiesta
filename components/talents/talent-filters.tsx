@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { removeKeysFromUrlQuery } from "@/lib/url";
+import { formUrlQuery, removeKeysFromUrlQuery } from "@/lib/url";
 
 import SearchInput from "../ui/search-input";
 
@@ -17,6 +17,8 @@ export default function TalentFilters() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const country = searchParams.get("country") || "";
+  const slevel = searchParams.get("slevel") || "";
   const [filters, setFilters] = useState({
     search: "",
     location: "",
@@ -37,10 +39,29 @@ export default function TalentFilters() {
   const handleReset = () => {
     const newUrl = removeKeysFromUrlQuery({
       params: searchParams.toString(),
-      keysToRemove: ["search", "country", "skill"],
+      keysToRemove: ["search", "country", "skill", "experience", "location", "slevel"],
     });
 
     router.push(newUrl, { scroll: false });
+  };
+
+  const handleUpdateParams = (value: string, updatedvalue: string, path: string) => {
+    if (value === updatedvalue) {
+      const newUrl = removeKeysFromUrlQuery({
+        params: searchParams.toString(),
+        keysToRemove: [path],
+      });
+
+      router.push(newUrl, { scroll: false });
+    } else {
+      const newUrl = formUrlQuery({
+        params: searchParams.toString(),
+        key: String(path),
+        value,
+      });
+
+      router.push(newUrl, { scroll: false });
+    }
   };
 
   return (
@@ -69,13 +90,10 @@ export default function TalentFilters() {
                 <div key={loc} className="flex items-center">
                   <Checkbox
                     id={`loc-${loc}`}
-                    checked={filters.location === loc}
-                    onCheckedChange={() =>
-                      setFilters({
-                        ...filters,
-                        location: filters.location === loc ? "" : loc,
-                      })
-                    }
+                    checked={country === loc}
+                    onCheckedChange={() => {
+                      handleUpdateParams(loc, country, "country");
+                    }}
                   />
                   <Label htmlFor={`loc-${loc}`} className="ml-2 cursor-pointer font-normal">
                     {loc}
@@ -93,13 +111,10 @@ export default function TalentFilters() {
                 <div key={level} className="flex items-center">
                   <Checkbox
                     id={level}
-                    checked={filters.skillLevel === level}
-                    onCheckedChange={() =>
-                      setFilters({
-                        ...filters,
-                        skillLevel: filters.skillLevel === level ? "" : level,
-                      })
-                    }
+                    checked={slevel === level}
+                    onCheckedChange={() => {
+                      handleUpdateParams(level, slevel, "slevel");
+                    }}
                   />
                   <Label htmlFor={level} className="ml-2 cursor-pointer font-normal">
                     {level}

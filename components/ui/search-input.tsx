@@ -17,7 +17,7 @@ const SearchInput = ({ route, placeholder = "Name or title...", query = "search"
   const router = useRouter();
   const searchParams = useSearchParams();
   const search = searchParams.get(query) || "";
-  const [searchQuery, setSearchQuery] = useState(search);
+  const [searchQuery, setSearchQuery] = useState(search || "");
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
