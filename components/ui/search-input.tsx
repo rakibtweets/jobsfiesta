@@ -9,40 +9,46 @@ import { Input } from "./input";
 
 interface CustomeInputProps {
   route?: string;
-
+  query?: string;
   placeholder: string;
 }
-const SearchInput = ({ route, placeholder = "Name or title..." }: CustomeInputProps) => {
+const SearchInput = ({ route, placeholder = "Name or title...", query = "search" }: CustomeInputProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const search = searchParams.get("search") || "";
+  const search = searchParams.get(query) || "";
   const [searchQuery, setSearchQuery] = useState(search);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (searchQuery) {
-        const newUrl = formUrlQuery({
-          params: searchParams.toString(),
-          key: "search",
-          value: searchQuery,
-        });
+      const params = searchParams.toString(); // stable snapshot
 
-        router.push(newUrl, { scroll: false });
+      if (searchQuery) {
+        router.push(
+          formUrlQuery({
+            params,
+            key: query,
+            value: searchQuery,
+          }),
+          { scroll: false }
+        );
       } else {
         if (pathname === route) {
-          const newUrl = removeKeysFromUrlQuery({
-            params: searchParams.toString(),
-            keysToRemove: ["search"],
-          });
-
-          router.push(newUrl, { scroll: false });
+          router.push(
+            removeKeysFromUrlQuery({
+              params,
+              keysToRemove: [query],
+            }),
+            { scroll: false }
+          );
         }
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery, router, route, searchParams, pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]); // <— IMPORTANT
+
   return (
     <div>
       <Input

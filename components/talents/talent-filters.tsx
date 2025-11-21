@@ -1,20 +1,22 @@
 "use client";
 
 import { X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { removeKeysFromUrlQuery } from "@/lib/url";
 
 import SearchInput from "../ui/search-input";
 
 export default function TalentFilters() {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [filters, setFilters] = useState({
     search: "",
     location: "",
@@ -33,13 +35,12 @@ export default function TalentFilters() {
   ];
 
   const handleReset = () => {
-    setFilters({
-      search: "",
-      location: "",
-      skillLevel: "",
-      experience: "",
-      skills: "",
+    const newUrl = removeKeysFromUrlQuery({
+      params: searchParams.toString(),
+      keysToRemove: ["search", "country", "skill"],
     });
+
+    router.push(newUrl, { scroll: false });
   };
 
   return (
@@ -57,7 +58,7 @@ export default function TalentFilters() {
           {/* Search */}
           <div>
             <Label className="mb-2 block">Search</Label>
-            <SearchInput placeholder="Enter name or title..." route={pathname} />
+            <SearchInput query="search" placeholder="Enter name or title..." route={pathname} />
           </div>
 
           {/* Location */}
@@ -128,11 +129,7 @@ export default function TalentFilters() {
           {/* Skills */}
           <div>
             <Label className="mb-2 block">Skills</Label>
-            <Input
-              placeholder="e.g., React, Python..."
-              value={filters.skills}
-              onChange={(e) => setFilters({ ...filters, skills: e.target.value })}
-            />
+            <SearchInput query="skill" placeholder="Enter skills tag..." route={pathname} />
           </div>
         </div>
       </Card>
