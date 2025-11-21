@@ -38,14 +38,12 @@ const employerProfileSchema = new Schema<IEmployerProfile>(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
     accountType: { type: String, default: "employee" },
-
     companyName: {
       type: String,
       required: true,
       trim: true,
       index: true,
     },
-
     companyLogo: {
       id: { type: String },
       url: { type: String },
