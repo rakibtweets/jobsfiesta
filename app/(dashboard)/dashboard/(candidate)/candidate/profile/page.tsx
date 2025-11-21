@@ -1,6 +1,7 @@
 import { BookOpen, Briefcase, FileText, MapPin, Plus, User } from "lucide-react";
 
 import UploadImagButton from "@/components/action-buttion/upload-image-button";
+import UploadPDFButton from "@/components/action-buttion/upload-pdf-button";
 import { CandidateEducationForm } from "@/components/forms/candidate/candidate-education-form";
 import { CandidateExperienceForm } from "@/components/forms/candidate/candidate-experience-form";
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
@@ -29,7 +30,7 @@ const CandidateProfilePage = async () => {
           {/* Avatar + Info */}
           <div className="flex gap-4">
             <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarImage src={candidate?.photo?.url || "https://github.com/shadcn.png"} alt="@shadcn" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
 
@@ -42,7 +43,7 @@ const CandidateProfilePage = async () => {
                   <MapPin size={14} /> {`${candidate?.location?.country},${candidate?.location?.state || ""}`}
                 </p>
               </div>
-              <UploadImagButton />
+              <UploadImagButton accountType={candidate?.accountType} loggedInUserId={String(candidate?.user)} />
             </div>
           </div>
 
@@ -186,7 +187,7 @@ const CandidateProfilePage = async () => {
               </div>
               <h3 className="mb-2 text-lg font-semibold">Resume Management</h3>
               <p className="text-muted-foreground mb-6">Upload and manage your resume</p>
-              <Button>Upload Resume</Button>
+              <UploadPDFButton accountType={candidate?.accountType} loggedInUserId={String(candidate?.user)} />
             </Card>
           </TabsContent>
         </Tabs>

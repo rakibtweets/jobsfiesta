@@ -24,6 +24,10 @@ export interface IResume {
   id?: string;
   url?: string;
 }
+export interface IPhoto {
+  id?: string;
+  url?: string;
+}
 
 export interface ICandidateProfile extends Document {
   user: mongoose.Types.ObjectId;
@@ -31,7 +35,7 @@ export interface ICandidateProfile extends Document {
   email: string;
   phone: string;
   gender: string;
-  accountType?: string;
+  accountType?: "candidate" | "employee";
   headline?: string;
   location?: {
     country?: string;
@@ -40,6 +44,7 @@ export interface ICandidateProfile extends Document {
   dateOfBirth?: Date;
   bio?: string;
   resume?: IResume;
+  photo?: IPhoto;
   skills: string[];
   experience: IExperience[];
   education: IEducation[];
@@ -61,6 +66,10 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
     phone: { type: String },
+    photo: {
+      id: { type: String },
+      url: { type: String },
+    },
     gender: { type: String, required: true },
     dateOfBirth: { type: Date },
     accountType: { type: String, default: "candidate" },

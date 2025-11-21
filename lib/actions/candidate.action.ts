@@ -497,3 +497,126 @@ export const deleteEducationFromCandidateProfile = async (
     return handleError(error) as ErrorResponse;
   }
 };
+
+// Server action: update candidate resume/image information
+export const candidateImageUpload = async (
+  userId: string,
+  payload: { id?: string; url?: string }
+): Promise<ActionResponse> => {
+  try {
+    await dbConnect();
+
+    console.log(payload);
+
+    if (!payload?.url) {
+      throw new Error("Image URL is required");
+    }
+    const candidate = await Candidate.findOne({ user: userId });
+    if (!candidate) {
+      throw new Error("Candidate profile not found");
+    }
+
+    // Update photo atomically
+    const updatedProfile = await Candidate.findOneAndUpdate(
+      { user: userId },
+      {
+        $set: {
+          photo: {
+            id: payload.id ?? candidate.photo?.id ?? "",
+            url: payload.url ?? candidate.photo?.url ?? "",
+          },
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).lean();
+
+    if (!updatedProfile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    console.log(updatedProfile);
+
+    // Update better-auth user profile image
+    try {
+      if (updatedProfile?.photo?.url as string) {
+        await auth.api.updateUser({
+          body: {
+            image: payload.url as string,
+          },
+          headers: await headers(),
+        });
+
+        return {
+          success: true,
+        };
+      }
+    } catch (error) {
+      console.log("🚀 ~ candidateImageUplaod ~ error:", error);
+      if (error instanceof APIError) {
+        return {
+          success: false,
+          status: error.statusCode,
+          error: {
+            message: error.message,
+          },
+        };
+      }
+    }
+
+    // Revalidate page
+    revalidatePath("/dashboard/candidate/profile");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.log("🚀 ~ candidateImageUplaod ~ error:", error);
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const candidateResumeUplaod = async (
+  userId: string,
+  payload: { id?: string; url?: string }
+): Promise<ActionResponse> => {
+  try {
+    await dbConnect();
+    console.log(payload);
+    if (!payload?.url) {
+      throw new Error("Image URL is required");
+    }
+
+    // Update resume atomically
+    const updatedProfile = await Candidate.findOneAndUpdate(
+      { user: userId },
+      {
+        $set: {
+          resume: {
+            id: payload.id,
+            url: payload.url,
+          },
+        },
+      },
+      {
+        new: true, // return updated data
+        runValidators: true,
+      }
+    ).lean();
+
+    if (!updatedProfile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    // Revalidate page
+    revalidatePath("/dashboard/candidate/profile");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};

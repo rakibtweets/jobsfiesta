@@ -18,8 +18,8 @@ export default async function Home() {
 
   // console.log(session?.user);
 
-  const candidate = await getCandidates();
-  console.log("🚀 ~ Home ~ candidate:", candidate);
+  // const candidate = await getCandidates();
+  // console.log("🚀 ~ Home ~ candidate:", candidate);
 
   return (
     <>

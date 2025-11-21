@@ -4,7 +4,7 @@ import { Camera } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { toast } from "sonner";
 
-import { candidateImageUpload } from "@/lib/actions/candidate.action";
+import { candidateResumeUplaod } from "@/lib/actions/candidate.action";
 
 import { Button } from "../ui/button";
 
@@ -13,7 +13,7 @@ interface IUploadButtonProps {
   accountType: "candidate" | "employee" | undefined;
 }
 
-const UploadImagButton = ({ accountType, loggedInUserId }: IUploadButtonProps) => {
+const UploadPDFButton = ({ accountType, loggedInUserId }: IUploadButtonProps) => {
   // const [resource, setResource] = useState();
   // console.log("🚀 ~ UploadImagButton ~ resource:", resource);
   return (
@@ -21,9 +21,11 @@ const UploadImagButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =
       uploadPreset="jobfiesta_rakibtweets"
       signatureEndpoint={`/api/signed-image`}
       options={{
-        folder: "candidate",
+        folder: "resume",
         sources: ["local", "url"],
+        resourceType: "auto",
         maxFileSize: 2 * 1024 * 1024,
+        clientAllowedFormats: ["pdf"],
         multiple: false,
       }}
       onSuccess={async (result) => {
@@ -42,18 +44,18 @@ const UploadImagButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =
             return;
           }
           if (accountType === "candidate" && loggedInUserId) {
-            //todo: update image to
+            //todo: update image to candidate
             console.log({
               id: publicId,
               url: secureUrl,
             });
-            const { success, error } = await candidateImageUpload(loggedInUserId, {
+            const { success, error } = await candidateResumeUplaod(loggedInUserId, {
               id: publicId,
               url: secureUrl,
             });
 
-            if (success) toast.success("Image upload successfully");
-            else toast.error(error?.message || "Fail to upload image");
+            if (success) toast.success("Upload resume successfully");
+            else toast.error(error?.message || "Fail to upload resume");
           }
         } catch (err) {
           console.log(err);
@@ -67,12 +69,11 @@ const UploadImagButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =
         }
         return (
           <Button onClick={() => handleOnClick()} className="md:flex md:w-full lg:w-auto">
-            <Camera size={24} />
-            Upload Photo
+            Upload Resume
           </Button>
         );
       }}
     </CldUploadWidget>
   );
 };
-export default UploadImagButton;
+export default UploadPDFButton;
