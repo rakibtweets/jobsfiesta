@@ -1,10 +1,11 @@
-import { BookOpen, Briefcase, FileText, MapPin, Plus, User } from "lucide-react";
+import { BookOpen, Briefcase, FileStack, FileText, MapPin, Plus, User } from "lucide-react";
 
 import UploadImagButton from "@/components/action-buttion/upload-image-button";
 import UploadPDFButton from "@/components/action-buttion/upload-pdf-button";
 import { CandidateEducationForm } from "@/components/forms/candidate/candidate-education-form";
 import { CandidateExperienceForm } from "@/components/forms/candidate/candidate-experience-form";
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
+import CandidateSkillForm from "@/components/forms/candidate/candidate-skill-from";
 import { CandidateEducationDisplayList } from "@/components/sections/candidate/candidate-eduction";
 import { CandidateExperienceDisplayList } from "@/components/sections/candidate/candidate-experiece";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -85,7 +86,7 @@ const CandidateProfilePage = async () => {
       {/* Profile Information */}
       <section className="mt-4">
         <Tabs defaultValue="basic" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basic" className="flex items-center gap-2">
               <User size={18} className="mr-2" />
               <span className="hidden sm:inline">Basic Info</span>
@@ -99,6 +100,10 @@ const CandidateProfilePage = async () => {
               <span className="hidden sm:inline">Education</span>
             </TabsTrigger>
 
+            <TabsTrigger value="skills" className="flex items-center gap-2">
+              <FileStack size={16} />
+              <span className="hidden sm:inline">Skills</span>
+            </TabsTrigger>
             <TabsTrigger value="resume" className="flex items-center gap-2">
               <FileText size={16} />
               <span className="hidden sm:inline">Resume</span>
@@ -179,6 +184,12 @@ const CandidateProfilePage = async () => {
             </Card>
           </TabsContent>
 
+          {/* Skills */}
+          <TabsContent value="skills">
+            <Card className="p-8 text-center">
+              <CandidateSkillForm userId={String(candidate?.user)} mongoSkills={candidate?.skills} />
+            </Card>
+          </TabsContent>
           {/* Resume Tab */}
           <TabsContent value="resume">
             <Card className="p-8 text-center">

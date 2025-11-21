@@ -620,3 +620,36 @@ export const candidateResumeUplaod = async (
     return handleError(error) as ErrorResponse;
   }
 };
+export const candidateSkillsUpload = async (userId: string, payload: string[]): Promise<ActionResponse> => {
+  try {
+    await dbConnect();
+    console.log(payload);
+
+    // Update resume atomically
+    const updatedProfile = await Candidate.findOneAndUpdate(
+      { user: userId },
+      {
+        $set: {
+          skills: payload,
+        },
+      },
+      {
+        new: true, // return updated data
+        runValidators: true,
+      }
+    ).lean();
+
+    if (!updatedProfile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    // Revalidate page
+    revalidatePath("/dashboard/candidate/profile");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};

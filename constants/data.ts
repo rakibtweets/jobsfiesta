@@ -52,3 +52,33 @@ export const genders = [
   { value: "female", label: "Female" },
   { value: "other", label: "Other" },
 ] as const;
+
+export const skillsGroupOptions = [
+  {
+    heading: "Frontend Frameworks",
+    options: [
+      { value: "react", label: "React" },
+      { value: "vue", label: "Vue.js" },
+      { value: "angular", label: "Angular" },
+      { value: "svelte", label: "Svelte" },
+    ],
+  },
+  {
+    heading: "Backend Technologies",
+    options: [
+      { value: "nodejs", label: "Node.js" },
+      { value: "django", label: "Django" },
+      { value: "rails", label: "Ruby on Rails" },
+      { value: "spring", label: "Spring Boot" },
+    ],
+  },
+  {
+    heading: "Databases",
+    options: [
+      { value: "postgresql", label: "PostgreSQL" },
+      { value: "mongodb", label: "MongoDB" },
+      { value: "redis", label: "Redis" },
+      { value: "mysql", label: "MySQL" },
+    ],
+  },
+];
