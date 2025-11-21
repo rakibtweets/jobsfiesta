@@ -1,20 +1,12 @@
-"use client";
-
 import { Users } from "lucide-react";
-import { useState } from "react";
+import { Suspense } from "react";
 
+import ListSkeletons from "@/components/skeletons/list-skeleton";
 import TalentFilters from "@/components/talents/talent-filters";
 import TalentListings from "@/components/talents/talent-listings";
 
-export default function TalentsPage() {
-  const [filters, setFilters] = useState({
-    search: "",
-    location: "",
-    skillLevel: "",
-    experience: "",
-    skills: "",
-  });
-
+export default async function TalentsPage({ searchParams }: RouteParams) {
+  const { search, country, skill, page, filter, limit } = await searchParams;
   return (
     <section className="from-background to-card/30 min-h-screen bg-linear-to-b">
       {/* Animated header section */}
@@ -43,12 +35,21 @@ export default function TalentsPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <TalentFilters filters={filters} setFilters={setFilters} />
+            <TalentFilters />
           </div>
 
           {/* Talent Listings */}
           <div className="lg:col-span-3">
-            <TalentListings filters={filters} />
+            <Suspense fallback={<ListSkeletons />}>
+              <TalentListings
+                search={search}
+                country={country}
+                filter={filter}
+                page={Number(page)}
+                limit={Number(limit)}
+                skill={skill}
+              />
+            </Suspense>
           </div>
         </div>
       </div>

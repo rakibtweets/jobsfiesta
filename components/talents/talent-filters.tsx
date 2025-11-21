@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,7 +11,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function TalentFilters({ filters, setFilters }: any) {
+import SearchInput from "../ui/search-input";
+
+export default function TalentFilters() {
+  const pathname = usePathname();
+  const [filters, setFilters] = useState({
+    search: "",
+    location: "",
+    skillLevel: "",
+    experience: "",
+    skills: "",
+  });
+
   const skillLevels = ["Entry Level", "Junior", "Mid-Level", "Senior", "Expert"];
   const locations = ["Remote", "San Francisco, CA", "New York, NY", "Boston, MA", "Austin, TX", "Los Angeles, CA"];
   const experienceRanges = [
@@ -45,11 +57,7 @@ export default function TalentFilters({ filters, setFilters }: any) {
           {/* Search */}
           <div>
             <Label className="mb-2 block">Search</Label>
-            <Input
-              placeholder="Name or title..."
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            />
+            <SearchInput placeholder="Enter name or title..." route={pathname} />
           </div>
 
           {/* Location */}
