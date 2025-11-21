@@ -12,3 +12,19 @@ interface ISignInEmailParams {
   password: string;
   rememberMe?: boolean;
 }
+
+interface PaginatedSearchParams {
+  search?: string;
+  country?: string;
+  skill?: string;
+  page?: number;
+  filter?: string;
+  limit?: number;
+}
+
+interface PaginationResponse {
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
+}

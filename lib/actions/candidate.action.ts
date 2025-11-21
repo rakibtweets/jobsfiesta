@@ -1,7 +1,7 @@
 "use server";
 
 import { APIError } from "better-auth";
-import mongoose from "mongoose";
+import mongoose, { FilterQuery, PipelineStage } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import z from "zod";
@@ -366,7 +366,6 @@ export const addEducationToCandidateProfile = async (
     await dbConnect();
 
     const { institution, degree, fieldOfStudy, graduationYear } = validationResult.params!;
-    console.log("🚀 ~ addEducationToCandidateProfile ~ params:", params);
 
     // 2. Find candidate profile
     const profile = await Candidate.findOne({ user: userId });
@@ -620,10 +619,10 @@ export const candidateResumeUplaod = async (
     return handleError(error) as ErrorResponse;
   }
 };
+
 export const candidateSkillsUpload = async (userId: string, payload: string[]): Promise<ActionResponse> => {
   try {
     await dbConnect();
-    console.log(payload);
 
     // Update resume atomically
     const updatedProfile = await Candidate.findOneAndUpdate(
@@ -650,6 +649,100 @@ export const candidateSkillsUpload = async (userId: string, payload: string[]): 
       success: true,
     };
   } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const getAllCandidates = async (
+  query: PaginatedSearchParams
+): Promise<ActionResponse<{ candidates: ICandidateProfile[]; pagination: PaginationResponse }>> => {
+  try {
+    await dbConnect();
+
+    const { search = "", country = "", skill = "", page = 1, limit = 10 } = query;
+
+    // Build MongoDB Filter
+    const filter: FilterQuery<ICandidateProfile> = {};
+
+    // Search by name OR headline
+    if (search) {
+      filter.$or = [{ name: { $regex: search, $options: "i" } }, { headline: { $regex: search, $options: "i" } }];
+    }
+
+    // Filter by country
+    if (country) {
+      filter["location.country"] = { $regex: country, $options: "i" };
+    }
+
+    // Filter by skills
+    if (skill) {
+      const tag: string = skill.toLowerCase().trim();
+      filter.skills = { $in: [tag] };
+    }
+
+    const skip = (page - 1) * limit;
+
+    // Exclude sensitive fields
+    const projection = {
+      email: 0,
+      phone: 0,
+      resume: 0,
+      updatedAt: 0,
+      __v: 0,
+    };
+
+    // Prioritized Sorting
+    const sortPriority: Record<string, 1 | -1> = {
+      hasResume: -1, // 1st priority
+      hasSkills: -1, // 2nd priority
+      createdAt: -1, // latest first
+    };
+
+    // Aggregation Pipeline for Priorit
+    const pipeline: PipelineStage[] = [
+      { $match: filter },
+
+      // Add priority fields
+      {
+        $addFields: {
+          hasResume: {
+            $cond: [{ $gt: ["$resume.url", null] }, 1, 0],
+          },
+          hasSkills: {
+            $cond: [{ $gt: [{ $size: "$skills" }, 0] }, 1, 0],
+          },
+        },
+      },
+
+      // Remove sensitive fields
+      { $project: projection },
+
+      // Sort by priority
+      { $sort: sortPriority },
+
+      // Pagination
+      { $skip: skip },
+      { $limit: limit },
+    ];
+
+    const candidates = (await Candidate.aggregate(pipeline).exec()) as ICandidateProfile[];
+    const total = await Candidate.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      success: true,
+      data: {
+        candidates,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages,
+        },
+      },
+    };
+  } catch (error) {
+    console.log("🚀 ~ getAllCandidates ~ error:", error);
     return handleError(error) as ErrorResponse;
   }
 };

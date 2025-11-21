@@ -82,3 +82,19 @@ export const skillsGroupOptions = [
     ],
   },
 ];
+
+export const experienceOps = [
+  { value: "0-2", label: "0-2 years" },
+  { value: "2-5", label: "2-5 years" },
+  { value: "5-7", label: "5-7 years" },
+  { value: "7-10", label: "7-10 years" },
+  { value: "10+", label: "10+ years" },
+] as const;
+
+export const skillLevels = [
+  { value: "entry-level", label: "Entry Level" },
+  { value: "junior", label: "Junior" },
+  { value: "mid-level", label: "Mid-Level" },
+  { value: "senior", label: "Senior" },
+  { value: "expert", label: "Expert" },
+] as const;
