@@ -45,7 +45,7 @@ export default function ProfileMenu({ name, email, role }: IProfileMenuProps) {
         toast.error(error.message);
       }
 
-      return router.push("/sign-in");
+      return router.push("/auth/sign-in");
     } catch (error) {
       console.log("Logut error", error);
       toast.error("Unknown Logut unsuccessfull");

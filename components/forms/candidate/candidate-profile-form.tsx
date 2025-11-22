@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "better-auth";
 import { Save, Mail, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -20,7 +19,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Textarea } from "@/components/ui/textarea";
 import { genders } from "@/constants/data";
 import { ICandidateProfile } from "@/database/candidate.model";
-import { createCandidateProfile, updateExperienceInCandidateProfile } from "@/lib/actions/candidate.action";
+import { createCandidateProfile, updateCandidateProfile } from "@/lib/actions/candidate.action";
 
 const createCandidateProfileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -98,7 +97,7 @@ export function CandidateProfileForm({
       }
     }
     if (formType === "update") {
-      const { success, error } = await updateExperienceInCandidateProfile(String(userMongoId), { ...data });
+      const { success, error } = await updateCandidateProfile(String(userMongoId), { ...data });
       if (success) {
         toast.success(`Your data is upddated successfully`);
       } else {

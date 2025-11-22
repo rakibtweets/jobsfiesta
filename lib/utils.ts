@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
+import countries from "@/constants/countries.json";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -38,4 +40,11 @@ export const formatDate = (date: string | Date | null | undefined): string => {
   if (isNaN(d.getTime())) return "";
 
   return format(d, "dd MMM yyyy");
+};
+
+export const getCountries = () => {
+  return countries.map((country) => ({
+    label: country.name,
+    value: country.name,
+  }));
 };

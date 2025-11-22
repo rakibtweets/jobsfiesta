@@ -1,0 +1,244 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import router from "next/router";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { success } from "zod";
+
+import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { companySizeOps, industries } from "@/constants/data";
+import { IEmployerProfile } from "@/database/employee.model";
+import { updateCandidateProfile } from "@/lib/actions/candidate.action";
+import { createEmployeeProfile, updateEmployeeProfile } from "@/lib/actions/employee.action";
+import { getCountries } from "@/lib/utils";
+import { employeeFormSchema, EmployeeProfileFormValues } from "@/lib/validations/employee.validatoin";
+
+interface ICandidateEmployeeFromProps {
+  name?: string | undefined;
+  email?: string | undefined;
+  employee?: IEmployerProfile;
+  accountType?: string | undefined;
+  userMongoId?: string | undefined;
+  onBoarding?: boolean | undefined;
+  formType?: "update" | "create";
+}
+export function EmployeeProfileForm({
+  name,
+  email,
+  onBoarding,
+  formType,
+  userMongoId,
+  accountType,
+  employee,
+}: ICandidateEmployeeFromProps) {
+  const countries = getCountries();
+  // Initialize form with react-hook-form and zod resolver
+  const form = useForm<EmployeeProfileFormValues>({
+    resolver: zodResolver(employeeFormSchema),
+    defaultValues: {
+      name: employee?.name || name || "",
+      email: employee?.email || email || "",
+      companyName: employee?.companyName || "",
+      companySize: employee?.companySize || "",
+      country: employee?.country || "",
+      industry: employee?.industry || "",
+    },
+  });
+
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  // ------------------------------
+  // 3. Submit Handler
+  // ------------------------------
+  async function onSubmit(data: EmployeeProfileFormValues) {
+    try {
+      console.log("Form Data Submitted:", data);
+      if (onBoarding && userMongoId && accountType === "create") {
+        // first time create
+        try {
+          const { success, error } = await createEmployeeProfile(userMongoId, accountType, { ...data });
+          if (success) {
+            toast.success(`Your ${accountType} is created successfully`);
+            router.push("/dashboard/employee");
+          } else {
+            toast.error(error?.message);
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error("Fail to create your profile. Try again");
+        }
+      }
+      if (formType === "update") {
+        const { success, error } = await updateEmployeeProfile(String(userMongoId), { ...data });
+        if (success) {
+          toast.success(`Your data is upddated successfully`);
+        } else {
+          toast.error(error?.message);
+        }
+      }
+
+      toast(
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      );
+
+      // Optionally reset form after success
+      // form.reset();
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Name Field */}
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="John Doe"
+                  {...field}
+                  disabled={isSubmitting || onBoarding || formType === "update"}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Email Field */}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Business Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="john@company.com"
+                  {...field}
+                  disabled={isSubmitting || onBoarding || formType === "update"}
+                />
+              </FormControl>
+              <FormDescription>This will be used for account notifications.</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Company Name Field */}
+        <FormField
+          control={form.control}
+          name="companyName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Company Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Acme Inc." {...field} disabled={isSubmitting} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="companySize"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Company Size</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Company Size" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {companySizeOps.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* Industry Field */}
+          <FormField
+            control={form.control}
+            name="industry"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Industry</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {industries.map((i) => (
+                        <SelectItem key={i.value} value={i.value}>
+                          {i.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Location Field */}
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Country</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {countries.map((i) => (
+                        <SelectItem key={i.value} value={i.value}>
+                          {i.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isSubmitting ? "Creating.." : "Create Profile"}
+        </Button>
+      </form>
+    </Form>
+  );
+}

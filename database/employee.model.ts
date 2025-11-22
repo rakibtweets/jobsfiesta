@@ -14,10 +14,11 @@ export interface IEmployerProfile extends Document {
   email: string;
   accountType?: string;
   companyName: string;
+  companySize: string;
   companyLogo?: ICompanyLogo;
   website?: string;
-  location?: string;
-  industry?: string;
+  country: string;
+  industry: string;
   about?: string;
   jobsPosted: mongoose.Types.ObjectId[];
   createdAt: Date;
@@ -36,13 +37,17 @@ const employerProfileSchema = new Schema<IEmployerProfile>(
       unique: true,
     },
     name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, trim: true },
+    email: { type: String, required: true, index: true },
     accountType: { type: String, default: "employee" },
     companyName: {
       type: String,
       required: true,
       trim: true,
       index: true,
+    },
+    companySize: {
+      type: String,
+      required: true,
     },
     companyLogo: {
       id: { type: String },
@@ -54,13 +59,15 @@ const employerProfileSchema = new Schema<IEmployerProfile>(
       trim: true,
     },
 
-    location: {
+    country: {
       type: String,
+      required: true,
       trim: true,
     },
 
     industry: {
       type: String,
+      requierd: true,
       trim: true,
     },
 
