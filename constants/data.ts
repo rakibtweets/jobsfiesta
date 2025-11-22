@@ -121,3 +121,11 @@ export const industries = [
   { value: "transportation", label: "Transportation" },
   { value: "energy", label: "Energy" },
 ] as const;
+
+export const jobTypes = [
+  { value: "full-time", label: "Full-time" },
+  { value: "part-time", label: "Part-time" },
+  { value: "cantact", label: "Contract" },
+  { value: "emporary", label: "Temporary" },
+  { value: "internship", label: "Internship" },
+];

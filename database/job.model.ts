@@ -21,6 +21,8 @@ export interface IJob extends Document {
   description: string;
   location: string;
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship" | "Remote";
+  yearOfExperieence: string;
+  skillLelvel: string;
   salary?: ISalary;
   skillsRequired: string[];
   status: "open" | "closed" | "filled";
@@ -63,7 +65,15 @@ const jobSchema = new Schema<IJob>(
     jobType: {
       type: String,
       required: true,
-      enum: ["Full-time", "Part-time", "Contract", "Internship", "Remote"],
+    },
+
+    skillLelvel: {
+      type: String,
+      required: true,
+    },
+    yearOfExperieence: {
+      type: String,
+      required: true,
     },
 
     salary: {

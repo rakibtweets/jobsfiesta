@@ -16,6 +16,7 @@ export const createEmployeeProfile = async (
   accountType: string,
   payload: EmployeeProfileFormValues
 ): Promise<ActionResponse<{ employee: IEmployerProfile }>> => {
+  console.log({ userId, accountType, payload });
   const validationResult = await action({
     params: payload,
     schema: employeeFormSchema,
@@ -31,10 +32,10 @@ export const createEmployeeProfile = async (
     const { name, email, companyName, companySize, country, industry } = validationResult.params!;
 
     // Ensure one user = one profile (optional if needed)
-    const existing = await Employee.findOne({ email });
+    const existing = await Employee.findOne({ user: userId });
 
     if (existing) {
-      throw new Error("Employee profile for this email already exists");
+      throw new Error("Employee profile for this user already exists");
     }
 
     // 3. Create profile

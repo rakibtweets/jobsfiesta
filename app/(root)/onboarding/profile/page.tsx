@@ -4,7 +4,6 @@ import { getServerSession } from "@/lib/get-session";
 
 const ProfileOnBoardingPage = async () => {
   const me = await getServerSession();
-  console.log("🚀 ~ ProfileOnBoardingPage ~ me:", me);
 
   return (
     <section className="min-h-screen p-7">

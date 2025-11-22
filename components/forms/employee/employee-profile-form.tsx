@@ -2,10 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { success } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -13,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { companySizeOps, industries } from "@/constants/data";
 import { IEmployerProfile } from "@/database/employee.model";
-import { updateCandidateProfile } from "@/lib/actions/candidate.action";
 import { createEmployeeProfile, updateEmployeeProfile } from "@/lib/actions/employee.action";
 import { getCountries } from "@/lib/utils";
 import { employeeFormSchema, EmployeeProfileFormValues } from "@/lib/validations/employee.validatoin";
@@ -37,6 +35,7 @@ export function EmployeeProfileForm({
   employee,
 }: ICandidateEmployeeFromProps) {
   const countries = getCountries();
+  const router = useRouter();
   // Initialize form with react-hook-form and zod resolver
   const form = useForm<EmployeeProfileFormValues>({
     resolver: zodResolver(employeeFormSchema),
@@ -58,9 +57,10 @@ export function EmployeeProfileForm({
   // 3. Submit Handler
   // ------------------------------
   async function onSubmit(data: EmployeeProfileFormValues) {
+    console.log({ onBoarding, userMongoId, accountType });
     try {
       console.log("Form Data Submitted:", data);
-      if (onBoarding && userMongoId && accountType === "create") {
+      if (onBoarding && userMongoId && accountType === "employee") {
         // first time create
         try {
           const { success, error } = await createEmployeeProfile(userMongoId, accountType, { ...data });
@@ -84,11 +84,11 @@ export function EmployeeProfileForm({
         }
       }
 
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      );
+      // toast(
+      //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+      //     <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+      //   </pre>
+      // );
 
       // Optionally reset form after success
       // form.reset();

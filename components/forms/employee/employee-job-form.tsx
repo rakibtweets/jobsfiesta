@@ -1,21 +1,40 @@
 "use client";
 
+import { setTimeout } from "timers";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MultiSelect, MultiSelectRef } from "@/components/ui/multi-select";
 import { NumberInput } from "@/components/ui/number-input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { experienceOps, jobTypes, skillLevels, skillsGroupOptions } from "@/constants/data";
 import { jobFormSchema, type JobFormValues } from "@/lib/validations/job";
 
-export default function JobForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+interface IJobFromProps {
+  formType: "create" | "update";
+  updatedData?: Partial<JobFormValues>;
+  JobId?: string;
+  employeeId?: string;
+}
+
+export default function JobForm({ formType, JobId, employeeId, updatedData }: IJobFromProps) {
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const multiSelectRef = useRef<MultiSelectRef>(null);
+  console.log({ formType, JobId, employeeId, updatedData });
+
+  const clearAllSkills = () => {
+    if (multiSelectRef.current) {
+      multiSelectRef.current.clear();
+    }
+  };
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
@@ -26,24 +45,33 @@ export default function JobForm() {
         min: undefined,
         max: undefined,
       },
-      type: "",
+      yearOfExperieence: "",
+      skillLelvel: "",
+      skillsRequired: [],
+      jobType: "",
       description: "",
     },
   });
+  const {
+    formState: { isSubmitting },
+  } = form;
 
   async function onSubmit(values: JobFormValues) {
-    setIsSubmitting(true);
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log("Form submitted:", values);
       setSubmitSuccess(true);
       form.reset();
+
       setTimeout(() => setSubmitSuccess(false), 3000);
+      toast(
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+        </pre>
+      );
     } catch (error) {
       console.error("Error submitting form:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
@@ -121,27 +149,104 @@ export default function JobForm() {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={form.control}
-                  name="type"
+                  name="jobType"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Job Type</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select job type" />
-                          </SelectTrigger>
-                        </FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select job type" />
+                        </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Full-time">Full-time</SelectItem>
-                          <SelectItem value="Part-time">Part-time</SelectItem>
-                          <SelectItem value="Contract">Contract</SelectItem>
-                          <SelectItem value="Temporary">Temporary</SelectItem>
-                          <SelectItem value="Internship">Internship</SelectItem>
+                          <SelectGroup>
+                            {jobTypes.map((c) => (
+                              <SelectItem key={c.value} value={c.value}>
+                                {c.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
                         </SelectContent>
                       </Select>
-                      <FormDescription>Type of employment</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="skillLelvel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Year of experience</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select skill level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {skillLevels.map((c) => (
+                              <SelectItem key={c.value} value={c.value}>
+                                {c.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="skillsRequired"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Required Skills</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        ref={multiSelectRef}
+                        options={skillsGroupOptions}
+                        value={field.value}
+                        modalPopover={true}
+                        disabled={isSubmitting}
+                        defaultValue={[]}
+                        onValueChange={field.onChange}
+                        placeholder="Choose skills..."
+                        className="w-full md:w-96"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div>
+                <FormField
+                  control={form.control}
+                  name="yearOfExperieence"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Year of experience</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select year of experiene" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {experienceOps.map((c) => (
+                              <SelectItem key={c.value} value={c.value}>
+                                {c.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -181,7 +286,15 @@ export default function JobForm() {
                     "Post Job"
                   )}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => form.reset()} disabled={isSubmitting}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    form.reset();
+                    clearAllSkills();
+                  }}
+                  disabled={isSubmitting}
+                >
                   Clear Form
                 </Button>
               </div>
