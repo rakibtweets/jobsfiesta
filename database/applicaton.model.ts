@@ -9,7 +9,6 @@ export interface IApplication extends Document {
   job: mongoose.Types.ObjectId; // ref: Job
   candidate: mongoose.Types.ObjectId; // ref: CandidateProfile
   status: ApplicationStatus;
-  coverLetter?: string;
   resumeSnapshot: string; // Stored at submission time
   createdAt: Date;
   updatedAt: Date;
@@ -36,10 +35,6 @@ const applicationSchema = new Schema<IApplication>(
       type: String,
       enum: ["submitted", "reviewed", "interviewing", "offered", "rejected", "withdrawn"],
       default: "submitted",
-    },
-
-    coverLetter: {
-      type: String,
     },
 
     // Important snapshot — resume used at time of applying
