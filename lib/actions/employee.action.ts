@@ -1,8 +1,11 @@
 "use server";
 
 import { APIError } from "better-auth";
+import mongoose from "mongoose";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
+import { Candidate } from "@/database/candidate.model";
 import { Employee, IEmployerProfile } from "@/database/employee.model";
 import { auth } from "@/lib/auth";
 
@@ -122,3 +125,120 @@ export const updateEmployeeProfile = async (
     return handleError(error) as ErrorResponse;
   }
 };
+
+// save candidates
+export async function addToSavedCandidate(employeeId: string, candidateId: string): Promise<ActionResponse> {
+  const validationResult = await action({
+    params: { employeeId, candidateId },
+    authorizeRole: "employee",
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  try {
+    await dbConnect();
+
+    const candidate = await Candidate.findById(candidateId);
+    if (!candidate) {
+      throw new Error("candidate not found");
+    }
+
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      throw new Error("User not found");
+    }
+    const alreadyInWishlist = employee.savedCandidate?.some(
+      (id: mongoose.Types.ObjectId) => id.toString() === candidateId
+    );
+
+    if (alreadyInWishlist) {
+      throw new Error("Candidate already in saved list");
+    }
+
+    // Add candidate to employee's savedCandidate list if not already there
+    await Employee.findByIdAndUpdate(employeeId, { $addToSet: { savedCandidate: candidateId } }, { new: true });
+
+    revalidatePath("/dashboard/employee");
+    revalidatePath("/dashboard/employee/saved-candidates");
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding to wishlist:", error);
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+// remove from  removeFromSavedCandidate
+
+export async function removeFromSavedCandidate(employeeId: string, candidateId: string): Promise<ActionResponse> {
+  const validationResult = await action({
+    params: { employeeId, candidateId },
+    authorizeRole: "employee",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    const candidate = await Candidate.findById(candidateId);
+    if (!candidate) {
+      throw new Error("Candidate not found");
+    }
+
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      throw new Error("Employee not found");
+    }
+
+    const isSaved = employee.savedCandidate?.some((id: mongoose.Types.ObjectId) => id.toString() === candidateId);
+
+    if (!isSaved) {
+      throw new Error("Candidate is not in saved list");
+    }
+
+    // Remove candidate from savedCandidate list
+    await Employee.findByIdAndUpdate(employeeId, { $pull: { savedCandidate: candidateId } }, { new: true });
+
+    revalidatePath("/dashboard/employee");
+    revalidatePath("/dashboard/employee/saved-candidates");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing from saved candidates:", error);
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function clearSavedCandidates(employeeId: string): Promise<ActionResponse> {
+  const validationResult = await action({
+    params: { employeeId },
+    authorizeRole: "employee",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      throw new Error("Employee not found");
+    }
+
+    // Clear the savedCandidate array
+    await Employee.findByIdAndUpdate(employeeId, { $set: { savedCandidate: [] } }, { new: true });
+
+    // Revalidate paths
+    revalidatePath("/dashboard/employee");
+    revalidatePath("/dashboard/employee/saved-candidates");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error clearing saved candidates:", error);
+    return handleError(error) as ErrorResponse;
+  }
+}

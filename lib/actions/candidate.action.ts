@@ -735,7 +735,7 @@ export const getAllCandidates = cache(
 
 export const getCandidateById = async (
   candidateId: string | mongoose.Types.ObjectId
-): Promise<ActionResponse<{ candidate: ICandidateProfile | null }>> => {
+): Promise<ActionResponse<{ candidate: ICandidateProfile }>> => {
   try {
     await dbConnect();
 
