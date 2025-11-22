@@ -16,8 +16,11 @@ interface ISignInEmailParams {
 interface PaginatedSearchParams {
   search?: string;
   country?: string;
+  status?: string;
   skill?: string;
   page?: number;
+  location?: string;
+  jobType?: string;
   filter?: string;
   limit?: number;
 }

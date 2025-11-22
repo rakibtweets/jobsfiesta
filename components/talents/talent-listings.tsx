@@ -5,68 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getAllCandidates } from "@/lib/actions/candidate.action";
-const allTalents = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    title: "Senior Product Designer",
-    location: "San Francisco, CA",
-    experience: "5-10 years",
-    skills: ["UI/UX", "Figma", "Prototyping", "User Research"],
-    rating: 4.8,
-    avatar: "SJ",
-  },
-  {
-    id: 2,
-    name: "Alex Chen",
-    title: "Full Stack Developer",
-    location: "Remote",
-    experience: "2-5 years",
-    skills: ["React", "Node.js", "TypeScript", "PostgreSQL"],
-    rating: 4.9,
-    avatar: "AC",
-  },
-  {
-    id: 3,
-    name: "Emma Martinez",
-    title: "Data Scientist",
-    location: "Boston, MA",
-    experience: "5-10 years",
-    skills: ["Python", "Machine Learning", "Data Analysis", "TensorFlow"],
-    rating: 4.7,
-    avatar: "EM",
-  },
-  {
-    id: 4,
-    name: "James Wilson",
-    title: "DevOps Engineer",
-    location: "Austin, TX",
-    experience: "10+ years",
-    skills: ["AWS", "Docker", "Kubernetes", "CI/CD"],
-    rating: 4.9,
-    avatar: "JW",
-  },
-  {
-    id: 5,
-    name: "Lisa Anderson",
-    title: "Product Manager",
-    location: "New York, NY",
-    experience: "5-10 years",
-    skills: ["Product Strategy", "Data Analytics", "Leadership", "User Testing"],
-    rating: 4.8,
-    avatar: "LA",
-  },
-  {
-    id: 6,
-    name: "Michael Brown",
-    title: "Frontend Developer",
-    location: "Los Angeles, CA",
-    experience: "2-5 years",
-    skills: ["React", "Vue", "CSS", "JavaScript"],
-    rating: 4.6,
-    avatar: "MB",
-  },
-];
 
 export default async function TalentListings(query: PaginatedSearchParams) {
   const { search, country, skill, page, limit } = await query;

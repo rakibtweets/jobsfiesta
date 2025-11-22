@@ -27,6 +27,7 @@ export interface IJob extends Document {
   skillsRequired: string[];
   status: "open" | "closed" | "filled";
   deadline?: Date;
+  countApplicatons?: number;
   companyName?: string;
   companyLogo?: ICompanyLogo;
   applications: mongoose.Types.ObjectId[];
@@ -110,7 +111,10 @@ const jobSchema = new Schema<IJob>(
       id: { type: String },
       url: { type: String },
     },
-
+    countApplicatons: {
+      type: Number,
+      default: 0,
+    },
     applications: [
       {
         type: Schema.Types.ObjectId,

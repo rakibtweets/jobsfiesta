@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import mongoose from "mongoose";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -14,21 +16,22 @@ import { NumberInput } from "@/components/ui/number-input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { experienceOps, jobTypes, skillLevels, skillsGroupOptions } from "@/constants/data";
-import { createNewJob } from "@/lib/actions/job.action";
+import { IJob } from "@/database/job.model";
+import { createNewJob, updateExistingJobById } from "@/lib/actions/job.action";
 import { getCountries } from "@/lib/utils";
 import { jobFormSchema, type JobFormValues } from "@/lib/validations/job";
 
 interface IJobFromProps {
   formType: "create" | "update";
-  updatedData?: Partial<JobFormValues>;
-  JobId?: string;
-  employeeId?: string;
+  mongoData?: Partial<IJob>;
+  jobId?: mongoose.Types.ObjectId | string | undefined;
+  employeeId?: mongoose.Types.ObjectId | string | undefined;
 }
 
-export default function JobForm({ formType, JobId, employeeId, updatedData }: IJobFromProps) {
+export default function JobForm({ formType, jobId, employeeId, mongoData }: IJobFromProps) {
+  const router = useRouter();
   const countries = getCountries();
   const multiSelectRef = useRef<MultiSelectRef>(null);
-  console.log({ formType, JobId, employeeId, updatedData });
 
   const clearAllSkills = () => {
     if (multiSelectRef.current) {
@@ -39,19 +42,20 @@ export default function JobForm({ formType, JobId, employeeId, updatedData }: IJ
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
-      title: "",
-      location: "",
+      title: mongoData?.title || "",
+      location: mongoData?.location || "",
       salary: {
-        min: undefined,
-        max: undefined,
+        min: mongoData?.salary?.min ?? 0,
+        max: mongoData?.salary?.max ?? 0,
       },
-      yearOfExperieence: "",
-      skillLelvel: "",
-      skillsRequired: [],
-      jobType: "",
-      description: "",
+      yearOfExperieence: mongoData?.yearOfExperieence || "",
+      skillLelvel: mongoData?.skillLelvel || "",
+      skillsRequired: mongoData?.skillsRequired || [],
+      jobType: mongoData?.jobType || "",
+      description: mongoData?.description || "",
     },
   });
+
   const {
     formState: { isSubmitting },
   } = form;
@@ -65,15 +69,26 @@ export default function JobForm({ formType, JobId, employeeId, updatedData }: IJ
         if (success) {
           toast.success(`Your job is created successfully`);
           form.reset();
+          router.push(`/dashboard/employee/jobs`);
         } else {
           toast.error(error?.message);
         }
       }
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      if (formType === "update" && jobId) {
+        //todo: create job
+        const { success, error } = await updateExistingJobById(jobId, values);
+        if (success) {
+          toast.success(`Your job is updated successfully`);
+          router.push(`/dashboard/employee/jobs`);
+        } else {
+          toast.error(error?.message);
+        }
+      }
+      // toast(
+      //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+      //     <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+      //   </pre>
+      // );
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -229,7 +244,7 @@ export default function JobForm({ formType, JobId, employeeId, updatedData }: IJ
                         value={field.value}
                         modalPopover={true}
                         disabled={isSubmitting}
-                        defaultValue={[]}
+                        defaultValue={mongoData?.skillsRequired || []}
                         onValueChange={field.onChange}
                         placeholder="Choose skills..."
                         className="w-full md:w-96"
