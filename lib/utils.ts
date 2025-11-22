@@ -48,3 +48,12 @@ export const getCountries = () => {
     value: country.name,
   }));
 };
+
+export const getCompanyInitials = (name?: string) => {
+  if (!name) return "?";
+
+  const words = name.trim().split(" ");
+  const firstLetter = words[0]?.[0] || "";
+  const secondLetter = words[1]?.[0] || "";
+  return (firstLetter + secondLetter).toUpperCase();
+};

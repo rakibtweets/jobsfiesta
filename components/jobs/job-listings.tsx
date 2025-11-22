@@ -92,7 +92,6 @@ export default async function JobListings(query: PaginatedSearchParams) {
   });
 
   const jobs = data?.jobs || [];
-  console.log("🚀 ~ JobListings ~ jobs:", data);
   return (
     <div className="space-y-4">
       <div className="text-muted-foreground mb-6 text-sm">

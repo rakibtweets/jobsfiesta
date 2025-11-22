@@ -63,7 +63,6 @@ export default function JobForm({ formType, jobId, employeeId, mongoData }: IJob
   } = form;
 
   async function onSubmit(values: JobFormValues) {
-    console.log("🚀 ~ onSubmit ~ values:", values);
     try {
       // Simulate API call
       if (formType === "create" && employeeId) {

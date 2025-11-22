@@ -3,7 +3,6 @@ import { getServerSession } from "@/lib/get-session";
 
 const EmployeeJobPostPage = async () => {
   const me = await getServerSession();
-  console.log("🚀 ~ EmployeeJobPostPage ~ me:", me);
   return (
     <>
       <h2 className="mb-6 text-2xl font-bold">Post a New Job</h2>
