@@ -31,12 +31,14 @@ export const createNewJob = async (
   try {
     await dbConnect();
 
-    const { title, description, location, jobType, skillLelvel, yearOfExperieence, salary, skillsRequired } =
+    const { title, description, location, jobType, skillLelvel, yearOfExperieence, salary, skillsRequired, benefits } =
       validationResult.params!;
 
     // Ensure employee exists
     const employee = await Employee.findById(employeeId);
     if (!employee) throw new Error("Employee profile not found");
+
+    console.log(validationResult.params);
 
     // Create job
     const [job] = await Job.create([
@@ -50,7 +52,9 @@ export const createNewJob = async (
         yearOfExperieence,
         salary,
         skillsRequired,
+        benefits,
         companyName: employee.companyName,
+        companyLogo: employee.companyLogo ?? undefined,
       },
     ]);
 
@@ -132,91 +136,91 @@ export const deleteJob = async (jobId: string): Promise<ActionResponse> => {
   }
 };
 
-export const getAllJobs = cache(
-  async (query: PaginatedSearchParams): Promise<ActionResponse<{ jobs: IJob[]; pagination: PaginationResponse }>> => {
-    try {
-      await dbConnect();
+export const getAllJobs = async (
+  query: PaginatedSearchParams
+): Promise<ActionResponse<{ jobs: IJob[]; pagination: PaginationResponse }>> => {
+  try {
+    await dbConnect();
 
-      const { search = "", location = "", jobType = "", skill = "", page = 1, limit = 10 } = query;
+    const { search = "", location = "", jobType = "", skill = "", page = 1, limit = 10 } = query;
 
-      const filter: FilterQuery<IJob> = {};
+    const filter: FilterQuery<IJob> = {};
 
-      // Full-text search — title, description, skills
-      if (search) {
-        filter.$text = { $search: search };
-      }
-
-      // Filter by location
-      if (location) {
-        filter.location = { $regex: location, $options: "i" };
-      }
-
-      // Filter by job type
-      if (jobType) {
-        filter.jobType = jobType;
-      }
-
-      // Filter by required skills
-      if (skill) {
-        filter.skillsRequired = { $in: [skill.toLowerCase().trim()] };
-      }
-
-      const skip = (page - 1) * limit;
-
-      // Exclude fields
-      const projection = {
-        __v: 0,
-        updatedAt: 0,
-      };
-
-      // Priority Sorting:
-      const sortPriority: Record<string, 1 | -1> = {
-        countApplicatons: -1, // most popular first
-        createdAt: -1, // newest jobs first
-      };
-
-      const pipeline: PipelineStage[] = [
-        { $match: filter },
-
-        {
-          $addFields: {
-            hasApplicants: {
-              $cond: [{ $gt: ["$countApplicatons", 0] }, 1, 0],
-            },
-          },
-        },
-
-        { $project: projection },
-
-        { $sort: sortPriority },
-
-        { $skip: skip },
-        { $limit: limit },
-      ];
-
-      const jobs = (await Job.aggregate(pipeline).exec()) as IJob[];
-
-      const total = await Job.countDocuments(filter);
-      const totalPages = Math.ceil(total / limit);
-
-      return {
-        success: true,
-        data: {
-          jobs,
-          pagination: {
-            total,
-            page,
-            limit,
-            totalPages,
-          },
-        },
-      };
-    } catch (error) {
-      console.log("🚀 ~ getAllJobs ~ error:", error);
-      return handleError(error) as ErrorResponse;
+    // Full-text search — title, description, skills
+    if (search) {
+      filter.$text = { $search: search };
     }
+
+    // Filter by location
+    if (location) {
+      filter.location = { $regex: location, $options: "i" };
+    }
+
+    // Filter by job type
+    if (jobType) {
+      filter.jobType = jobType;
+    }
+
+    // Filter by required skills
+    if (skill) {
+      filter.skillsRequired = { $in: [skill.toLowerCase().trim()] };
+    }
+
+    const skip = (page - 1) * limit;
+
+    // Exclude fields
+    const projection = {
+      __v: 0,
+      updatedAt: 0,
+    };
+
+    // Priority Sorting:
+    const sortPriority: Record<string, 1 | -1> = {
+      countApplicatons: -1, // most popular first
+      createdAt: -1, // newest jobs first
+    };
+
+    const pipeline: PipelineStage[] = [
+      { $match: filter },
+
+      {
+        $addFields: {
+          hasApplicants: {
+            $cond: [{ $gt: ["$countApplicatons", 0] }, 1, 0],
+          },
+        },
+      },
+
+      { $project: projection },
+
+      { $sort: sortPriority },
+
+      { $skip: skip },
+      { $limit: limit },
+    ];
+
+    const jobs = (await Job.aggregate(pipeline).exec()) as IJob[];
+
+    const total = await Job.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      success: true,
+      data: {
+        jobs: JSON.parse(JSON.stringify(jobs)),
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages,
+        },
+      },
+    };
+  } catch (error) {
+    console.log("🚀 ~ getAllJobs ~ error:", error);
+    return handleError(error) as ErrorResponse;
   }
-);
+};
 
 export const getJobsByEmployeeId = async (
   employeeId: string,

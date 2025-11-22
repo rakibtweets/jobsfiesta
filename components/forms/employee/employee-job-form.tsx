@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import CreateableMultipleSelector from "@/components/custom-ui/custom-multi-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -15,7 +16,7 @@ import { MultiSelect, MultiSelectRef } from "@/components/ui/multi-select";
 import { NumberInput } from "@/components/ui/number-input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { experienceOps, jobTypes, skillLevels, skillsGroupOptions } from "@/constants/data";
+import { experienceOps, jobBenefits, jobTypes, skillLevels, skillsGroupOptions } from "@/constants/data";
 import { IJob } from "@/database/job.model";
 import { createNewJob, updateExistingJobById } from "@/lib/actions/job.action";
 import { getCountries } from "@/lib/utils";
@@ -45,11 +46,12 @@ export default function JobForm({ formType, jobId, employeeId, mongoData }: IJob
       title: mongoData?.title || "",
       location: mongoData?.location || "",
       salary: {
-        min: mongoData?.salary?.min ?? 0,
-        max: mongoData?.salary?.max ?? 0,
+        min: mongoData?.salary?.min ?? undefined,
+        max: mongoData?.salary?.max ?? undefined,
       },
       yearOfExperieence: mongoData?.yearOfExperieence || "",
       skillLelvel: mongoData?.skillLelvel || "",
+      benefits: mongoData?.benefits || [],
       skillsRequired: mongoData?.skillsRequired || [],
       jobType: mongoData?.jobType || "",
       description: mongoData?.description || "",
@@ -61,6 +63,7 @@ export default function JobForm({ formType, jobId, employeeId, mongoData }: IJob
   } = form;
 
   async function onSubmit(values: JobFormValues) {
+    console.log("🚀 ~ onSubmit ~ values:", values);
     try {
       // Simulate API call
       if (formType === "create" && employeeId) {
@@ -255,7 +258,7 @@ export default function JobForm({ formType, jobId, employeeId, mongoData }: IJob
                 )}
               />
 
-              <div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="yearOfExperieence"
@@ -276,6 +279,31 @@ export default function JobForm({ formType, jobId, employeeId, mongoData }: IJob
                           </SelectGroup>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="benefits"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Benefits</FormLabel>
+                      <FormControl>
+                        <CreateableMultipleSelector
+                          {...field}
+                          value={field.value?.map((v) => ({ label: v, value: v }))}
+                          onChange={(opts) => field.onChange(opts.map((o) => o.value))}
+                          defaultOptions={jobBenefits}
+                          creatable
+                          placeholder="Enter your job benefits..."
+                          emptyIndicator={
+                            <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                              no results found.
+                            </p>
+                          }
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -268,6 +268,7 @@ export const updateExperienceInCandidateProfile = async (
     return handleError(error) as ErrorResponse;
   }
 };
+
 export const getCandidateProfileByUserId = async (
   userId: string
 ): Promise<ActionResponse<{ candidate: ICandidateProfile }>> => {
@@ -731,3 +732,37 @@ export const getAllCandidates = cache(
     }
   }
 );
+
+export const getCandidateById = async (
+  candidateId: string | mongoose.Types.ObjectId
+): Promise<ActionResponse<{ candidate: ICandidateProfile | null }>> => {
+  try {
+    await dbConnect();
+
+    if (!candidateId) {
+      throw new Error("Candidate ID is required");
+    }
+
+    // Exclude sensitive fields like email, phone, etc.
+    const projection = {
+      email: 0,
+      phone: 0,
+      updatedAt: 0,
+      __v: 0,
+    };
+
+    const candidate = await Candidate.findById(candidateId, projection).lean<ICandidateProfile | null>();
+
+    if (!candidate) {
+      throw new Error("Candidate not found");
+    }
+
+    return {
+      success: true,
+      data: { candidate },
+    };
+  } catch (error) {
+    console.log("🚀 ~ getCandidateById ~ error:", error);
+    return handleError(error) as ErrorResponse;
+  }
+};

@@ -25,6 +25,7 @@ export interface IJob extends Document {
   skillLelvel: string;
   salary?: ISalary;
   skillsRequired: string[];
+  benefits?: string[];
   status: "open" | "closed" | "filled";
   deadline?: Date;
   countApplicatons?: number;
@@ -89,6 +90,12 @@ const jobSchema = new Schema<IJob>(
         type: String,
         trim: true,
         lowercase: true,
+      },
+    ],
+
+    benefits: [
+      {
+        type: String,
       },
     ],
 

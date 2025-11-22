@@ -1,20 +1,12 @@
-"use client";
-
 import { Briefcase } from "lucide-react";
-import { useState } from "react";
+import { Suspense } from "react";
 
 import JobFilters from "@/components/jobs/job-filters";
 import JobListings from "@/components/jobs/job-listings";
+import ListSkeletons from "@/components/skeletons/list-skeleton";
 
-export default function JobsPage() {
-  const [filters, setFilters] = useState({
-    search: "",
-    location: "",
-    jobType: "",
-    salary: "",
-    company: "",
-  });
-
+export default async function JobsPage({ searchParams }: RouteParams) {
+  const { search, location, jobType, skill, page, limit } = await searchParams;
   return (
     <section className="from-background to-card/30 min-h-screen bg-linear-to-b">
       {/* Animated header section */}
@@ -43,12 +35,21 @@ export default function JobsPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <JobFilters filters={filters} setFilters={setFilters} />
+            <JobFilters />
           </div>
 
           {/* Job Listings */}
           <div className="lg:col-span-3">
-            <JobListings filters={filters} />
+            <Suspense fallback={<ListSkeletons />}>
+              <JobListings
+                search={search}
+                location={location}
+                jobType={jobType}
+                page={Number(page)}
+                limit={Number(limit)}
+                skill={skill}
+              />
+            </Suspense>
           </div>
         </div>
       </div>

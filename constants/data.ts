@@ -129,3 +129,28 @@ export const jobTypes = [
   { value: "emporary", label: "Temporary" },
   { value: "internship", label: "Internship" },
 ];
+
+export const jobBenefits = [
+  { label: "Health Insurance", value: "Health Insurance" },
+  { label: "Life Insurance", value: "Life Insurance" },
+  { label: "Remote Work", value: "Remote Work" },
+  { label: "Paid Time Off (PTO)", value: "Paid Time Off (PTO)" },
+  { label: "Work From Home", value: "Work From Home" },
+  { label: "Flexible Schedule", value: "Flexible Schedule" },
+  { label: "Performance Bonus", value: "Performance Bonus" },
+  { label: "Yearly Increment", value: "Yearly Increment" },
+  { label: "Retirement Plan", value: "Retirement Plan" },
+  { label: "Lunch Provided", value: "Lunch Provided" },
+  { label: "Snacks & Drinks", value: "Snacks & Drinks" },
+  { label: "Transportation Allowance", value: "Transportation Allowance" },
+  { label: "Medical Reimbursement", value: "Medical Reimbursement" },
+  { label: "Stock Options (ESOP)", value: "Stock Options (ESOP)" },
+  { label: "Employee Discount", value: "Employee Discount" },
+  { label: "Parental Leave", value: "Parental Leave" },
+  { label: "On-site Gym", value: "On-site Gym" },
+  { label: "Training & Development", value: "Training & Development" },
+  { label: "Professional Growth Support", value: "Professional Growth Support" },
+  { label: "Internet Allowance", value: "Internet Allowance" },
+  { label: "Housing Allowance", value: "Housing Allowance" },
+  { label: "Commission Pay", value: "Commission Pay" },
+];

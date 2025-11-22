@@ -28,6 +28,7 @@ export const jobFormSchema = z.object({
   yearOfExperieence: z.string().min(1, "Experience in requiere"),
   skillLelvel: z.string().min(1, "Skill level in requiere"),
   skillsRequired: z.array(z.string()).min(1, { message: "Please select at least one skill." }),
+  benefits: z.array(z.string()).optional(),
   description: z
     .string()
     .min(1, "Job description is required")
