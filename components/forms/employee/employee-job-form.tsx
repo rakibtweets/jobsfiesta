@@ -1,9 +1,7 @@
 "use client";
 
-import { setTimeout } from "timers";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -16,6 +14,8 @@ import { NumberInput } from "@/components/ui/number-input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { experienceOps, jobTypes, skillLevels, skillsGroupOptions } from "@/constants/data";
+import { createNewJob } from "@/lib/actions/job.action";
+import { getCountries } from "@/lib/utils";
 import { jobFormSchema, type JobFormValues } from "@/lib/validations/job";
 
 interface IJobFromProps {
@@ -26,7 +26,7 @@ interface IJobFromProps {
 }
 
 export default function JobForm({ formType, JobId, employeeId, updatedData }: IJobFromProps) {
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const countries = getCountries();
   const multiSelectRef = useRef<MultiSelectRef>(null);
   console.log({ formType, JobId, employeeId, updatedData });
 
@@ -59,12 +59,16 @@ export default function JobForm({ formType, JobId, employeeId, updatedData }: IJ
   async function onSubmit(values: JobFormValues) {
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Form submitted:", values);
-      setSubmitSuccess(true);
-      form.reset();
-
-      setTimeout(() => setSubmitSuccess(false), 3000);
+      if (formType === "create" && employeeId) {
+        //todo: create job
+        const { success, error } = await createNewJob(employeeId, values);
+        if (success) {
+          toast.success(`Your job is created successfully`);
+          form.reset();
+        } else {
+          toast.error(error?.message);
+        }
+      }
       toast(
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(values, null, 2)}</code>
@@ -77,11 +81,11 @@ export default function JobForm({ formType, JobId, employeeId, updatedData }: IJ
 
   return (
     <>
-      {submitSuccess && (
+      {/* {submitSuccess && (
         <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
           <p className="font-medium text-green-800 dark:text-green-100">✓ Job posting created successfully!</p>
         </div>
-      )}
+      )} */}
 
       <Card>
         <CardHeader>
@@ -111,11 +115,21 @@ export default function JobForm({ formType, JobId, employeeId, updatedData }: IJ
                   name="location"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Location</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., San Francisco, CA" {...field} />
-                      </FormControl>
-                      <FormDescription>Where the job is located</FormDescription>
+                      <FormLabel>Country</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {countries.map((i) => (
+                              <SelectItem key={i.value} value={i.value}>
+                                {i.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
