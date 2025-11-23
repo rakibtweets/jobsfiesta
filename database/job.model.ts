@@ -36,9 +36,6 @@ export interface IJob extends Document {
   updatedAt: Date;
 }
 
-// ------------------------------
-// 2. SCHEMA
-// ------------------------------
 const jobSchema = new Schema<IJob>(
   {
     employer: {

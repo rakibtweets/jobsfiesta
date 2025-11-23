@@ -280,3 +280,112 @@ export async function getSavedCandidates(
     return handleError(error) as ErrorResponse;
   }
 }
+
+// logo upload
+
+export const employeeLogoUpload = async (
+  userId: string,
+  payload: { id?: string; url?: string }
+): Promise<ActionResponse> => {
+  try {
+    await dbConnect();
+
+    console.log(payload);
+
+    if (!payload?.url) {
+      throw new Error("Image URL is required");
+    }
+    const employee = await Employee.findOne({ user: userId });
+    if (!employee) {
+      throw new Error("Employee profile not found");
+    }
+
+    // Update photo atomically
+    const updatedProfile = await Employee.findOneAndUpdate(
+      { user: userId },
+      {
+        $set: {
+          companyLogo: {
+            id: payload.id ?? employee.companyLogo?.id ?? "",
+            url: payload.url ?? employee.companyLogo?.url ?? "",
+          },
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).lean();
+
+    if (!updatedProfile) {
+      throw new Error("Candidate profile not found");
+    }
+
+    console.log(updatedProfile);
+
+    // Update better-auth user profile image
+    try {
+      if (updatedProfile?.companyLogo?.url as string) {
+        await auth.api.updateUser({
+          body: {
+            image: payload.url as string,
+          },
+          headers: await headers(),
+        });
+
+        return {
+          success: true,
+        };
+      }
+    } catch (error) {
+      if (error instanceof APIError) {
+        return {
+          success: false,
+          status: error.statusCode,
+          error: {
+            message: error.message,
+          },
+        };
+      }
+    }
+
+    // Revalidate page
+    revalidatePath("/dashboard/employee/profile");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export async function getEmployeeById(employeeId: string): Promise<ActionResponse<{ employee: IEmployerProfile }>> {
+  const validationResult = await action({
+    params: { employeeId },
+    authorizeRole: "employee",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    const employee = await Employee.findById(employeeId);
+
+    if (!employee) {
+      throw new Error("Employee not found");
+    }
+
+    return {
+      success: true,
+      data: {
+        employee: JSON.parse(JSON.stringify(employee)),
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}

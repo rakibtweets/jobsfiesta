@@ -68,6 +68,7 @@ export default function Header() {
             <ProfileMenu
               name={data?.user?.name}
               email={data?.user.email}
+              image={data?.user?.image as string}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               role={(data?.user as any)?.role}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -28,12 +28,13 @@ import { authClient } from "@/lib/auth-client";
 interface IProfileMenuProps {
   name: string | undefined;
   email: string | undefined;
-  image?: string | undefined;
+  image?: string | null | undefined;
   accountType: "candidate" | "employee" | undefined;
   role: "admin" | "editor" | "modarator" | undefined;
 }
 
-export default function ProfileMenu({ name, email, role }: IProfileMenuProps) {
+export default function ProfileMenu({ name, email, role, image }: IProfileMenuProps) {
+  console.log("🚀 ~ ProfileMenu ~ image:", image);
   const router = useRouter();
 
   const handleLogOut = async () => {
@@ -56,7 +57,7 @@ export default function ProfileMenu({ name, email, role }: IProfileMenuProps) {
       <DropdownMenuTrigger asChild>
         <Button className="h-auto p-0 hover:bg-transparent">
           <Avatar>
-            <AvatarImage src={"https://github.com/shadcn.png"} alt="Profile image" />
+            <AvatarImage src={image || "https://github.com/shadcn.png"} alt="Profile image" />
             <AvatarFallback>{"kk"}</AvatarFallback>
           </Avatar>
           <ChevronDownIcon size={16} className="opacity-60" aria-hidden="true" />
