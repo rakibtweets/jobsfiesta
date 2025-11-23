@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
-import { Candidate } from "@/database/candidate.model";
+import { Candidate, ICandidateProfile } from "@/database/candidate.model";
 import { Employee, IEmployerProfile } from "@/database/employee.model";
 import { auth } from "@/lib/auth";
 
@@ -171,7 +171,7 @@ export async function addToSavedCandidate(candidateId: string, employeeId: strin
 
 // remove from  removeFromSavedCandidate
 
-export async function removeFromSavedCandidate(employeeId: string, candidateId: string): Promise<ActionResponse> {
+export async function removeFromSavedCandidate(candidateId: string, employeeId: string): Promise<ActionResponse> {
   const validationResult = await action({
     params: { employeeId, candidateId },
     authorizeRole: "employee",
@@ -241,6 +241,42 @@ export async function clearSavedCandidates(employeeId: string): Promise<ActionRe
     return { success: true };
   } catch (error) {
     console.error("Error clearing saved candidates:", error);
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getSavedCandidates(
+  employeeId: string
+): Promise<ActionResponse<{ candidates: ICandidateProfile[] }>> {
+  const validationResult = await action({
+    authorizeRole: "employee",
+  });
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    // Find the employee and populate savedCandidate with selected fields
+    const employee = await Employee.findById(employeeId).populate({
+      path: "savedCandidate",
+      model: Candidate,
+      select: "name skills headline location.country",
+    });
+
+    if (!employee) {
+      throw new Error('"Employee not found"');
+    }
+
+    return {
+      success: true,
+      data: {
+        candidates: JSON.parse(JSON.stringify(employee.savedCandidate)) || [],
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching saved candidates:", error);
     return handleError(error) as ErrorResponse;
   }
 }
