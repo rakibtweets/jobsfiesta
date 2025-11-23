@@ -115,6 +115,7 @@ export const updateEmployeeProfile = async (
     );
     if (!updatedProfile) throw new Error("Failed to update Employee profile");
     // 3. Return success
+    revalidatePath("/dashboard/employee/profile");
     return {
       success: true,
       data: {
@@ -122,6 +123,7 @@ export const updateEmployeeProfile = async (
       },
     };
   } catch (error) {
+    console.log("🚀 ~ updateEmployeeProfile ~ error:", error);
     return handleError(error) as ErrorResponse;
   }
 };

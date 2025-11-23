@@ -15,7 +15,7 @@ interface IUploadButtonProps {
 const UploadLogoButton = ({ accountType, loggedInUserId }: IUploadButtonProps) => {
   // const [resource, setResource] = useState();
   // console.log("🚀 ~ UploadImagButton ~ resource:", resource);
-  console.log({ accountType, loggedInUserId });
+
   return (
     <CldUploadWidget
       uploadPreset="jobfiesta_rakibtweets"

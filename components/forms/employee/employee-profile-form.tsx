@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { companySizeOps, industries } from "@/constants/data";
 import { IEmployerProfile } from "@/database/employee.model";
 import { createEmployeeProfile, updateEmployeeProfile } from "@/lib/actions/employee.action";
@@ -57,9 +58,7 @@ export function EmployeeProfileForm({
   // 3. Submit Handler
   // ------------------------------
   async function onSubmit(data: EmployeeProfileFormValues) {
-    console.log({ onBoarding, userMongoId, accountType });
     try {
-      console.log("Form Data Submitted:", data);
       if (onBoarding && userMongoId && accountType === "employee") {
         // first time create
         try {
@@ -235,8 +234,15 @@ export function EmployeeProfileForm({
         </div>
 
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? "Creating.." : "Create Profile"}
+          {/* {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} */}
+          {isSubmitting ? (
+            <>
+              <Spinner />
+              <span>Submitting</span>
+            </>
+          ) : (
+            <>{formType === "create" ? "Create Profile" : "Update profile"}</>
+          )}
         </Button>
       </form>
     </Form>

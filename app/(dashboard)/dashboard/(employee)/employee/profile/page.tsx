@@ -2,30 +2,16 @@
 import { redirect } from "next/navigation";
 
 import EmployeeProfileInfo from "@/components/employee/sections/employee-profile-info";
+import { EmployeeProfileForm } from "@/components/forms/employee/employee-profile-form";
 import { getEmployeeById } from "@/lib/actions/employee.action";
 import { getServerSession } from "@/lib/get-session";
 
 // Dummy Employee Data
-async function getDummyEmployee() {
-  return {
-    name: "John Doe",
-    email: "john.doe@techcorp.com",
-    companyName: "Tech Corp Solutions",
-    companySize: "150-300",
-    country: "United States",
-    industry: "Software & IT",
-    about: "We specialize in enterprise software, cloud engineering, and AI-driven solutions.",
-    companyLogo: {
-      url: "", // leave empty to show fallback avatar
-    },
-  };
-}
 
 export default async function EmployeeProfilePage() {
   // const employee = await getDummyEmployee();
 
   const me = await getServerSession();
-  console.log("🚀 ~ EmployeeProfilePage ~ me:", me);
 
   if (!me?.session) redirect("/auth/sign-in");
 
@@ -42,7 +28,13 @@ export default async function EmployeeProfilePage() {
       <EmployeeProfileInfo employee={data?.employee} />
 
       {/* Update Form */}
-      {/* <EmployeeProfileForm employee={employee} /> */}
+      <EmployeeProfileForm
+        formType="update"
+        name={me?.user?.name}
+        email={me?.user?.email}
+        userMongoId={me?.user?.id}
+        employee={data?.employee}
+      />
     </section>
   );
 }
