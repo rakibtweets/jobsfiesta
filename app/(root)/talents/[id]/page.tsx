@@ -1,16 +1,23 @@
-import { MapPin, Download, Calendar } from "lucide-react";
+import { MapPin, Download, Calendar, Heart } from "lucide-react";
 import Link from "next/link";
 
+import TalentFovouriteButton from "@/components/action-buttion/talent-favourite-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCandidateById } from "@/lib/actions/candidate.action";
+import { getServerSession } from "@/lib/get-session";
 import { formatDate, getCompanyInitials } from "@/lib/utils";
 
 export default async function TalentDetailsPage({ params }: RouteParams) {
   const { id } = await params;
   const { data } = await getCandidateById(id);
+  const me = await getServerSession();
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  const employeeId = me?.user?.employee || "";
 
   const candidate = data?.candidate;
   // if (!candidate) return notFound();
@@ -47,6 +54,7 @@ export default async function TalentDetailsPage({ params }: RouteParams) {
               {/* Info */}
               <div className="grow">
                 <h1 className="text-foreground mb-2 text-3xl font-bold">{candidate?.name}</h1>
+
                 <p className="text-primary mb-3 text-xl font-semibold">{candidate?.headline}</p>
                 <div className="text-muted-foreground mb-4 flex flex-wrap gap-4 text-sm">
                   <div className="flex items-center gap-1">
@@ -62,14 +70,22 @@ export default async function TalentDetailsPage({ params }: RouteParams) {
                   <span className="capitalize">{candidate?.gender}</span>
                 </div>
                 <p className="text-foreground mb-4 leading-relaxed">{candidate?.bio}</p>
-                {candidate?.resume?.url && (
-                  <Link href={candidate?.resume?.url} target="_blank" rel="noopener noreferrer">
-                    <Button className="gap-2">
-                      <Download className="h-4 w-4" />
-                      Download Resume
-                    </Button>
-                  </Link>
-                )}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                  {candidate?.resume?.url && (
+                    <Link
+                      href={candidate.resume.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 sm:flex-none"
+                    >
+                      <Button className="w-full gap-2 sm:w-auto">
+                        <Download size={16} />
+                        Download Resume
+                      </Button>
+                    </Link>
+                  )}
+                  <TalentFovouriteButton candidateId={String(candidate?._id)} employeeId={employeeId} />
+                </div>
               </div>
             </div>
           </CardContent>
@@ -101,10 +117,10 @@ export default async function TalentDetailsPage({ params }: RouteParams) {
             </CardHeader>
             <CardContent className="space-y-4">
               {candidate?.experience.map((exp) => (
-                <div key={String(exp._id)} className="border-primary/30 border-l-4 py-2 pl-4">
-                  <div className="mb-1 flex items-start justify-between">
+                <div key={String(exp._id)} className="border-primary/30 border-l-4 py-2 pl-4 md:pl-6">
+                  <div className="mb-1 flex flex-col gap-1 md:flex-row md:items-start md:justify-between md:gap-2">
                     <h3 className="text-foreground text-lg font-semibold">{exp.position}</h3>
-                    <span className="text-muted-foreground ml-2 text-sm whitespace-nowrap">
+                    <span className="text-muted-foreground text-sm whitespace-nowrap">
                       {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
                     </span>
                   </div>
@@ -124,10 +140,12 @@ export default async function TalentDetailsPage({ params }: RouteParams) {
             </CardHeader>
             <CardContent className="space-y-4">
               {candidate?.education.map((edu) => (
-                <div key={String(edu._id)} className="border-primary/30 border-l-4 py-2 pl-4">
-                  <div className="mb-1 flex items-start justify-between">
+                <div key={String(edu._id)} className="border-primary/30 border-l-4 py-2 pl-4 md:pl-6">
+                  <div className="mb-1 flex flex-col gap-1 md:flex-row md:items-start md:justify-between md:gap-2">
                     <h3 className="text-foreground text-lg font-semibold">{edu.degree}</h3>
-                    <span className="text-muted-foreground text-sm">{formatDate(edu.graduationYear)}</span>
+                    <span className="text-muted-foreground text-sm whitespace-nowrap">
+                      {formatDate(edu.graduationYear)}
+                    </span>
                   </div>
                   <p className="text-primary mb-1 font-medium">{edu.institution}</p>
                   <p className="text-foreground/80 text-sm">{edu.fieldOfStudy}</p>

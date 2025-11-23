@@ -127,7 +127,7 @@ export const updateEmployeeProfile = async (
 };
 
 // save candidates
-export async function addToSavedCandidate(employeeId: string, candidateId: string): Promise<ActionResponse> {
+export async function addToSavedCandidate(candidateId: string, employeeId: string): Promise<ActionResponse> {
   const validationResult = await action({
     params: { employeeId, candidateId },
     authorizeRole: "employee",
@@ -137,6 +137,8 @@ export async function addToSavedCandidate(employeeId: string, candidateId: strin
   }
   try {
     await dbConnect();
+
+    console.log({ candidateId, employeeId });
 
     const candidate = await Candidate.findById(candidateId);
     if (!candidate) {
