@@ -1,31 +1,12 @@
 "use client";
 
-import {
-  CheckCircle,
-  FileTextIcon,
-  Loader2,
-  PauseIcon,
-  PlayIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { CheckCircle, FileTextIcon, Loader2, PauseIcon, PlayIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Task {
   id: string;
@@ -101,8 +82,7 @@ const tasks: Task[] = [
     status: "completed",
     priority: "urgent",
     dueDate: "2024-03-19",
-    notes:
-      "Conducted comprehensive security review and vulnerability assessment",
+    notes: "Conducted comprehensive security review and vulnerability assessment",
   },
 ];
 
@@ -112,7 +92,7 @@ function getStatusBadge(status: Task["status"]) {
       return (
         <Badge
           variant="outline"
-          className="bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20 border-0"
+          className="border-0 bg-amber-500/15 text-amber-700 hover:bg-amber-500/25 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20"
         >
           Pending
         </Badge>
@@ -121,7 +101,7 @@ function getStatusBadge(status: Task["status"]) {
       return (
         <Badge
           variant="outline"
-          className="bg-blue-500/15 text-blue-700 hover:bg-blue-500/25 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20 border-0"
+          className="border-0 bg-blue-500/15 text-blue-700 hover:bg-blue-500/25 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
         >
           In Progress
         </Badge>
@@ -130,7 +110,7 @@ function getStatusBadge(status: Task["status"]) {
       return (
         <Badge
           variant="outline"
-          className="bg-green-500/15 text-green-700 hover:bg-green-500/25 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/20 border-0"
+          className="border-0 bg-green-500/15 text-green-700 hover:bg-green-500/25 dark:bg-green-500/10 dark:text-green-400 dark:hover:bg-green-500/20"
         >
           Completed
         </Badge>
@@ -139,7 +119,7 @@ function getStatusBadge(status: Task["status"]) {
       return (
         <Badge
           variant="outline"
-          className="bg-rose-500/15 text-rose-700 hover:bg-rose-500/25 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20 border-0"
+          className="border-0 bg-rose-500/15 text-rose-700 hover:bg-rose-500/25 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
         >
           Blocked
         </Badge>
@@ -178,17 +158,11 @@ export default function Table02() {
     return (
       <TableRow key={task.id} className="hover:bg-muted/50">
         <TableCell className="h-16 px-4 font-medium">{task.title}</TableCell>
-        <TableCell className="h-16 px-4 text-sm text-muted-foreground">
-          {task.assignee}
-        </TableCell>
-        <TableCell className="h-16 px-4">
-          {getStatusBadge(task.status)}
-        </TableCell>
+        <TableCell className="text-muted-foreground h-16 px-4 text-sm">{task.assignee}</TableCell>
+        <TableCell className="h-16 px-4">{getStatusBadge(task.status)}</TableCell>
 
-        <TableCell className="h-16 px-4 text-sm text-muted-foreground">
-          {task.dueDate}
-        </TableCell>
-        <TableCell className="h-16 px-4 max-w-[300px] text-sm text-muted-foreground">
+        <TableCell className="text-muted-foreground h-16 px-4 text-sm">{task.dueDate}</TableCell>
+        <TableCell className="text-muted-foreground h-16 max-w-[300px] px-4 text-sm">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -211,11 +185,7 @@ export default function Table02() {
                       onClick={() => handleAction(task, "start")}
                       disabled={busy}
                     >
-                      {startPending ? (
-                        <Loader2 className="size-4 animate-spin" />
-                      ) : (
-                        <PlayIcon className="size-4" />
-                      )}
+                      {startPending ? <Loader2 className="size-4 animate-spin" /> : <PlayIcon className="size-4" />}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Start</TooltipContent>
@@ -232,11 +202,7 @@ export default function Table02() {
                         onClick={() => handleAction(task, "pause")}
                         disabled={busy}
                       >
-                        {pausePending ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <PauseIcon className="size-4" />
-                        )}
+                        {pausePending ? <Loader2 className="size-4 animate-spin" /> : <PauseIcon className="size-4" />}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Pause</TooltipContent>
@@ -266,15 +232,11 @@ export default function Table02() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 text-destructive hover:bg-destructive hover:text-white"
+                    className="text-destructive hover:bg-destructive h-8 w-8 hover:text-white"
                     onClick={() => handleAction(task, "delete")}
                     disabled={busy}
                   >
-                    {deletePending ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <Trash2Icon className="size-4" />
-                    )}
+                    {deletePending ? <Loader2 className="size-4 animate-spin" /> : <Trash2Icon className="size-4" />}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Delete</TooltipContent>
@@ -301,21 +263,17 @@ export default function Table02() {
   };
 
   return (
-    <div className="rounded-lg border bg-card w-[95%]">
+    <div className="bg-card w-[95%] rounded-lg border">
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-transparent border-b">
+          <TableRow className="border-b hover:bg-transparent">
             <TableHead className="h-12 px-4 font-medium">Title</TableHead>
             <TableHead className="h-12 px-4 font-medium">Assignee</TableHead>
-            <TableHead className="h-12 px-4 font-medium w-[120px]">
-              Status
-            </TableHead>
+            <TableHead className="h-12 w-[120px] px-4 font-medium">Status</TableHead>
 
             <TableHead className="h-12 px-4 font-medium">Due Date</TableHead>
             <TableHead className="h-12 px-4 font-medium">Notes</TableHead>
-            <TableHead className="h-12 px-4 font-medium w-[180px]">
-              Actions
-            </TableHead>
+            <TableHead className="h-12 w-[180px] px-4 font-medium">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>{tasks.map(renderTaskRow)}</TableBody>

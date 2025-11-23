@@ -1,10 +1,18 @@
+import { redirect } from "next/navigation";
 import React from "react";
 
 // import ProfileAvatar from "@/components/shared/ProfileAvatar";
 import { CandidateDashboardSidebar } from "@/components/candidate/candidate-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { getServerSession } from "@/lib/get-session";
 
-const CandidateDashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const CandidateDashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+  const me = await getServerSession();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  if (!me?.session || me.user.accountType !== "candidate") {
+    redirect("/unauthorize");
+  }
   return (
     <SidebarProvider>
       <CandidateDashboardSidebar />

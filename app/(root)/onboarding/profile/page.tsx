@@ -1,9 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { redirect } from "next/navigation";
+
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
 import { EmployeeProfileForm } from "@/components/forms/employee/employee-profile-form";
 import { getServerSession } from "@/lib/get-session";
 
 const ProfileOnBoardingPage = async () => {
   const me = await getServerSession();
+  //@ts-ignore
+  if (me?.user?.candidate || me?.user?.employee) {
+    redirect("/");
+  }
 
   return (
     <section className="min-h-screen p-7">
@@ -11,7 +18,6 @@ const ProfileOnBoardingPage = async () => {
         <h2 className="text-center text-2xl font-semibold">
           Complete your{" "}
           {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             me?.user?.accountType
           }{" "}
@@ -19,14 +25,12 @@ const ProfileOnBoardingPage = async () => {
         </h2>
         <>
           {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             me?.user?.accountType === "candidate" && (
               <CandidateProfileForm
                 name={me.user.name}
                 email={me.user.email}
                 userMongoId={me.user.id}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //@ts-ignore
                 accountType={me?.user?.accountType}
                 formType="create"
@@ -36,14 +40,12 @@ const ProfileOnBoardingPage = async () => {
           }
 
           {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             me?.user?.accountType === "employee" && (
               <EmployeeProfileForm
                 name={me.user.name}
                 email={me.user.email}
                 userMongoId={me.user.id}
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 //@ts-ignore
                 accountType={me?.user?.accountType}
                 // formType="create"

@@ -1,10 +1,18 @@
+import { redirect } from "next/navigation";
 import React from "react";
 
 // import ProfileAvatar from "@/components/shared/ProfileAvatar";
 import { EmployeeDashboardSidebar } from "@/components/employee/employee-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { getServerSession } from "@/lib/get-session";
 
-const EmployeeDashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const EmployeeDashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+  const me = await getServerSession();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  if (!me?.session || me.user.accountType !== "employee") {
+    redirect("/unauthorize");
+  }
   return (
     <SidebarProvider>
       <EmployeeDashboardSidebar />

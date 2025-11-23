@@ -1,12 +1,14 @@
 "use client";
+
 import {
   BookOpenIcon,
   ChevronDownIcon,
   LayoutDashboardIcon,
   LogOutIcon,
-  PinIcon,
+  Plus,
+  Save,
+  Settings,
   UserCheck,
-  UserPenIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -33,8 +35,7 @@ interface IProfileMenuProps {
   role: "admin" | "editor" | "modarator" | undefined;
 }
 
-export default function ProfileMenu({ name, email, role, image }: IProfileMenuProps) {
-  console.log("🚀 ~ ProfileMenu ~ image:", image);
+export default function ProfileMenu({ name, email, role, image, accountType }: IProfileMenuProps) {
   const router = useRouter();
 
   const handleLogOut = async () => {
@@ -71,18 +72,68 @@ export default function ProfileMenu({ name, email, role, image }: IProfileMenuPr
 
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link className="cursor-pointer" href="/dashboard">
-              <LayoutDashboardIcon className="mr-2 size-4" aria-hidden="true" />
-              Dashboard
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link className="cursor-pointer" href="/profile">
-              <UserCheck className="mr-2 size-4" aria-hidden="true" />
-              Profile
-            </Link>
-          </DropdownMenuItem>
+          {accountType === "employee" && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/employee">
+                  <LayoutDashboardIcon className="mr-2 size-4" aria-hidden="true" />
+                  Dashboard
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/employee/jobs/new">
+                  <Plus className="mr-2 size-4" aria-hidden="true" />
+                  Post Job
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/employee/profile">
+                  <UserCheck className="mr-2 size-4" aria-hidden="true" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/employee/settings">
+                  <Settings className="mr-2 size-4" aria-hidden="true" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
+          {accountType === "candidate" && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/candidate">
+                  <LayoutDashboardIcon className="mr-2 size-4" aria-hidden="true" />
+                  Dashboard
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/candidate/applications">
+                  <Plus className="mr-2 size-4" aria-hidden="true" />
+                  Applications
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/candidate/saved-jobs">
+                  <Save className="mr-2 size-4" aria-hidden="true" />
+                  Saved Jobs
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/candidate/profile">
+                  <UserCheck className="mr-2 size-4" aria-hidden="true" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/candidate/settings">
+                  <Settings className="mr-2 size-4" aria-hidden="true" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
           {role === "admin" && (
             <DropdownMenuItem>
               <BookOpenIcon size={16} className="opacity-60" aria-hidden="true" />
@@ -90,17 +141,7 @@ export default function ProfileMenu({ name, email, role, image }: IProfileMenuPr
             </DropdownMenuItem>
           )}
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <PinIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Option 4</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <UserPenIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Option 5</span>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => handleLogOut()} variant="destructive">
           <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
