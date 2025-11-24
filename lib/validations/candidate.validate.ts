@@ -7,10 +7,12 @@ export const createCandidateProfileSchema = z.object({
   headline: z.string().min(1, "Headline is required"),
   gender: z.string().min(1, "Gender is required"),
   dateOfBirth: z.date().optional(),
+  yearOfExperience: z.string().min(1, "Year of experience is required"),
   location: z.object({
     country: z.string().min(1, "Country is required"),
     state: z.string().optional(),
   }),
+  languages: z.array(z.string()).min(1, { message: "Please select at least one language." }),
   bio: z.string().min(1, "Bio is required"),
 });
 

@@ -1,4 +1,5 @@
 import { BookOpen, Briefcase, FileStack, FileText, MapPin, Plus, User } from "lucide-react";
+import Image from "next/image";
 
 import UploadImagButton from "@/components/action-buttion/upload-image-button";
 import UploadPDFButton from "@/components/action-buttion/upload-pdf-button";
@@ -193,11 +194,29 @@ const CandidateProfilePage = async () => {
           {/* Resume Tab */}
           <TabsContent value="resume">
             <Card className="p-8 text-center">
-              <div className="mb-4">
-                <FileText size={48} className="text-muted-foreground mx-auto mb-4" />
-              </div>
-              <h3 className="mb-2 text-lg font-semibold">Resume Management</h3>
-              <p className="text-muted-foreground mb-6">Upload and manage your resume</p>
+              {/* If resume exists */}
+              {candidate?.resume?.url ? (
+                <div className="flex flex-col items-center gap-4">
+                  <h3 className="text-lg font-semibold">Your Resume</h3>
+
+                  {/* If PDF */}
+                  {candidate.resume.url.endsWith(".pdf") ? (
+                    <iframe src={candidate.resume.url} className="h-[400px] w-full rounded-md border"></iframe>
+                  ) : (
+                    /* If image (jpg, png, etc.) */
+                    <Image src={candidate.resume.url} alt="Resume" className="w-full max-w-2xl rounded-md border" />
+                  )}
+                </div>
+              ) : (
+                /* If resume missing */
+                <div className="flex flex-col items-center">
+                  <FileText size={48} className="text-muted-foreground mx-auto mb-4" />
+                  <h3 className="mb-2 text-lg font-semibold">Resume Management</h3>
+                  <p className="text-muted-foreground mb-4">Upload and manage your resume</p>
+                </div>
+              )}
+
+              {/* Upload button always visible */}
               <UploadPDFButton accountType={candidate?.accountType} loggedInUserId={String(candidate?.user)} />
             </Card>
           </TabsContent>

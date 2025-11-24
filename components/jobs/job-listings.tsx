@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getAllJobs } from "@/lib/actions/job.action";
 
+import { Badge } from "../ui/badge";
+
 // const allJobs = [
 //   {
 //     id: 1,
@@ -127,14 +129,16 @@ export default async function JobListings(query: PaginatedSearchParams) {
                   </div>
 
                   <div className="mb-4 flex flex-wrap gap-2">
-                    {job?.skillsRequired?.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-secondary/50 text-secondary-foreground rounded-full px-2 py-1 text-xs"
-                      >
+                    {job?.skillsRequired?.slice(0, 3).map((tag, idx) => (
+                      <Badge key={idx} variant="secondary" className="px-2 py-1 text-xs">
                         {tag}
-                      </span>
+                      </Badge>
                     ))}
+                    {job?.skillsRequired.length > 3 && (
+                      <Badge variant="secondary" className="px-3 py-1">
+                        {job?.skillsRequired.length - 3} + more
+                      </Badge>
+                    )}
                   </div>
                 </div>
 

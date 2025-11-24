@@ -1,3 +1,6 @@
+import { Trash2 } from "lucide-react";
+
+import DeleteAccountSection from "@/components/dashboard/delete-account-section";
 import { EmailForm } from "@/components/forms/auth/email-form";
 import { ProfileNameForm } from "@/components/forms/auth/name-form";
 import { PasswordForm } from "@/components/forms/auth/password-form";
@@ -45,7 +48,11 @@ export default async function ProfileSettings() {
         <PasswordForm />
 
         {/* Logout form */}
-        <LogoutForm />
+        <LogoutForm userAgent={me?.session?.userAgent} />
+
+        {/* Delete Section */}
+
+        <DeleteAccountSection accountId={me?.user?.id} />
       </div>
     </div>
   );

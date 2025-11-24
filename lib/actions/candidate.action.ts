@@ -38,7 +38,8 @@ export const createCandidateProfile = async (
     await dbConnect();
 
     // Extract fields from validated result
-    const { name, email, phone, headline, gender, dateOfBirth, location, bio } = validationResult.params!;
+    const { name, email, phone, headline, gender, dateOfBirth, location, bio, yearOfExperience, languages } =
+      validationResult.params!;
 
     // Ensure one user = one profile (optional if needed)
     const existing = await Candidate.findOne({ email });
@@ -56,8 +57,10 @@ export const createCandidateProfile = async (
         phone,
         headline,
         gender,
+        yearOfExperience,
         dateOfBirth,
         location,
+        languages,
         bio,
       },
     ]);
@@ -118,7 +121,8 @@ export const updateCandidateProfile = async (
   try {
     await dbConnect();
 
-    const { name, phone, headline, gender, dateOfBirth, location, bio } = validationResult.params!;
+    const { name, phone, headline, gender, dateOfBirth, location, bio, yearOfExperience, languages } =
+      validationResult.params!;
 
     // 2. Find candidate profile
     const profile = await Candidate.findOne({ user: userId });
@@ -133,6 +137,8 @@ export const updateCandidateProfile = async (
     if (headline !== undefined) profile.headline = headline;
     if (gender !== undefined) profile.gender = gender;
     if (bio !== undefined) profile.bio = bio;
+    if (yearOfExperience !== undefined) profile.yearOfExperience = yearOfExperience;
+    if (languages !== undefined) profile.languages = languages;
 
     if (dateOfBirth !== undefined) profile.dateOfBirth = dateOfBirth;
 

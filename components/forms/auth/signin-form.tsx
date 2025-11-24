@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -66,9 +67,10 @@ const SignInForm = () => {
     toast.success("Google sign successful");
   };
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4">
+    <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 p-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
+          {/* Email */}
           <FormField
             control={form.control}
             name="email"
@@ -76,14 +78,14 @@ const SignInForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input disabled={isSubmitting} placeholder="email@exaple.com" type="email" {...field} />
+                  <Input disabled={isSubmitting} placeholder="email@example.com" type="email" {...field} />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          {/* Password */}
           <FormField
             control={form.control}
             name="password"
@@ -93,12 +95,20 @@ const SignInForm = () => {
                 <FormControl>
                   <PasswordInput disabled={isSubmitting} placeholder="Enter Password" {...field} />
                 </FormControl>
-                <FormDescription>Enter your password.</FormDescription>
+
+                {/* Forgot password link */}
+                <div className="flex justify-end">
+                  <Link href="/auth/forgot-password" className="text-primary text-sm hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          {/* Remember Me */}
           <FormField
             control={form.control}
             name="rememberMe"
@@ -107,6 +117,7 @@ const SignInForm = () => {
                 <FormControl>
                   <Checkbox disabled={isSubmitting} checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
+
                 <div className="space-y-1 leading-none">
                   <FormLabel className="flex cursor-pointer items-start gap-2">
                     <span className="text-muted-foreground text-sm">Remember Me</span>
@@ -117,13 +128,26 @@ const SignInForm = () => {
               </FormItem>
             )}
           />
-          <Button disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Loging..." : "Login"}
+
+          {/* Login Button */}
+          <Button disabled={isSubmitting} type="submit" className="w-full">
+            {isSubmitting ? "Logging..." : "Login"}
           </Button>
         </form>
       </Form>
 
-      <Button onClick={signInWithGoogle}>Sign In With Google</Button>
+      {/* Google signin */}
+      <Button onClick={signInWithGoogle} className="w-full">
+        Sign In With Google
+      </Button>
+
+      {/* Signup Link */}
+      <p className="text-muted-foreground mt-4 text-sm">
+        New here?{" "}
+        <Link href="/auth/sign-up" className="text-primary font-medium hover:underline">
+          Create an account
+        </Link>
+      </p>
     </div>
   );
 };

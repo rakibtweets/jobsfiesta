@@ -47,6 +47,8 @@ export interface ICandidateProfile extends Document {
   resume?: IResume;
   photo?: IPhoto;
   skills: string[];
+  languages?: string[];
+  yearOfExperience?: string;
   experience: IExperience[];
   education: IEducation[];
   createdAt: Date;
@@ -93,13 +95,20 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
         lowercase: true,
       },
     ],
+    languages: [
+      {
+        type: String,
+        trim: true,
+        lowercase: true,
+      },
+    ],
     savedJob: [
       {
         type: Schema.Types.ObjectId,
         ref: "Job",
       },
     ],
-
+    yearOfExperience: { type: String },
     experience: [
       {
         _id: { type: Schema.Types.ObjectId, auto: true },

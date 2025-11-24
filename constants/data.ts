@@ -84,10 +84,13 @@ export const skillsGroupOptions = [
 ];
 
 export const experienceOps = [
-  { value: "0-2", label: "0-2 years" },
-  { value: "2-5", label: "2-5 years" },
+  { value: "0-1", label: "0-1 years" },
+  { value: "2-3", label: "2-3 years" },
+  { value: "3-4", label: "3-4 years" },
+  { value: "4-5", label: "4-5 years" },
   { value: "5-7", label: "5-7 years" },
-  { value: "7-10", label: "7-10 years" },
+  { value: "6-8", label: "6-8 years" },
+  { value: "8-10", label: "8-10 years" },
   { value: "10+", label: "10+ years" },
 ] as const;
 
@@ -153,4 +156,19 @@ export const jobBenefits = [
   { label: "Internet Allowance", value: "Internet Allowance" },
   { label: "Housing Allowance", value: "Housing Allowance" },
   { label: "Commission Pay", value: "Commission Pay" },
+];
+
+export const languages = [
+  { value: "english", label: "English" },
+  { value: "bangla", label: "Bangla" },
+  { value: "hindi", label: "Hindi" },
+  { value: "urdu", label: "Urdu" },
+  { value: "spanish", label: "Spanish" },
+  { value: "french", label: "French" },
+  { value: "german", label: "German" },
+  { value: "mandarin", label: "Mandarin" },
+  { value: "arabic", label: "Arabic" },
+  { value: "russian", label: "Russian" },
+  { value: "japanese", label: "Japanese" },
+  { value: "portuguese", label: "Portuguese" },
 ];

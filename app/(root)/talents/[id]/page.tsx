@@ -1,4 +1,4 @@
-import { MapPin, Download, Calendar, Heart } from "lucide-react";
+import { MapPin, Download, Calendar, Briefcase } from "lucide-react";
 import Link from "next/link";
 
 import TalentFovouriteButton from "@/components/action-buttion/talent-favourite-button";
@@ -56,6 +56,10 @@ export default async function TalentDetailsPage({ params }: RouteParams) {
                 <h1 className="text-foreground mb-2 text-3xl font-bold">{candidate?.name}</h1>
 
                 <p className="text-primary mb-3 text-xl font-semibold">{candidate?.headline}</p>
+                <p className="text-muted-foreground mb-3 flex items-center gap-2">
+                  <Briefcase size={16} />
+                  {`${candidate?.yearOfExperience} experience`}
+                </p>
                 <div className="text-muted-foreground mb-4 flex flex-wrap gap-4 text-sm">
                   <div className="flex items-center gap-1">
                     <MapPin className="h-4 w-4" />
@@ -99,11 +103,12 @@ export default async function TalentDetailsPage({ params }: RouteParams) {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {candidate?.skills.map((skill) => (
+                {candidate?.skills.slice(0, 3).map((skill) => (
                   <Badge key={skill} variant="secondary" className="px-3 py-1">
                     {skill}
                   </Badge>
                 ))}
+                {/* {remainingSkills.length > 0 && <Badge>{remainingSkills.length} +more</Badge>} */}
               </div>
             </CardContent>
           </Card>

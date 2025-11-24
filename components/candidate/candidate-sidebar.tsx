@@ -1,4 +1,4 @@
-import { Users, Home, LayoutDashboard, Layers, Heart } from "lucide-react";
+import { Users, Home, LayoutDashboard, Layers, Heart, Settings } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -43,6 +43,11 @@ const items = [
     title: "Proile",
     url: "/dashboard/candidate/profile",
     icon: Users,
+  },
+  {
+    title: "Settings",
+    url: "/dashboard/candidate/settings",
+    icon: Settings,
   },
 ];
 

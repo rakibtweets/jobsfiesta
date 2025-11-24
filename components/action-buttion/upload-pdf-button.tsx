@@ -44,11 +44,7 @@ const UploadPDFButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =>
             return;
           }
           if (accountType === "candidate" && loggedInUserId) {
-            //todo: update image to candidate
-            console.log({
-              id: publicId,
-              url: secureUrl,
-            });
+            //todo: update pdf to candidate
             const { success, error } = await candidateResumeUplaod(loggedInUserId, {
               id: publicId,
               url: secureUrl,

@@ -1,5 +1,7 @@
 "use client";
 
+import { error } from "console";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -16,9 +18,20 @@ const passwordSchema = z.object({
   currentPassword: z.string().min(1, {
     message: "Please enter your current password.",
   }),
-  newPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
+  newPassword: z
+    .string()
+    .refine((val) => /.{8,}/.test(val), {
+      message: "At least 8 characters",
+    })
+    .refine((val) => /[0-9]/.test(val), {
+      message: "At least 1 number",
+    })
+    .refine((val) => /[a-z]/.test(val), {
+      message: "At least 1 lowercase letter",
+    })
+    .refine((val) => /[A-Z]/.test(val), {
+      message: "At least 1 uppercase letter",
+    }),
 });
 
 export function PasswordForm() {
@@ -43,9 +56,14 @@ export function PasswordForm() {
         return toast.error(error.message);
       }
       toast.success("Password Updated");
-    } catch (error) {
-      console.log("🚀 ~ onSubmit ~ error:", error);
-      toast.error("Fail to rest password");
+      form.reset();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error?.message || "Fail to rest password");
+      } else {
+        // fallback for unknown errors
+        toast.error("Failed to reset password");
+      }
     }
   }
 

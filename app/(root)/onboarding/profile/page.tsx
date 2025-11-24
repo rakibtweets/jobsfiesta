@@ -13,7 +13,7 @@ const ProfileOnBoardingPage = async () => {
   }
 
   return (
-    <section className="min-h-screen p-7">
+    <section className="mx-auto min-h-screen w-full max-w-lg p-7">
       <div className="flex flex-col items-center justify-center gap-6">
         <h2 className="text-center text-2xl font-semibold">
           Complete your{" "}

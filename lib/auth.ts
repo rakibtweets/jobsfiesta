@@ -24,6 +24,9 @@ export const auth = betterAuth({
     enabled: true,
   },
   user: {
+    deleteUser: {
+      enabled: true,
+    },
     additionalFields: {
       agreeOnTerms: {
         type: "boolean",
@@ -36,6 +39,8 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: false,
+        defaultValue: "user",
+        input: false,
       },
       employee: {
         type: "string",

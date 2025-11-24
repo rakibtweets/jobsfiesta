@@ -9,6 +9,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import CreateableMultipleSelector from "@/components/custom-ui/custom-multi-select";
 import { Button } from "@/components/ui/button";
 import { DateInput } from "@/components/ui/date-input";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -17,7 +18,7 @@ import LocationSelector from "@/components/ui/location-input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { genders } from "@/constants/data";
+import { experienceOps, genders, languages } from "@/constants/data";
 import { ICandidateProfile } from "@/database/candidate.model";
 import { createCandidateProfile, updateCandidateProfile } from "@/lib/actions/candidate.action";
 
@@ -32,6 +33,8 @@ const createCandidateProfileSchema = z.object({
     country: z.string().min(1, "Country is required"),
     state: z.string().optional(),
   }),
+  yearOfExperience: z.string().min(1, "required"),
+  languages: z.array(z.string()).min(1, { message: "Please select at least one language." }),
   bio: z.string().min(1, "Bio is required"),
 });
 
@@ -67,11 +70,13 @@ export function CandidateProfileForm({
       phone: candidate?.phone || "",
       gender: candidate?.gender || "",
       headline: candidate?.headline || "",
+      yearOfExperience: candidate?.yearOfExperience || "",
       dateOfBirth: candidate?.dateOfBirth ? new Date(candidate.dateOfBirth) : undefined,
       location: candidate?.location || {
         country: "",
         state: "",
       },
+      languages: candidate?.languages || [],
       bio: candidate?.bio || "",
     },
   });
@@ -87,7 +92,7 @@ export function CandidateProfileForm({
         const { success, error } = await createCandidateProfile(userMongoId, accountType, { ...data });
         if (success) {
           toast.success(`Your ${accountType} is created successfully`);
-          router.push("/dashboard/candidate");
+          router.push("/dashboard/candidate/profile");
         } else {
           toast.error(error?.message);
         }
@@ -294,6 +299,58 @@ export function CandidateProfileForm({
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="yearOfExperience"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Year of Experience</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Year Of Experience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {experienceOps.map((e) => (
+                        <SelectItem key={e.value} value={e.value}>
+                          {e.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="languages"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Languages</FormLabel>
+                <FormControl>
+                  <CreateableMultipleSelector
+                    {...field}
+                    value={field.value?.map((v) => ({ label: v, value: v }))}
+                    onChange={(opts) => field.onChange(opts.map((o) => o.value))}
+                    defaultOptions={languages}
+                    creatable
+                    placeholder="Enter your job language..."
+                    emptyIndicator={
+                      <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                        no results found.
+                      </p>
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
