@@ -9,12 +9,13 @@ import { getAllCandidates } from "@/lib/actions/candidate.action";
 import { Badge } from "../ui/badge";
 
 export default async function TalentListings(query: PaginatedSearchParams) {
-  const { search, country, skill, page, limit } = await query;
+  const { search, country, skill, page, limit, experience } = await query;
   const { data } = await getAllCandidates({
     search: search || "",
     country: country || "",
     page: page || 1,
     skill: skill || "",
+    experience: experience || "",
     limit: limit || 10,
   });
 

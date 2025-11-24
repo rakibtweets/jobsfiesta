@@ -5,15 +5,16 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { formUrlQuery } from "@/lib/url";
 
 interface Filter {
-  name: string;
+  label: string;
   value: string;
 }
 interface Props {
-  filters: Filter[];
+  filtersOps: Filter[];
   filter?: string;
+  placeholerText?: string;
 }
 
-const FilterInput = ({ filters, filter }: Props) => {
+const FilterInput = ({ filtersOps, filter, placeholerText }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramsFilter = searchParams.get(filter || "");
@@ -31,15 +32,15 @@ const FilterInput = ({ filters, filter }: Props) => {
       <Select onValueChange={handleUpdateParams} defaultValue={paramsFilter || undefined}>
         <SelectTrigger aria-label="Filter options">
           <div className="line-clamp-1 flex-1 text-left">
-            <SelectValue placeholder="Select a filter" />
+            <SelectValue placeholder={placeholerText || "Select a filter"} />
           </div>
         </SelectTrigger>
 
         <SelectContent>
           <SelectGroup>
-            {filters.map((item) => (
+            {filtersOps?.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                {item.name}
+                {item.label}
               </SelectItem>
             ))}
           </SelectGroup>

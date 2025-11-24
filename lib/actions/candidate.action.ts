@@ -651,7 +651,7 @@ export const getAllCandidates = cache(
     try {
       await dbConnect();
 
-      const { search = "", country = "", skill = "", page = 1, limit = 10 } = query;
+      const { search = "", country = "", skill = "", page = 1, limit = 10, experience } = query;
 
       // Build MongoDB Filter
       const filter: FilterQuery<ICandidateProfile> = {};
@@ -659,6 +659,10 @@ export const getAllCandidates = cache(
       // Search by name OR headline
       if (search) {
         filter.$or = [{ name: { $regex: search, $options: "i" } }, { headline: { $regex: search, $options: "i" } }];
+      }
+      // Filter by experience
+      if (experience) {
+        filter.yearOfExperience = { $regex: experience, $options: "i" };
       }
 
       // Filter by country

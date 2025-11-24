@@ -1,5 +1,3 @@
-import { SavedJob } from "@/components/tables/saved-job-columns";
-
 export const applications = [
   {
     id: 1,
@@ -30,7 +28,7 @@ export const applications = [
   },
 ];
 
-export const savedJobs: SavedJob[] = Array.from({ length: 50 }, (_, i) => {
+export const savedJobs = Array.from({ length: 50 }, (_, i) => {
   const positions = [
     "Frontend Developer",
     "Backend Developer",
@@ -124,7 +122,7 @@ export const experienceOps = [
   { value: "6-8", label: "6-8 years" },
   { value: "8-10", label: "8-10 years" },
   { value: "10+", label: "10+ years" },
-] as const;
+];
 
 export const skillLevels = [
   { value: "entry-level", label: "Entry Level" },
