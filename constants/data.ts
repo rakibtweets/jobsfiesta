@@ -1,3 +1,5 @@
+import { SavedJob } from "@/components/tables/saved-job-columns";
+
 export const applications = [
   {
     id: 1,
@@ -28,24 +30,54 @@ export const applications = [
   },
 ];
 
-export const savedJobs = [
-  {
-    id: 1,
-    position: "Product Manager",
-    company: "InnovateCo",
-    location: "Boston, MA",
-    salary: "$130k - $160k",
-    savedDate: "3 days ago",
-  },
-  {
-    id: 2,
-    position: "DevOps Engineer",
-    company: "CloudSystems",
-    location: "Austin, TX",
-    salary: "$105k - $135k",
-    savedDate: "1 week ago",
-  },
-];
+export const savedJobs: SavedJob[] = Array.from({ length: 50 }, (_, i) => {
+  const positions = [
+    "Frontend Developer",
+    "Backend Developer",
+    "Fullstack Developer",
+    "DevOps Engineer",
+    "Product Manager",
+    "UI/UX Designer",
+    "QA Engineer",
+  ];
+  const companies = [
+    "TechCorp",
+    "InnovateCo",
+    "CloudSystems",
+    "NextGen Solutions",
+    "AlphaBeta",
+    "PixelWorks",
+    "CodeCrafters",
+  ];
+  const locations = [
+    "New York, NY",
+    "San Francisco, CA",
+    "Austin, TX",
+    "Boston, MA",
+    "Seattle, WA",
+    "Chicago, IL",
+    "Los Angeles, CA",
+  ];
+  const salaries = ["$80k - $100k", "$90k - $120k", "$100k - $130k", "$105k - $135k", "$120k - $150k", "$130k - $160k"];
+  const savedDates = [
+    "1 day ago",
+    "2 days ago",
+    "3 days ago",
+    "1 week ago",
+    "2 weeks ago",
+    "3 weeks ago",
+    "1 month ago",
+  ];
+
+  return {
+    id: (i + 1).toString(),
+    position: positions[Math.floor(Math.random() * positions.length)],
+    company: companies[Math.floor(Math.random() * companies.length)],
+    location: locations[Math.floor(Math.random() * locations.length)],
+    salary: salaries[Math.floor(Math.random() * salaries.length)],
+    savedDate: savedDates[Math.floor(Math.random() * savedDates.length)],
+  };
+});
 
 export const genders = [
   { value: "male", label: "Male" },

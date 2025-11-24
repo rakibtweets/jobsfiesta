@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+import { IJob } from "./job.model";
+
 // ------------------------------
 // 1. INTERFACES
 // ------------------------------
@@ -41,7 +43,7 @@ export interface ICandidateProfile extends Document {
     country?: string;
     state?: string;
   };
-  savedJob?: mongoose.Types.ObjectId[];
+  savedJob?: mongoose.Types.ObjectId[] | IJob[];
   dateOfBirth?: Date;
   bio?: string;
   resume?: IResume;

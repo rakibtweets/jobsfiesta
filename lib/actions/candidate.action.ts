@@ -8,7 +8,7 @@ import { cache } from "react";
 import z from "zod";
 
 import { Candidate, ICandidateProfile, IExperience, IEducation } from "@/database/candidate.model";
-import { Job } from "@/database/job.model";
+import { IJob, Job } from "@/database/job.model";
 import { auth } from "@/lib/auth";
 
 import action from "../handlers/action";
@@ -803,7 +803,7 @@ export async function addToSaveJob(candidateId: string, jobiId: string): Promise
     if (!job) {
       throw new Error("Job not found");
     }
-    const alreadyInSaveJob = candidate.savedJob?.some((id: mongoose.Types.ObjectId) => id.toString() === jobiId);
+    const alreadyInSaveJob = candidate.savedJob?.some((id) => id.toString() === jobiId);
 
     if (alreadyInSaveJob) {
       throw new Error("Job already in saved list");
@@ -816,7 +816,7 @@ export async function addToSaveJob(candidateId: string, jobiId: string): Promise
     revalidatePath("/dashboard/candidate/saved-jobs");
     return { success: true };
   } catch (error) {
-    console.error("Error adding to wishlist:", error);
+    console.error("Error adding to savejob:", error);
     return handleError(error) as ErrorResponse;
   }
 }
@@ -846,7 +846,7 @@ export async function removeFromSavedJob(candidateId: string, jobId: string): Pr
       throw new Error("Job not found");
     }
 
-    const isSaved = candidate.savedJob?.some((id: mongoose.Types.ObjectId) => id.toString() === jobId);
+    const isSaved = candidate.savedJob?.some((id) => id.toString() === jobId);
 
     if (!isSaved) {
       throw new Error("Job is not in saved list");
@@ -861,6 +861,54 @@ export async function removeFromSavedJob(candidateId: string, jobId: string): Pr
     return { success: true };
   } catch (error) {
     console.error("Error removing from saved list:", error);
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+type SavedJobWithCandidate = IJob & {
+  candidateId: string;
+};
+
+export async function getSavedJobsCandidateId(
+  candidateId: string
+): Promise<ActionResponse<{ jobs: SavedJobWithCandidate[] }>> {
+  const validationResult = await action({
+    authorizeRole: "candidate",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    // Find the employee and populate savedCandidate with selected fields
+    const candidate = (await Candidate.findById(candidateId).populate({
+      path: "savedJob",
+      model: Job,
+      select: "title companyName location salary jobType skillsRequired  _id",
+    })) as ICandidateProfile | null;
+
+    if (!candidate) {
+      throw new Error('"candidate not found"');
+    }
+    const savedJobs = candidate.savedJob as IJob[];
+
+    // Map saved jobs and attach candidateId
+    const jobs: SavedJobWithCandidate[] = savedJobs.map((job) => ({
+      ...job.toObject(),
+      candidateId: String(candidate?._id as string),
+    }));
+
+    return {
+      success: true,
+      data: {
+        jobs: JSON.parse(JSON.stringify(jobs)) || [],
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching saved candidates:", error);
     return handleError(error) as ErrorResponse;
   }
 }
