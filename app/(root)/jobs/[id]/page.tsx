@@ -1,12 +1,14 @@
-import { MapPin, DollarSign, Clock, Share2, Bookmark, Users, CheckCircle } from "lucide-react";
+import { MapPin, DollarSign, Clock, Share2, Bookmark, Users, CheckCircle, Heart } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import SaveJobButton from "@/components/action-buttion/save-job-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getJobById } from "@/lib/actions/job.action";
+import { getServerSession } from "@/lib/get-session";
 import { formatDate, getCompanyInitials } from "@/lib/utils";
 
 // const mockJobDetails: Record<string, any> = {
@@ -68,6 +70,10 @@ import { formatDate, getCompanyInitials } from "@/lib/utils";
 export default async function JobDetailsPage({ params }: RouteParams) {
   const { id } = await params;
   const { data } = await getJobById(id);
+  const me = await getServerSession();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const candidateId = me?.user?.candidate;
   if (!data?.job) return notFound();
 
   const job = data.job || {};
@@ -210,9 +216,7 @@ export default async function JobDetailsPage({ params }: RouteParams) {
             >
               Apply Now
             </Button>
-            <Button variant="outline" className="hover:bg-primary/10 mb-6 w-full bg-transparent">
-              Save Job
-            </Button>
+            <SaveJobButton candidateId={candidateId as string} jobId={String(job?._id)} />
 
             <div className="border-border/50 space-y-4 border-t pt-4">
               {[

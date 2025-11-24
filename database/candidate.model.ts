@@ -41,6 +41,7 @@ export interface ICandidateProfile extends Document {
     country?: string;
     state?: string;
   };
+  savedJob?: mongoose.Types.ObjectId[];
   dateOfBirth?: Date;
   bio?: string;
   resume?: IResume;
@@ -90,6 +91,12 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
         type: String,
         trim: true,
         lowercase: true,
+      },
+    ],
+    savedJob: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Job",
       },
     ],
 
