@@ -1,74 +1,84 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { MapPin, DollarSign, Clock, Share2, Bookmark, Users, CheckCircle } from "lucide-react";
+import { MapPin, DollarSign, Clock, Share2, Bookmark, Users, CheckCircle, Heart } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import SaveJobButton from "@/components/action-buttion/save-job-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getJobById } from "@/lib/actions/job.action";
+import { getServerSession } from "@/lib/get-session";
+import { formatDate, getCompanyInitials } from "@/lib/utils";
 
-const mockJobDetails: Record<string, any> = {
-  "1": {
-    id: 1,
-    title: "Senior Product Designer",
-    company: "TechCorp",
-    location: "San Francisco, CA",
-    salary: "$120k - $150k",
-    type: "Full-time",
-    tags: ["Design", "UI/UX", "Remote"],
-    company_logo: "TC",
-    postedDate: "2 days ago",
-    applications: 24,
-    views: 312,
-    description: `We're looking for an experienced Senior Product Designer to join our growing team. You'll work on designing innovative solutions that impact millions of users.
+// const mockJobDetails: Record<string, any> = {
+//   "1": {
+//     id: 1,
+//     title: "Senior Product Designer",
+//     company: "TechCorp",
+//     location: "San Francisco, CA",
+//     salary: "$120k - $150k",
+//     type: "Full-time",
+//     tags: ["Design", "UI/UX", "Remote"],
+//     company_logo: "TC",
+//     postedDate: "2 days ago",
+//     applications: 24,
+//     views: 312,
+//     description: `We're looking for an experienced Senior Product Designer to join our growing team. You'll work on designing innovative solutions that impact millions of users.
 
-Key Responsibilities:
-- Lead design strategy and vision for our products
-- Collaborate with cross-functional teams
-- Conduct user research and usability testing
-- Create wireframes, prototypes, and design specifications
-- Mentor junior designers
+// Key Responsibilities:
+// - Lead design strategy and vision for our products
+// - Collaborate with cross-functional teams
+// - Conduct user research and usability testing
+// - Create wireframes, prototypes, and design specifications
+// - Mentor junior designers
 
-Requirements:
-- 5+ years of product design experience
-- Expertise in Figma or similar design tools
-- Strong portfolio demonstrating product design work
-- Understanding of user-centered design principles
-- Excellent communication skills`,
-    benefits: [
-      "Competitive salary",
-      "Health insurance",
-      "401(k) matching",
-      "Flexible work hours",
-      "Remote work options",
-      "Professional development budget",
-    ],
-    about_company: "TechCorp is a leading technology company focused on creating innovative solutions.",
-  },
-  "2": {
-    id: 2,
-    title: "Full Stack Developer",
-    company: "StartupXYZ",
-    location: "New York, NY",
-    salary: "$100k - $130k",
-    type: "Full-time",
-    tags: ["React", "Node.js", "Full Stack"],
-    company_logo: "SX",
-    postedDate: "5 days ago",
-    applications: 18,
-    views: 245,
-    description: `Join StartupXYZ as a Full Stack Developer and help us build the future of web applications.`,
-    benefits: ["Competitive salary", "Equity options", "Unlimited PTO", "Team events"],
-    about_company: "StartupXYZ is a fast-growing startup in the tech space.",
-  },
-};
+// Requirements:
+// - 5+ years of product design experience
+// - Expertise in Figma or similar design tools
+// - Strong portfolio demonstrating product design work
+// - Understanding of user-centered design principles
+// - Excellent communication skills`,
+//     benefits: [
+//       "Competitive salary",
+//       "Health insurance",
+//       "401(k) matching",
+//       "Flexible work hours",
+//       "Remote work options",
+//       "Professional development budget",
+//     ],
+//     about_company: "TechCorp is a leading technology company focused on creating innovative solutions.",
+//   },
+//   "2": {
+//     id: 2,
+//     title: "Full Stack Developer",
+//     company: "StartupXYZ",
+//     location: "New York, NY",
+//     salary: "$100k - $130k",
+//     type: "Full-time",
+//     tags: ["React", "Node.js", "Full Stack"],
+//     company_logo: "SX",
+//     postedDate: "5 days ago",
+//     applications: 18,
+//     views: 245,
+//     description: `Join StartupXYZ as a Full Stack Developer and help us build the future of web applications.`,
+//     benefits: ["Competitive salary", "Equity options", "Unlimited PTO", "Team events"],
+//     about_company: "StartupXYZ is a fast-growing startup in the tech space.",
+//   },
+// };
 
 export default async function JobDetailsPage({ params }: RouteParams) {
   const { id } = await params;
-  if (!id) return notFound();
+  const { data } = await getJobById(id);
+  const me = await getServerSession();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const candidateId = me?.user?.candidate;
+  if (!data?.job) return notFound();
 
-  const job = mockJobDetails[id];
+  const job = data.job || {};
+
+  // const job = mockJobDetails[id];
 
   if (!job) {
     return (
@@ -84,32 +94,36 @@ export default async function JobDetailsPage({ params }: RouteParams) {
   }
 
   return (
-    <section className="from-background to-card/30 min-h-screen bg-linear-to-b">
+    <section className="from-background to-card/30 min-h-screen bg-linear-to-b p-10">
       {/* Animated header background */}
       <div className="from-primary/5 pointer-events-none absolute inset-0 h-96 bg-linear-to-b via-transparent to-transparent" />
 
       {/* Header Section */}
       <div className="animate-fade-in relative z-10 mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex gap-4">
-          <div className="from-primary/20 to-accent/20 ring-primary/10 flex h-16 w-16 items-center justify-center rounded-lg bg-linear-to-br ring-2">
-            <span className="from-primary to-accent bg-linear-to-br bg-clip-text text-2xl font-bold text-transparent">
-              {job.company_logo}
-            </span>
-          </div>
+          <Avatar className="ring-primary/10 from-primary/20 to-accent/20 h-16 w-16 bg-linear-to-br ring-2">
+            {job?.companyLogo?.url ? (
+              <AvatarImage src={job.companyLogo.url} alt={job.companyName || "Company Logo"} />
+            ) : (
+              <AvatarFallback className="from-primary to-accent bg-linear-to-br bg-clip-text text-2xl font-bold text-transparent">
+                {getCompanyInitials(job?.companyName) || "?"}
+              </AvatarFallback>
+            )}
+          </Avatar>
           <div className="flex-1">
             <h1 className="from-primary to-accent mb-2 bg-linear-to-r bg-clip-text text-5xl font-bold text-transparent">
               {job.title}
             </h1>
-            <p className="text-muted-foreground mb-3 text-xl">{job.company}</p>
+            <p className="text-muted-foreground mb-3 text-xl">{job?.companyName}</p>
             <div className="flex flex-wrap gap-3">
               <div className="text-muted-foreground bg-secondary/50 flex items-center gap-2 rounded-lg px-3 py-1">
                 <MapPin size={18} /> {job.location}
               </div>
               <div className="text-muted-foreground bg-secondary/50 flex items-center gap-2 rounded-lg px-3 py-1">
-                <DollarSign size={18} /> {job.salary}
+                <DollarSign size={18} /> {job?.salary?.min}-{job?.salary?.max}
               </div>
               <div className="text-muted-foreground bg-secondary/50 flex items-center gap-2 rounded-lg px-3 py-1">
-                <Clock size={18} /> {job.type}
+                <Clock size={18} /> {job.jobType}
               </div>
             </div>
           </div>
@@ -132,7 +146,7 @@ export default async function JobDetailsPage({ params }: RouteParams) {
         </div>
 
         <div className="mb-6 flex flex-wrap gap-2">
-          {job.tags.map((tag: string, idx: number) => (
+          {job?.skillsRequired?.map((tag: string, idx: number) => (
             <Badge
               key={idx}
               variant="secondary"
@@ -144,11 +158,11 @@ export default async function JobDetailsPage({ params }: RouteParams) {
         </div>
 
         <div className="text-muted-foreground bg-card/50 border-border flex gap-4 rounded-lg border px-4 py-3 text-sm backdrop-blur">
-          <span>Posted {job.postedDate}</span>
+          <span>Posted {formatDate(job.createdAt)}</span>
           <span className="flex items-center gap-1">
-            <Users size={16} /> {job.applications} applicants
+            <Users size={16} /> {job.countApplicatons || 0} applicants
           </span>
-          <span>{job.views} views</span>
+          {/* <span>{job.views} views</span> */}
         </div>
       </div>
 
@@ -164,11 +178,11 @@ export default async function JobDetailsPage({ params }: RouteParams) {
           </Card>
 
           {/* Benefits */}
-          {job.benefits && job.benefits.length > 0 && (
+          {job?.benefits && job?.benefits.length > 0 && (
             <Card className="from-background to-card/50 border-border hover:border-primary/30 group border bg-linear-to-br p-8 transition-all duration-300 hover:shadow-lg">
               <h2 className="group-hover:text-primary mb-4 text-2xl font-bold transition-colors">Benefits</h2>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {job.benefits.map((benefit: string, idx: number) => (
+                {job?.benefits.map((benefit: string, idx: number) => (
                   <div
                     key={idx}
                     className="bg-primary/5 hover:bg-primary/10 flex items-center gap-3 rounded-lg p-3 transition-colors"
@@ -183,8 +197,10 @@ export default async function JobDetailsPage({ params }: RouteParams) {
 
           {/* About Company */}
           <Card className="from-background to-card/50 border-border hover:border-primary/30 group border bg-linear-to-br p-8 transition-all duration-300 hover:shadow-lg">
-            <h2 className="group-hover:text-primary mb-4 text-2xl font-bold transition-colors">About {job.company}</h2>
-            <p className="text-muted-foreground mb-4">{job.about_company}</p>
+            <h2 className="group-hover:text-primary mb-4 text-2xl font-bold transition-colors">
+              About {job.companyName}
+            </h2>
+            {job?.aboutCompany && <p className="text-muted-foreground mb-4">{job.aboutCompany}</p>}
             <Button variant="outline" className="hover:bg-primary/10 bg-transparent">
               Visit Company Page
             </Button>
@@ -200,16 +216,14 @@ export default async function JobDetailsPage({ params }: RouteParams) {
             >
               Apply Now
             </Button>
-            <Button variant="outline" className="hover:bg-primary/10 mb-6 w-full bg-transparent">
-              Save Job
-            </Button>
+            <SaveJobButton candidateId={candidateId as string} jobId={String(job?._id)} />
 
             <div className="border-border/50 space-y-4 border-t pt-4">
               {[
-                { label: "Job Type", value: job.type },
-                { label: "Salary", value: job.salary },
+                { label: "Job Type", value: job.jobType },
+                { label: "Salary", value: `${job?.salary?.min}-${job?.salary?.min}` },
                 { label: "Location", value: job.location },
-                { label: "Posted", value: job.postedDate },
+                { label: "Posted", value: formatDate(job.createdAt) },
               ].map((item, idx) => (
                 <div key={idx} className="bg-background/50 hover:bg-primary/5 rounded-lg p-3 transition-colors">
                   <div className="text-muted-foreground mb-1 text-xs font-semibold tracking-wide uppercase">
@@ -224,7 +238,7 @@ export default async function JobDetailsPage({ params }: RouteParams) {
       </div>
 
       {/* Similar Jobs */}
-      <div className="border-border/50 relative z-10 mt-16 border-t pt-8">
+      {/* <div className="border-border/50 relative z-10 mt-16 border-t pt-8">
         <h2 className="from-primary to-accent mb-6 bg-linear-to-r bg-clip-text text-3xl font-bold text-transparent">
           Similar Jobs
         </h2>
@@ -248,7 +262,7 @@ export default async function JobDetailsPage({ params }: RouteParams) {
             </Card>
           ))}
         </div>
-      </div>
+      </div> */}
     </section>
   );
 }

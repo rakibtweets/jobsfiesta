@@ -1,11 +1,20 @@
-import JobForm from "@/components/forms/employee/job-form";
+import JobForm from "@/components/forms/employee/employee-job-form";
+import { getServerSession } from "@/lib/get-session";
 
-const EmployeeJobPostPage = () => {
+const EmployeeJobPostPage = async () => {
+  const me = await getServerSession();
   return (
     <>
       <h2 className="mb-6 text-2xl font-bold">Post a New Job</h2>
       {/* Job Form */}
-      <JobForm />
+      <JobForm
+        formType="create"
+        employeeId={
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
+          me?.user.employee
+        }
+      />
     </>
   );
 };

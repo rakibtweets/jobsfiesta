@@ -6,10 +6,16 @@ import { useTheme } from "next-themes";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+
+import ProfileMenu from "./shared/profile-menu";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { data } = authClient.useSession();
+
+  // console.log(data);
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -58,14 +64,26 @@ export default function Header() {
             )}
           </button>
 
-          <div className="hidden gap-2 sm:flex">
-            <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild className="from-primary to-accent bg-linear-to-r transition-opacity hover:opacity-90">
-              <Link href="/signup">Sign Up</Link>
-            </Button>
-          </div>
+          {data?.user ? (
+            <ProfileMenu
+              name={data?.user?.name}
+              email={data?.user.email}
+              image={data?.user?.image as string}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              role={(data?.user as any)?.role}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              accountType={(data?.user as any)?.accountType}
+            />
+          ) : (
+            <div className="hidden gap-2 sm:flex">
+              <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
+                <Link href="/auth/sign-in">Sign In</Link>
+              </Button>
+              <Button asChild className="from-primary to-accent bg-linear-to-r transition-opacity hover:opacity-90">
+                <Link href="/auth/sign-up">Sign Up</Link>
+              </Button>
+            </div>
+          )}
 
           <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -85,12 +103,16 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-2 pt-4">
-              <Button variant="outline" className="w-full bg-transparent">
-                Login
-              </Button>
-              <Button className="from-primary to-accent w-full bg-linear-to-r">Sign Up</Button>
-            </div>
+            {!data?.user ? (
+              <div className="flex flex-col gap-2 pt-4">
+                <Button variant="outline" className="w-full bg-transparent">
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button className="from-primary to-accent w-full bg-linear-to-r">
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

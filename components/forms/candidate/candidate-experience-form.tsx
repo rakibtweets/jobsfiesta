@@ -1,62 +1,72 @@
 "use client";
 
-import { type } from "os";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save, Trash2 } from "lucide-react";
+import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import { DateInput } from "@/components/ui/date-input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { IExperience } from "@/database/candidate.model";
+import { addExperienceToCandidateProfile, updateExperienceInCandidateProfile } from "@/lib/actions/candidate.action";
+import { ExperienceFormValues, experienceSchema } from "@/lib/validations/candidate.validate";
 
-const experienceSchema = z.object({
-  experiences: z.object({
-    position: z.string().min(1, "Position is required"),
-    company: z.string().min(1, "Company is required"),
-    startDate: z
-      .date({
-        error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
-      })
-      .optional(),
-    endDate: z
-      .date({
-        error: (issue) => (issue.input === undefined ? "Required" : "Invalid date"),
-      })
-      .optional(),
-    description: z.string().optional(),
-  }),
-});
+interface IExperienceFromProps {
+  type: "add" | "edit";
+  experience?: IExperience;
+  userId?: string | undefined;
+  experienceId?: string | undefined;
+}
 
-type ExperienceFormValues = z.infer<typeof experienceSchema>;
-
-const defaultExperiences: ExperienceFormValues = {
-  experiences: {
-    position: "",
-    company: "",
-    startDate: undefined,
-    endDate: undefined,
-    description: "",
-  },
-};
-
-export function CandidateExperienceForm() {
+export function CandidateExperienceForm({ type, experience, userId, experienceId }: IExperienceFromProps) {
   const form = useForm<ExperienceFormValues>({
     resolver: zodResolver(experienceSchema),
-    defaultValues: defaultExperiences,
+    defaultValues: {
+      position: experience?.position || "",
+      company: experience?.company || "",
+      startDate: experience?.startDate ? new Date(experience?.startDate) : undefined,
+      endDate: experience?.endDate ? new Date(experience?.endDate) : undefined,
+      description: experience?.description || "",
+    },
   });
 
-  const onSubmit = (data: ExperienceFormValues) => {
-    console.log(data.experiences);
-    toast(
-      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    );
+  const {
+    formState: { isSubmitting },
+  } = form;
+
+  const onSubmit = async (data: ExperienceFormValues) => {
+    console.log(data);
+    if (type === "add" && userId) {
+      //todo: Add experience
+      const { success, error } = await addExperienceToCandidateProfile(userId, { ...data });
+      if (success) {
+        toast.success("New experiece added successfuly");
+        form.reset();
+      } else {
+        toast.error(error?.message);
+      }
+    } else {
+      //todo: edite experience
+      const { success, error } = await updateExperienceInCandidateProfile(String(userId), String(experienceId), {
+        ...data,
+      });
+      if (success) {
+        toast.success("Update experiece  successfuly");
+        form.reset();
+      } else {
+        toast.error(error?.message);
+      }
+    }
+    // toast(
+    //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //     <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //   </pre>
+    // );
   };
 
   return (
@@ -66,9 +76,9 @@ export function CandidateExperienceForm() {
           <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
-              name={`experiences.position`}
+              name={`position`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Position</FormLabel>
                   <FormControl>
                     <Input
@@ -82,9 +92,9 @@ export function CandidateExperienceForm() {
             />
             <FormField
               control={form.control}
-              name={`experiences.company`}
+              name={`company`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Company</FormLabel>
                   <FormControl>
                     <Input
@@ -101,9 +111,9 @@ export function CandidateExperienceForm() {
           <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
-              name={`experiences.startDate`}
+              name={`startDate`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Start Date</FormLabel>
                   <FormControl>
                     <DateInput
@@ -113,15 +123,16 @@ export function CandidateExperienceForm() {
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>
+                  <FormDescription>starting date</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <FormField
               control={form.control}
-              name={`experiences.endDate`}
+              name={`endDate`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">End Date</FormLabel>
                   <FormControl>
                     <DateInput
@@ -131,6 +142,7 @@ export function CandidateExperienceForm() {
                       className="bg-card/50 border-border/50 hover:border-border focus:ring-ring w-full rounded-md border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
                     />
                   </FormControl>
+                  <FormDescription>No need if you are still working</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -140,9 +152,9 @@ export function CandidateExperienceForm() {
           <div className="mb-4 space-y-2">
             <FormField
               control={form.control}
-              name={`experiences.description`}
+              name={`description`}
               render={({ field }) => (
-                <FormItem className="space-y-2">
+                <FormItem>
                   <FormLabel className="text-foreground text-sm font-semibold">Description</FormLabel>
                   <FormControl>
                     <Textarea
@@ -158,16 +170,18 @@ export function CandidateExperienceForm() {
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" size="sm">
-              <Save size={14} /> Save
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="border-red-600/30 hover:bg-red-50 dark:hover:bg-red-950"
-            >
-              <Trash2 size={14} /> Delete
+            <Button disabled={isSubmitting} type="submit" size="default">
+              {isSubmitting ? (
+                <>
+                  <Spinner />
+                  saving...
+                </>
+              ) : (
+                <>
+                  <Save size={14} />
+                  save
+                </>
+              )}
             </Button>
           </div>
         </div>

@@ -4,7 +4,7 @@ export const signupFormSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
     email: z.email().min(1, "Email is required"),
-
+    accountType: z.enum(["candidate", "employee"]),
     password: z
       .string()
       .refine((val) => /.{8,}/.test(val), {
@@ -22,7 +22,7 @@ export const signupFormSchema = z
 
     confirmPassword: z.string(),
 
-    agree: z.boolean().refine((val) => val === true, {
+    agreeOnTerms: z.boolean().refine((val) => val === true, {
       message: "You must agree to the terms",
     }),
   })

@@ -52,3 +52,105 @@ export const genders = [
   { value: "female", label: "Female" },
   { value: "other", label: "Other" },
 ] as const;
+
+export const skillsGroupOptions = [
+  {
+    heading: "Frontend Frameworks",
+    options: [
+      { value: "react", label: "React" },
+      { value: "vue", label: "Vue.js" },
+      { value: "angular", label: "Angular" },
+      { value: "svelte", label: "Svelte" },
+    ],
+  },
+  {
+    heading: "Backend Technologies",
+    options: [
+      { value: "nodejs", label: "Node.js" },
+      { value: "django", label: "Django" },
+      { value: "rails", label: "Ruby on Rails" },
+      { value: "spring", label: "Spring Boot" },
+    ],
+  },
+  {
+    heading: "Databases",
+    options: [
+      { value: "postgresql", label: "PostgreSQL" },
+      { value: "mongodb", label: "MongoDB" },
+      { value: "redis", label: "Redis" },
+      { value: "mysql", label: "MySQL" },
+    ],
+  },
+];
+
+export const experienceOps = [
+  { value: "0-2", label: "0-2 years" },
+  { value: "2-5", label: "2-5 years" },
+  { value: "5-7", label: "5-7 years" },
+  { value: "7-10", label: "7-10 years" },
+  { value: "10+", label: "10+ years" },
+] as const;
+
+export const skillLevels = [
+  { value: "entry-level", label: "Entry Level" },
+  { value: "junior", label: "Junior" },
+  { value: "mid-level", label: "Mid-Level" },
+  { value: "senior", label: "Senior" },
+  { value: "expert", label: "Expert" },
+] as const;
+
+export const companySizeOps = [
+  { value: "1-10", label: "1-10 employees" },
+  { value: "11-50", label: "11-50 employees" },
+  { value: "51-200", label: "51-200 employees" },
+  { value: "201-500", label: "201-500 employees" },
+  { value: "501-1000", label: "501-1000 employees" },
+  { value: "1000-5000", label: "1000-5000 employees" },
+  { value: "5000+", label: "5000+ employees" },
+] as const;
+
+export const industries = [
+  { value: "technology", label: "Technology" },
+  { value: "healthcare", label: "Healthcare" },
+  { value: "finance", label: "Finance" },
+  { value: "education", label: "Education" },
+  { value: "retail", label: "Retail" },
+  { value: "manufacturing", label: "Manufacturing" },
+  { value: "hospitality", label: "Hospitality" },
+  { value: "construction", label: "Construction" },
+  { value: "transportation", label: "Transportation" },
+  { value: "energy", label: "Energy" },
+] as const;
+
+export const jobTypes = [
+  { value: "full-time", label: "Full-time" },
+  { value: "part-time", label: "Part-time" },
+  { value: "cantact", label: "Contract" },
+  { value: "emporary", label: "Temporary" },
+  { value: "internship", label: "Internship" },
+];
+
+export const jobBenefits = [
+  { label: "Health Insurance", value: "Health Insurance" },
+  { label: "Life Insurance", value: "Life Insurance" },
+  { label: "Remote Work", value: "Remote Work" },
+  { label: "Paid Time Off (PTO)", value: "Paid Time Off (PTO)" },
+  { label: "Work From Home", value: "Work From Home" },
+  { label: "Flexible Schedule", value: "Flexible Schedule" },
+  { label: "Performance Bonus", value: "Performance Bonus" },
+  { label: "Yearly Increment", value: "Yearly Increment" },
+  { label: "Retirement Plan", value: "Retirement Plan" },
+  { label: "Lunch Provided", value: "Lunch Provided" },
+  { label: "Snacks & Drinks", value: "Snacks & Drinks" },
+  { label: "Transportation Allowance", value: "Transportation Allowance" },
+  { label: "Medical Reimbursement", value: "Medical Reimbursement" },
+  { label: "Stock Options (ESOP)", value: "Stock Options (ESOP)" },
+  { label: "Employee Discount", value: "Employee Discount" },
+  { label: "Parental Leave", value: "Parental Leave" },
+  { label: "On-site Gym", value: "On-site Gym" },
+  { label: "Training & Development", value: "Training & Development" },
+  { label: "Professional Growth Support", value: "Professional Growth Support" },
+  { label: "Internet Allowance", value: "Internet Allowance" },
+  { label: "Housing Allowance", value: "Housing Allowance" },
+  { label: "Commission Pay", value: "Commission Pay" },
+];

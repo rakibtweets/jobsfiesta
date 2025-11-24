@@ -1,7 +1,6 @@
 "use client";
 
 import { Briefcase, Users } from "lucide-react";
-import type React from "react";
 import { useState } from "react";
 
 import Footer from "@/components/footer";

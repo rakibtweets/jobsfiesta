@@ -1,14 +1,27 @@
-import { BookOpen, Briefcase, Camera, FileText, Mail, MapPin, Phone, Plus, Save, User } from "lucide-react";
+import { BookOpen, Briefcase, FileStack, FileText, MapPin, Plus, User } from "lucide-react";
 
+import UploadImagButton from "@/components/action-buttion/upload-image-button";
+import UploadPDFButton from "@/components/action-buttion/upload-pdf-button";
 import { CandidateEducationForm } from "@/components/forms/candidate/candidate-education-form";
 import { CandidateExperienceForm } from "@/components/forms/candidate/candidate-experience-form";
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
+import CandidateSkillForm from "@/components/forms/candidate/candidate-skill-from";
+import { CandidateEducationDisplayList } from "@/components/sections/candidate/candidate-eduction";
+import { CandidateExperienceDisplayList } from "@/components/sections/candidate/candidate-experiece";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getCandidateProfileByUserId } from "@/lib/actions/candidate.action";
+import { getServerSession } from "@/lib/get-session";
 
-const CandidateProfilePage = () => {
+const CandidateProfilePage = async () => {
+  const data = await getServerSession();
+  const user = data?.user;
+  const { data: candidateData } = await getCandidateProfileByUserId(String(user?.id));
+  const candidate = candidateData?.candidate;
+
   return (
     <>
       {/* Profile Summary Start */}
@@ -18,34 +31,31 @@ const CandidateProfilePage = () => {
           {/* Avatar + Info */}
           <div className="flex gap-4">
             <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarImage src={candidate?.photo?.url || "https://github.com/shadcn.png"} alt="@shadcn" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
 
             <div className="flex flex-col gap-4">
               <div>
-                <h1 className="text-xl font-bold sm:text-2xl">John Doe</h1>
-                <p className="text-muted-foreground text-sm sm:text-base">Senior Product Designer</p>
+                <h1 className="text-xl font-bold sm:text-2xl">{candidate?.name}</h1>
+                <p className="text-muted-foreground text-sm sm:text-base">{candidate?.headline}</p>
 
                 <p className="text-muted-foreground mt-2 flex items-center gap-1 text-xs sm:text-sm">
-                  <MapPin size={14} /> San Francisco, CA
+                  <MapPin size={14} /> {`${candidate?.location?.country},${candidate?.location?.state || ""}`}
                 </p>
               </div>
-              <Button className="hidden md:flex md:w-full lg:w-auto">
-                <Camera size={24} />
-                Upload Photo
-              </Button>
+              <UploadImagButton accountType={candidate?.accountType} loggedInUserId={String(candidate?.user)} />
             </div>
           </div>
 
           {/* Edit Button */}
-          <div className="flex w-full flex-col gap-3 md:w-auto">
+          {/* <div className="flex w-full flex-col gap-3 md:w-auto">
             <Button className="w-full sm:w-auto md:hidden md:w-full lg:w-auto">
               <Camera size={24} />
               Upload Image
             </Button>
             <Button className="w-full sm:w-auto">Edit Profile</Button>
-          </div>
+          </div> */}
         </div>
 
         {/* Stats Section */}
@@ -76,7 +86,7 @@ const CandidateProfilePage = () => {
       {/* Profile Information */}
       <section className="mt-4">
         <Tabs defaultValue="basic" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basic" className="flex items-center gap-2">
               <User size={18} className="mr-2" />
               <span className="hidden sm:inline">Basic Info</span>
@@ -90,6 +100,10 @@ const CandidateProfilePage = () => {
               <span className="hidden sm:inline">Education</span>
             </TabsTrigger>
 
+            <TabsTrigger value="skills" className="flex items-center gap-2">
+              <FileStack size={16} />
+              <span className="hidden sm:inline">Skills</span>
+            </TabsTrigger>
             <TabsTrigger value="resume" className="flex items-center gap-2">
               <FileText size={16} />
               <span className="hidden sm:inline">Resume</span>
@@ -101,7 +115,7 @@ const CandidateProfilePage = () => {
               <div>
                 <h3 className="text-foreground mb-6 text-xl font-bold">Basic Information</h3>
               </div>
-              <CandidateProfileForm />
+              <CandidateProfileForm candidate={candidate} formType="update" userMongoId={String(candidate?.user)} />
             </Card>
           </TabsContent>
 
@@ -112,13 +126,29 @@ const CandidateProfilePage = () => {
                   <h3 className="text-xl font-bold">Work Experience</h3>
                   <p className="text-muted-foreground mt-1 text-sm">Add and manage your professional experience</p>
                 </div>
-                <Button variant="outline">
-                  <Plus size={16} /> Add Experience
-                </Button>
+                <div>
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button variant={"outline"}>
+                        <Plus size={24} />
+                        Add Experience
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Experience</DialogTitle>
+                      </DialogHeader>
+                      <CandidateExperienceForm userId={user?.id} type="add" />
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               <div className="space-y-6">
-                <CandidateExperienceForm />
+                <CandidateExperienceDisplayList
+                  userId={String(candidate?.user)}
+                  experiences={candidate?.experience || []}
+                />
               </div>
             </Card>
           </TabsContent>
@@ -130,17 +160,36 @@ const CandidateProfilePage = () => {
                   <h3 className="text-xl font-bold">Education</h3>
                   <p className="text-muted-foreground mt-1 text-sm">Add your educational background</p>
                 </div>
-                <Button variant="outline">
-                  <Plus size={16} /> Add Education
-                </Button>
+                <div>
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button variant={"outline"}>
+                        <Plus size={24} />
+                        Add Educatoin
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Education</DialogTitle>
+                      </DialogHeader>
+                      <CandidateEducationForm type="add" userId={String(candidate?.user)} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               <div className="space-y-6">
-                <CandidateEducationForm />
+                <CandidateEducationDisplayList userId={String(candidate?.user)} educations={candidate?.education} />
               </div>
             </Card>
           </TabsContent>
 
+          {/* Skills */}
+          <TabsContent value="skills">
+            <Card className="p-8 text-center">
+              <CandidateSkillForm userId={String(candidate?.user)} mongoSkills={candidate?.skills} />
+            </Card>
+          </TabsContent>
           {/* Resume Tab */}
           <TabsContent value="resume">
             <Card className="p-8 text-center">
@@ -149,7 +198,7 @@ const CandidateProfilePage = () => {
               </div>
               <h3 className="mb-2 text-lg font-semibold">Resume Management</h3>
               <p className="text-muted-foreground mb-6">Upload and manage your resume</p>
-              <Button>Upload Resume</Button>
+              <UploadPDFButton accountType={candidate?.accountType} loggedInUserId={String(candidate?.user)} />
             </Card>
           </TabsContent>
         </Tabs>

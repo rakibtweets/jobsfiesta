@@ -1,7 +1,6 @@
 import { Users, Home, LayoutDashboard, Layers, Heart, CirclePlus } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
+import LogOutButton from "../action-buttion/log-out-button";
 
 // import LogoutButton from "../buttons/LogoutButton";
 
@@ -36,6 +37,11 @@ const items = [
   {
     title: "Post Job",
     url: "/dashboard/employee/jobs/new",
+    icon: CirclePlus,
+  },
+  {
+    title: "Applications",
+    url: "/dashboard/employee/jobs/1/applies",
     icon: CirclePlus,
   },
   {
@@ -75,7 +81,7 @@ export function EmployeeDashboardSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Button className="w-full">Log Out</Button>
+            <LogOutButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
