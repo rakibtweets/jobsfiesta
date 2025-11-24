@@ -1,7 +1,6 @@
 import { Users, Home, LayoutDashboard, Layers, Heart } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
+import LogOutButton from "../action-buttion/log-out-button";
 
 // import LogoutButton from "../buttons/LogoutButton";
 
@@ -70,7 +71,7 @@ export function CandidateDashboardSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Button className="w-full">Log Out</Button>
+            <LogOutButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -39,7 +39,6 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
   const router = useRouter();
 
   const handleLogOut = async () => {
-    console.log("logout....");
     try {
       const { error } = await authClient.signOut();
 

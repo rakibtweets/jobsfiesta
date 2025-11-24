@@ -11,6 +11,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import { companySizeOps, industries } from "@/constants/data";
 import { IEmployerProfile } from "@/database/employee.model";
 import { createEmployeeProfile, updateEmployeeProfile } from "@/lib/actions/employee.action";
@@ -47,6 +48,7 @@ export function EmployeeProfileForm({
       companySize: employee?.companySize || "",
       country: employee?.country || "",
       industry: employee?.industry || "",
+      about: employee?.about || "",
     },
   });
 
@@ -232,6 +234,23 @@ export function EmployeeProfileForm({
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="about"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>About Company</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Write about Your company.." className="min-h-40 resize-none" {...field} />
+              </FormControl>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground text-xs">{field.value.length}/2000</span>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" disabled={isSubmitting}>
           {/* {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} */}

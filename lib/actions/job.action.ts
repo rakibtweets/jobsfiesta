@@ -55,6 +55,7 @@ export const createNewJob = async (
         benefits,
         companyName: employee.companyName,
         companyLogo: employee.companyLogo ?? undefined,
+        aboutCompany: employee.about ?? undefined,
       },
     ]);
 

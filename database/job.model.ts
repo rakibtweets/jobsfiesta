@@ -6,8 +6,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface ISalary {
   min?: number;
   max?: number;
-  currency?: string; // e.g. "USD"
-  period?: string; // e.g. "Annual", "Hourly"
+  currency?: string;
+  period?: string;
 }
 
 interface ICompanyLogo {
@@ -30,6 +30,7 @@ export interface IJob extends Document {
   deadline?: Date;
   countApplicatons?: number;
   companyName?: string;
+  aboutCompany?: string;
   companyLogo?: ICompanyLogo;
   applications: mongoose.Types.ObjectId[];
   createdAt: Date;
@@ -110,15 +111,18 @@ const jobSchema = new Schema<IJob>(
     companyName: {
       type: String,
     },
-
     companyLogo: {
       id: { type: String },
       url: { type: String },
+    },
+    aboutCompany: {
+      type: String,
     },
     countApplicatons: {
       type: Number,
       default: 0,
     },
+
     applications: [
       {
         type: Schema.Types.ObjectId,

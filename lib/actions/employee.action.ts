@@ -32,7 +32,7 @@ export const createEmployeeProfile = async (
     await dbConnect();
 
     // Extract fields from validated result
-    const { name, email, companyName, companySize, country, industry } = validationResult.params!;
+    const { name, email, companyName, companySize, country, industry, about } = validationResult.params!;
 
     // Ensure one user = one profile (optional if needed)
     const existing = await Employee.findOne({ user: userId });
@@ -52,6 +52,7 @@ export const createEmployeeProfile = async (
         companySize,
         country,
         industry,
+        about,
       },
     ]);
 

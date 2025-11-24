@@ -7,6 +7,7 @@ export const employeeFormSchema = z.object({
   companySize: z.string().min(2, { message: "company size is required" }).trim(),
   country: z.string().min(1, { message: "country is required" }).trim(),
   industry: z.string().min(1, { message: "Industry is required" }).trim(),
+  about: z.string().min(20).trim(),
 });
 
 // Infer type from schema to ensure type safety in the form

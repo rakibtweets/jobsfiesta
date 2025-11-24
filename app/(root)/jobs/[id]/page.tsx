@@ -200,7 +200,7 @@ export default async function JobDetailsPage({ params }: RouteParams) {
             <h2 className="group-hover:text-primary mb-4 text-2xl font-bold transition-colors">
               About {job.companyName}
             </h2>
-            {/* <p className="text-muted-foreground mb-4">{job.about_company}</p> */}
+            {job?.aboutCompany && <p className="text-muted-foreground mb-4">{job.aboutCompany}</p>}
             <Button variant="outline" className="hover:bg-primary/10 bg-transparent">
               Visit Company Page
             </Button>
