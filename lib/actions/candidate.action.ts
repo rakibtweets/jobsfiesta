@@ -803,6 +803,7 @@ export async function addToSaveJob(candidateId: string, jobiId: string): Promise
     if (!job) {
       throw new Error("Job not found");
     }
+
     const alreadyInSaveJob = candidate.savedJob?.some((id) => id.toString() === jobiId);
 
     if (alreadyInSaveJob) {
