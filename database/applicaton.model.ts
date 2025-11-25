@@ -1,12 +1,14 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+import { IJob } from "./job.model";
+
 // ------------------------------
 // 1. INTERFACES
 // ------------------------------
 export type ApplicationStatus = "submitted" | "reviewed" | "interviewing" | "offered" | "rejected" | "withdrawn";
 
 export interface IApplication extends Document {
-  job: mongoose.Types.ObjectId; // ref: Job
+  job: mongoose.Types.ObjectId | IJob; // ref: Job
   candidate: mongoose.Types.ObjectId; // ref: CandidateProfile
   status: ApplicationStatus;
   resumeSnapshot: string; // Stored at submission time

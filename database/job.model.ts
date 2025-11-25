@@ -115,9 +115,11 @@ const jobSchema = new Schema<IJob>(
       id: { type: String },
       url: { type: String },
     },
+
     aboutCompany: {
       type: String,
     },
+
     countApplicatons: {
       type: Number,
       default: 0,
