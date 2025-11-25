@@ -8,7 +8,7 @@ import { cache } from "react";
 import z from "zod";
 
 import { Candidate, ICandidateProfile, IExperience, IEducation } from "@/database/candidate.model";
-import { Job } from "@/database/job.model";
+import { IJob, Job } from "@/database/job.model";
 import { auth } from "@/lib/auth";
 
 import action from "../handlers/action";
@@ -38,7 +38,8 @@ export const createCandidateProfile = async (
     await dbConnect();
 
     // Extract fields from validated result
-    const { name, email, phone, headline, gender, dateOfBirth, location, bio } = validationResult.params!;
+    const { name, email, phone, headline, gender, dateOfBirth, location, bio, yearOfExperience, languages } =
+      validationResult.params!;
 
     // Ensure one user = one profile (optional if needed)
     const existing = await Candidate.findOne({ email });
@@ -56,8 +57,10 @@ export const createCandidateProfile = async (
         phone,
         headline,
         gender,
+        yearOfExperience,
         dateOfBirth,
         location,
+        languages,
         bio,
       },
     ]);
@@ -118,7 +121,8 @@ export const updateCandidateProfile = async (
   try {
     await dbConnect();
 
-    const { name, phone, headline, gender, dateOfBirth, location, bio } = validationResult.params!;
+    const { name, phone, headline, gender, dateOfBirth, location, bio, yearOfExperience, languages } =
+      validationResult.params!;
 
     // 2. Find candidate profile
     const profile = await Candidate.findOne({ user: userId });
@@ -133,6 +137,8 @@ export const updateCandidateProfile = async (
     if (headline !== undefined) profile.headline = headline;
     if (gender !== undefined) profile.gender = gender;
     if (bio !== undefined) profile.bio = bio;
+    if (yearOfExperience !== undefined) profile.yearOfExperience = yearOfExperience;
+    if (languages !== undefined) profile.languages = languages;
 
     if (dateOfBirth !== undefined) profile.dateOfBirth = dateOfBirth;
 
@@ -645,7 +651,7 @@ export const getAllCandidates = cache(
     try {
       await dbConnect();
 
-      const { search = "", country = "", skill = "", page = 1, limit = 10 } = query;
+      const { search = "", country = "", skill = "", page = 1, limit = 10, experience } = query;
 
       // Build MongoDB Filter
       const filter: FilterQuery<ICandidateProfile> = {};
@@ -653,6 +659,10 @@ export const getAllCandidates = cache(
       // Search by name OR headline
       if (search) {
         filter.$or = [{ name: { $regex: search, $options: "i" } }, { headline: { $regex: search, $options: "i" } }];
+      }
+      // Filter by experience
+      if (experience) {
+        filter.yearOfExperience = { $regex: experience, $options: "i" };
       }
 
       // Filter by country
@@ -797,7 +807,8 @@ export async function addToSaveJob(candidateId: string, jobiId: string): Promise
     if (!job) {
       throw new Error("Job not found");
     }
-    const alreadyInSaveJob = candidate.savedJob?.some((id: mongoose.Types.ObjectId) => id.toString() === jobiId);
+
+    const alreadyInSaveJob = candidate.savedJob?.some((id) => id.toString() === jobiId);
 
     if (alreadyInSaveJob) {
       throw new Error("Job already in saved list");
@@ -810,7 +821,7 @@ export async function addToSaveJob(candidateId: string, jobiId: string): Promise
     revalidatePath("/dashboard/candidate/saved-jobs");
     return { success: true };
   } catch (error) {
-    console.error("Error adding to wishlist:", error);
+    console.error("Error adding to savejob:", error);
     return handleError(error) as ErrorResponse;
   }
 }
@@ -840,7 +851,7 @@ export async function removeFromSavedJob(candidateId: string, jobId: string): Pr
       throw new Error("Job not found");
     }
 
-    const isSaved = candidate.savedJob?.some((id: mongoose.Types.ObjectId) => id.toString() === jobId);
+    const isSaved = candidate.savedJob?.some((id) => id.toString() === jobId);
 
     if (!isSaved) {
       throw new Error("Job is not in saved list");
@@ -855,6 +866,43 @@ export async function removeFromSavedJob(candidateId: string, jobId: string): Pr
     return { success: true };
   } catch (error) {
     console.error("Error removing from saved list:", error);
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function getSavedJobsCandidateId(candidateId: string): Promise<ActionResponse<{ jobs: IJob[] }>> {
+  const validationResult = await action({
+    authorizeRole: "candidate",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  try {
+    await dbConnect();
+
+    // Find the employee and populate savedCandidate with selected fields
+    const candidate = (await Candidate.findById(candidateId).populate({
+      path: "savedJob",
+      model: Job,
+      select: "title companyName location salary jobType skillsRequired  _id",
+    })) as ICandidateProfile | null;
+
+    if (!candidate) {
+      throw new Error('"candidate not found"');
+    }
+
+    const savedJobs = candidate.savedJob as IJob[];
+
+    return {
+      success: true,
+      data: {
+        jobs: JSON.parse(JSON.stringify(savedJobs)) || [],
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching saved candidates:", error);
     return handleError(error) as ErrorResponse;
   }
 }

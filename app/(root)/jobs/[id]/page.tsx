@@ -2,6 +2,7 @@ import { MapPin, DollarSign, Clock, Share2, Bookmark, Users, CheckCircle, Heart 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ApplyJobButton from "@/components/action-buttion/apply-job-button";
 import SaveJobButton from "@/components/action-buttion/save-job-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -210,12 +211,7 @@ export default async function JobDetailsPage({ params }: RouteParams) {
         {/* Sidebar - Apply Section */}
         <div className="lg:col-span-1">
           <Card className="from-primary/5 to-accent/5 border-primary/20 hover:border-primary/50 sticky top-20 border-2 bg-linear-to-br p-6 shadow-lg transition-all duration-300">
-            <Button
-              size="lg"
-              className="from-primary to-accent hover:from-primary hover:to-accent mb-4 w-full bg-linear-to-r font-semibold"
-            >
-              Apply Now
-            </Button>
+            <ApplyJobButton candidateId={candidateId as string} jobId={String(job?._id)} />
             <SaveJobButton candidateId={candidateId as string} jobId={String(job?._id)} />
 
             <div className="border-border/50 space-y-4 border-t pt-4">

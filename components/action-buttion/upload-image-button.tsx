@@ -42,11 +42,7 @@ const UploadImagButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =
             return;
           }
           if (accountType === "candidate" && loggedInUserId) {
-            //todo: update image to
-            console.log({
-              id: publicId,
-              url: secureUrl,
-            });
+            //todo: update image to candidate
             const { success, error } = await candidateImageUpload(loggedInUserId, {
               id: publicId,
               url: secureUrl,

@@ -6,7 +6,7 @@ import TalentFilters from "@/components/talents/talent-filters";
 import TalentListings from "@/components/talents/talent-listings";
 
 export default async function TalentsPage({ searchParams }: RouteParams) {
-  const { search, country, skill, page, filter, limit } = await searchParams;
+  const { search, country, skill, page, filter, limit, experience } = await searchParams;
   return (
     <section className="from-background to-card/30 min-h-screen bg-linear-to-b">
       {/* Animated header section */}
@@ -47,6 +47,7 @@ export default async function TalentsPage({ searchParams }: RouteParams) {
                 filter={filter}
                 page={Number(page)}
                 limit={Number(limit)}
+                experience={experience}
                 skill={skill}
               />
             </Suspense>

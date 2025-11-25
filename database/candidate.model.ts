@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+import { IJob } from "./job.model";
+
 // ------------------------------
 // 1. INTERFACES
 // ------------------------------
@@ -41,12 +43,14 @@ export interface ICandidateProfile extends Document {
     country?: string;
     state?: string;
   };
-  savedJob?: mongoose.Types.ObjectId[];
+  savedJob?: mongoose.Types.ObjectId[] | IJob[];
   dateOfBirth?: Date;
   bio?: string;
   resume?: IResume;
   photo?: IPhoto;
   skills: string[];
+  languages?: string[];
+  yearOfExperience?: string;
   experience: IExperience[];
   education: IEducation[];
   createdAt: Date;
@@ -93,13 +97,20 @@ const candidateProfileSchema = new Schema<ICandidateProfile>(
         lowercase: true,
       },
     ],
+    languages: [
+      {
+        type: String,
+        trim: true,
+        lowercase: true,
+      },
+    ],
     savedJob: [
       {
         type: Schema.Types.ObjectId,
         ref: "Job",
       },
     ],
-
+    yearOfExperience: { type: String },
     experience: [
       {
         _id: { type: Schema.Types.ObjectId, auto: true },

@@ -2,13 +2,24 @@
 
 import { Laptop } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { UAParser } from "ua-parser-js";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 
-export function LogoutForm() {
+interface ILogOutProps {
+  userAgent?: string | null | undefined;
+}
+
+export function LogoutForm({ userAgent }: ILogOutProps) {
   const router = useRouter();
+
+  const parser = UAParser(userAgent as string);
+
+  const os = parser.os;
+  const browser = parser.browser;
+
   const handleLogout = async () => {
     await authClient.signOut({
       fetchOptions: {
@@ -33,7 +44,8 @@ export function LogoutForm() {
             </div>
             <div className="space-y-1">
               <p className="text-sm leading-none font-medium">Current Session</p>
-              <p className="text-muted-foreground text-sm">Windows, Chrome</p>
+              <p className="text-muted-foreground text-sm">{`${os?.name} ${os?.version}`}</p>
+              <p className="text-muted-foreground text-sm">{`${browser?.name} ${browser?.version}`}</p>
             </div>
           </div>
           <Button onClick={() => handleLogout()} variant="outline" size="sm">

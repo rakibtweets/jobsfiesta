@@ -61,6 +61,9 @@ export const createNewJob = async (
 
     if (!job) throw new Error("Failed to create Job posting");
 
+    // update noOfJobPost in Employee profile use findByIdAndUpdate use incment operator
+    await Employee.findByIdAndUpdate(employee._id, { $inc: { noOfJobPost: 1 } });
+
     revalidatePath(`/dashboard/employee/jobs`);
 
     return {
@@ -128,6 +131,9 @@ export const deleteJob = async (jobId: string): Promise<ActionResponse> => {
     if (!job) throw new Error("Job not found");
 
     await Job.findByIdAndDelete(jobId);
+
+    await Employee.findByIdAndUpdate(job.employer, { $inc: { noOfJobPost: -1 } });
+
     revalidatePath(`/dashboard/employee/jobs`);
     return {
       success: true,

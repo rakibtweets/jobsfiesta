@@ -19,6 +19,7 @@ interface PaginatedSearchParams {
   status?: string;
   skill?: string;
   page?: number;
+  experience?: string;
   location?: string;
   jobType?: string;
   filter?: string;

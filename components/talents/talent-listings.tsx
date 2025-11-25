@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getAllCandidates } from "@/lib/actions/candidate.action";
 
+import { Badge } from "../ui/badge";
+
 export default async function TalentListings(query: PaginatedSearchParams) {
-  const { search, country, skill, page, limit } = await query;
+  const { search, country, skill, page, limit, experience } = await query;
   const { data } = await getAllCandidates({
     search: search || "",
     country: country || "",
     page: page || 1,
     skill: skill || "",
+    experience: experience || "",
     limit: limit || 10,
   });
 
@@ -56,22 +59,27 @@ export default async function TalentListings(query: PaginatedSearchParams) {
                         <MapPin size={16} />
                         {`${talent?.location?.country},${talent?.location?.state || ""}`}
                       </div>
-                      <div className="text-muted-foreground flex items-center gap-2">
-                        <Briefcase size={16} />
-                        {/* {talent?.experience} */}experience
-                      </div>
+                      {talent?.yearOfExperience && (
+                        <div className="text-muted-foreground flex items-center gap-2">
+                          <Briefcase size={16} />
+                          {`${talent?.yearOfExperience} experience`}
+                        </div>
+                      )}
                     </div>
 
                     {/* Skills */}
                     <div className="mb-4 flex flex-wrap gap-2">
-                      {talent.skills.map((skill, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-secondary/50 text-secondary-foreground rounded-full px-2 py-1 text-xs"
-                        >
+                      {talent.skills.slice(0, 3).map((skill) => (
+                        <Badge key={skill} variant="secondary" className="px-3 py-1">
                           {skill}
-                        </span>
+                        </Badge>
                       ))}
+
+                      {talent.skills.length > 3 && (
+                        <Badge variant="secondary" className="px-3 py-1">
+                          {talent.skills.length - 3} + more
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -83,7 +91,9 @@ export default async function TalentListings(query: PaginatedSearchParams) {
                     {talent.rating}
                   </div> */}
 
-                  <Button size="sm">View Profile</Button>
+                  <Button className="cursor-pointer" size="sm">
+                    View Profile
+                  </Button>
                 </div>
               </div>
             </Card>

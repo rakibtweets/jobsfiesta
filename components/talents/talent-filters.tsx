@@ -2,39 +2,26 @@
 
 import { X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { experienceOps } from "@/constants/data";
 import { formUrlQuery, removeKeysFromUrlQuery } from "@/lib/url";
+import { getCountries } from "@/lib/utils";
 
+import FilterInput from "../ui/filter-input";
 import SearchInput from "../ui/search-input";
 
 export default function TalentFilters() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const country = searchParams.get("country") || "";
   const slevel = searchParams.get("slevel") || "";
-  const [filters, setFilters] = useState({
-    search: "",
-    location: "",
-    skillLevel: "",
-    experience: "",
-    skills: "",
-  });
+  const contries = getCountries();
 
   const skillLevels = ["Entry Level", "Junior", "Mid-Level", "Senior", "Expert"];
-  const locations = ["Remote", "San Francisco, CA", "New York, NY", "Boston, MA", "Austin, TX", "Los Angeles, CA"];
-  const experienceRanges = [
-    { label: "0-2 years", value: "0-2" },
-    { label: "2-5 years", value: "2-5" },
-    { label: "5-10 years", value: "5-10" },
-    { label: "10+ years", value: "10+" },
-  ];
 
   const handleReset = () => {
     const newUrl = removeKeysFromUrlQuery({
@@ -86,20 +73,7 @@ export default function TalentFilters() {
           <div>
             <Label className="mb-3 block font-semibold">Location</Label>
             <div className="space-y-2">
-              {locations.map((loc) => (
-                <div key={loc} className="flex items-center">
-                  <Checkbox
-                    id={`loc-${loc}`}
-                    checked={country === loc}
-                    onCheckedChange={() => {
-                      handleUpdateParams(loc, country, "country");
-                    }}
-                  />
-                  <Label htmlFor={`loc-${loc}`} className="ml-2 cursor-pointer font-normal">
-                    {loc}
-                  </Label>
-                </div>
-              ))}
+              <FilterInput filtersOps={contries} filter="country" placeholerText="Select country" />
             </div>
           </div>
 
@@ -127,18 +101,7 @@ export default function TalentFilters() {
           {/* Experience */}
           <div>
             <Label className="mb-3 block font-semibold">Experience</Label>
-            <Select value={filters.experience} onValueChange={(value) => setFilters({ ...filters, experience: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select experience" />
-              </SelectTrigger>
-              <SelectContent>
-                {experienceRanges.map((range) => (
-                  <SelectItem key={range.value} value={range.value}>
-                    {range.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FilterInput filtersOps={experienceOps} filter="experience" placeholerText="Years of Experience" />
           </div>
 
           {/* Skills */}

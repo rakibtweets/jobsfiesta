@@ -61,100 +61,127 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
     }
   }
 
+  const signInWithGoogle = async () => {
+    const { error } = await authClient.signIn.social({
+      provider: "google",
+    });
+
+    if (error) {
+      return toast.error(error.message);
+    }
+
+    toast.success("Google sign successful");
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto max-w-3xl space-y-8 py-10">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input disabled={isSubmitting} placeholder="Enter Your Name" type="text" {...field} />
-              </FormControl>
-              <FormDescription>This is your public display name.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input disabled={isSubmitting} placeholder="Enter Your Name" type="text" {...field} />
+                </FormControl>
+                <FormDescription>This is your public display name.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input disabled={isSubmitting} placeholder="email@exaple.com" type="email" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput disabled={isSubmitting} placeholder="Enter Password" {...field} />
-              </FormControl>
-              <FormDescription>Enter your password.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Comfirm Password</FormLabel>
-              <FormControl>
-                <PasswordInput disabled={isSubmitting} placeholder="confirm your password" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="agreeOnTerms"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
-              <FormControl>
-                <Checkbox disabled={isSubmitting} checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className="flex cursor-pointer items-start gap-2">
-                  <span className="text-muted-foreground text-sm">
-                    I agree to the{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      Privacy Policy
-                    </Link>
-                  </span>
-                </FormLabel>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input disabled={isSubmitting} placeholder="email@exaple.com" type="email" {...field} />
+                </FormControl>
 
                 <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
-        <Button disabled={isSubmitting} type="submit">
-          {isSubmitting ? "Signing up...." : "Sign Up"}
-        </Button>
-      </form>
-    </Form>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <PasswordInput disabled={isSubmitting} placeholder="Enter Password" {...field} />
+                </FormControl>
+                <FormDescription>Enter your password.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Comfirm Password</FormLabel>
+                <FormControl>
+                  <PasswordInput disabled={isSubmitting} placeholder="confirm your password" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="agreeOnTerms"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4">
+                <FormControl>
+                  <Checkbox disabled={isSubmitting} checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="flex cursor-pointer items-start gap-2">
+                    <span className="text-muted-foreground text-sm">
+                      I agree to the{" "}
+                      <Link href="#" className="text-primary hover:underline">
+                        Terms of Service
+                      </Link>{" "}
+                      and{" "}
+                      <Link href="#" className="text-primary hover:underline">
+                        Privacy Policy
+                      </Link>
+                    </span>
+                  </FormLabel>
+
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+          <Button disabled={isSubmitting} type="submit" className="w-full">
+            {isSubmitting ? "Signing up...." : "Sign Up"}
+          </Button>
+        </form>
+      </Form>
+
+      {/* Google signin */}
+      <Button onClick={signInWithGoogle} className="w-full">
+        Sign In With Google
+      </Button>
+
+      {/* Signup Link */}
+      <p className="text-muted-foreground mt-4 text-sm">
+        Already have an account?{" "}
+        <Link href="/auth/sign-up" className="text-primary font-medium hover:underline">
+          Login
+        </Link>
+      </p>
+    </div>
   );
 }

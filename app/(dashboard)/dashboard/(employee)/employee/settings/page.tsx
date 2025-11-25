@@ -1,9 +1,13 @@
+import { Trash2 } from "lucide-react";
+
+import DeleteAccountSection from "@/components/dashboard/delete-account-section";
 import { EmailForm } from "@/components/forms/auth/email-form";
 import { ProfileNameForm } from "@/components/forms/auth/name-form";
 import { PasswordForm } from "@/components/forms/auth/password-form";
 import { LogoutForm } from "@/components/forms/auth/signout-form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { getServerSession } from "@/lib/get-session";
 
 export default async function ProfileSettings() {
@@ -45,7 +49,12 @@ export default async function ProfileSettings() {
         <PasswordForm />
 
         {/* Logout form */}
-        <LogoutForm />
+        <LogoutForm userAgent={me?.session?.userAgent} />
+
+        {/* Delete Section */}
+
+        {/* Delete Section */}
+        <DeleteAccountSection accountId={me?.user?.id} />
       </div>
     </div>
   );

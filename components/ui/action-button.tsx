@@ -31,9 +31,9 @@ export function ActionButton({
 
   function performAction() {
     startTransition(async () => {
-      const { success, error } = await action();
+      const { success, error, message } = await action();
       if (success) {
-        toast.success("Task perform successfully");
+        toast.success(message || "Task perform successfully");
       } else {
         toast.error(error?.message);
       }

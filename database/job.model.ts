@@ -32,7 +32,6 @@ export interface IJob extends Document {
   companyName?: string;
   aboutCompany?: string;
   companyLogo?: ICompanyLogo;
-  applications: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -115,20 +114,15 @@ const jobSchema = new Schema<IJob>(
       id: { type: String },
       url: { type: String },
     },
+
     aboutCompany: {
       type: String,
     },
+
     countApplicatons: {
       type: Number,
       default: 0,
     },
-
-    applications: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Application",
-      },
-    ],
   },
   { timestamps: true }
 );

@@ -20,8 +20,8 @@ export interface IEmployerProfile extends Document {
   country: string;
   industry: string;
   about?: string;
-  jobsPosted?: mongoose.Types.ObjectId[];
   savedCandidate?: mongoose.Types.ObjectId[];
+  noOfJobPost?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -82,12 +82,11 @@ const employerProfileSchema = new Schema<IEmployerProfile>(
         ref: "Canidate",
       },
     ],
-    jobsPosted: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Job",
-      },
-    ],
+
+    noOfJobPost: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
