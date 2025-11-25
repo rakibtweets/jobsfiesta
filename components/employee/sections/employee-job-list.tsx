@@ -85,6 +85,11 @@ export default function EmployeeJobList({ job }: EmployeeJobListProps) {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link href={`/dashboard/employee/jobs/${job._id}/applicants`}>
+                    <Eye size={16} /> View applicants
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href={`/dashboard/employee/jobs/edit/${job._id}`}>
                     <Edit className="mr-2 h-4 w-4" />
                     Edit
