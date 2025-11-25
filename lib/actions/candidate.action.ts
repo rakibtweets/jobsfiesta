@@ -870,13 +870,7 @@ export async function removeFromSavedJob(candidateId: string, jobId: string): Pr
   }
 }
 
-type SavedJobWithCandidate = IJob & {
-  candidateId: string;
-};
-
-export async function getSavedJobsCandidateId(
-  candidateId: string
-): Promise<ActionResponse<{ jobs: SavedJobWithCandidate[] }>> {
+export async function getSavedJobsCandidateId(candidateId: string): Promise<ActionResponse<{ jobs: IJob[] }>> {
   const validationResult = await action({
     authorizeRole: "candidate",
   });
@@ -898,18 +892,13 @@ export async function getSavedJobsCandidateId(
     if (!candidate) {
       throw new Error('"candidate not found"');
     }
-    const savedJobs = candidate.savedJob as IJob[];
 
-    // Map saved jobs and attach candidateId
-    const jobs: SavedJobWithCandidate[] = savedJobs.map((job) => ({
-      ...job.toObject(),
-      candidateId: String(candidate?._id as string),
-    }));
+    const savedJobs = candidate.savedJob as IJob[];
 
     return {
       success: true,
       data: {
-        jobs: JSON.parse(JSON.stringify(jobs)) || [],
+        jobs: JSON.parse(JSON.stringify(savedJobs)) || [],
       },
     };
   } catch (error) {

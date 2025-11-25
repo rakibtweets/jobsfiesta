@@ -27,11 +27,9 @@ interface DataTableProps<TData, TValue> {
 export function SavedJobTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [globalFilter, setGlobalFilter] = React.useState("");
-
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-
-  const table = useReactTable({
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const table = useReactTable<TData>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -45,29 +43,28 @@ export function SavedJobTable<TData, TValue>({ columns, data }: DataTableProps<T
       sorting,
       columnFilters,
       columnVisibility,
-      globalFilter,
     },
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: (row, columnId, filterValue: string) => {
+    globalFilterFn: (row, columnId, filterValue) => {
+      const original = row.original;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      const title = original?.title.toLowerCase() || "";
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      const company = original?.companyName.toLowerCase() || "";
       const search = filterValue.toLowerCase();
-      const position = String(row.getValue("position") || "").toLowerCase();
-      const company = String(row.getValue("company") || "").toLowerCase();
-      return position.includes(search) || company.includes(search);
+
+      return title.includes(search) || company.includes(search);
     },
   });
-
   return (
     <div className="mt-6 rounded-md border">
       {/* Search and Page Size */}
       <div className="space-y-4 p-4">
         <Input
           placeholder="Search saved jobs..."
-          value={(table.getColumn("position")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => {
-            const value = event.target.value;
-            table.getColumn("position")?.setFilterValue(value);
-            table.getColumn("company")?.setFilterValue(value);
-          }}
+          value={table.getState().globalFilter || ""}
+          onChange={(e) => table.setGlobalFilter(e.target.value)}
           className="max-w-sm"
         />
 

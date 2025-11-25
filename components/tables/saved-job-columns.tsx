@@ -16,14 +16,14 @@ type SavedJobWithCandidate = IJob & {
 
 export const savedColumns: ColumnDef<SavedJobWithCandidate>[] = [
   {
-    accessorKey: "position",
-    header: "Position",
+    accessorKey: "title",
+    header: "Title",
     cell: ({ row }) => <div className="font-medium">{row.original?.title}</div>,
   },
 
   {
-    accessorKey: "company",
-    header: "Company",
+    accessorKey: "companyName",
+    header: "Company Name",
     cell: ({ row }) => <div className="text-muted-foreground">{row.original?.companyName}</div>,
   },
 
