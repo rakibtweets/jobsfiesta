@@ -37,13 +37,15 @@ const EmployeeJobs = async () => {
     return <p className="text-muted-foreground py-6 text-center">{error.message}</p>;
   }
 
-  if (!data?.jobs || data?.jobs?.length === 0) {
+  const jobs = data?.jobs || [];
+
+  if (!jobs || jobs?.length === 0) {
     return <p className="text-muted-foreground py-6 text-center">No jobs posted yet.</p>;
   }
   return (
     <>
-      {data?.jobs?.map((job) => (
-        <EmployeeJobList key={job.id} job={job} />
+      {jobs?.map((job) => (
+        <EmployeeJobList key={String(job._id)} job={job} />
       ))}
     </>
   );

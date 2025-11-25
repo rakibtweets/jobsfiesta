@@ -57,7 +57,7 @@ export default function EmployeeJobList({ job }: EmployeeJobListProps) {
 
               <div className="text-muted-foreground flex items-center gap-2">
                 <Users size={16} />
-                {job.applications.length || 0} Applications
+                {job?.countApplicatons || 0} Applications
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -78,9 +78,11 @@ export default function EmployeeJobList({ job }: EmployeeJobListProps) {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent>
-                <DropdownMenuItem>
-                  <Eye size={16} aria-hidden="true" />
-                  View Job
+                <DropdownMenuItem asChild>
+                  <Link href={`/jobs/${job._id}`}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Job
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/employee/jobs/edit/${job._id}`}>

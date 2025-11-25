@@ -101,7 +101,7 @@ export function AppliedJobTable<TData, TValue>({ columns, data }: DataTableProps
           </TableBody>
         </Table>
 
-        <DataTablePagination tableName="SavedJob" table={table} />
+        <DataTablePagination tableName="Applied Job" table={table} />
       </div>
     </div>
   );

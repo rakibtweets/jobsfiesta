@@ -13,7 +13,6 @@ type SavedJobWithCandidate = IJob & {
 const SavedJobs = async ({ candidateId }: IProps) => {
   const { data } = await getSavedJobsCandidateId(candidateId as string);
   const jobs = data?.jobs || [];
-  console.log("🚀 ~ SavedJobs ~ jobs:", jobs);
   const formattedJobs = jobs.map((job) => {
     return {
       ...job,
@@ -21,9 +20,9 @@ const SavedJobs = async ({ candidateId }: IProps) => {
     };
   }) as SavedJobWithCandidate[];
   return (
-    <div>
+    <>
       <SavedJobTable columns={savedColumns} data={formattedJobs} />
-    </div>
+    </>
   );
 };
 export default SavedJobs;

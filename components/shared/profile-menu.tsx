@@ -52,15 +52,15 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
       toast.error("Unknown Logut unsuccessfull");
     }
   };
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button className="h-auto p-0 hover:bg-transparent">
+      <DropdownMenuTrigger className="h-auto p-0" asChild>
+        <Button variant={"ghost"} className="rounded-full p-0">
           <Avatar>
             <AvatarImage src={image || "https://github.com/shadcn.png"} alt="Profile image" />
             <AvatarFallback>{"kk"}</AvatarFallback>
           </Avatar>
-          <ChevronDownIcon size={16} className="opacity-60" aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-w-64">
