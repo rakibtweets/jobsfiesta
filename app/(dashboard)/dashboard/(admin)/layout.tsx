@@ -1,10 +1,19 @@
+import { redirect } from "next/navigation";
 import React from "react";
 
 // import ProfileAvatar from "@/components/shared/ProfileAvatar";
 import { AdminDashboardSidebar } from "@/components/admin/admin-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { User } from "@/lib/auth";
+import { getServerSession } from "@/lib/get-session";
 
-const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
+const AdminDashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+  const me = await getServerSession();
+  const user = me?.user as User;
+  if (!user || user.role !== "admin") {
+    redirect("/sign-in");
+  }
+
   return (
     <SidebarProvider>
       <AdminDashboardSidebar />

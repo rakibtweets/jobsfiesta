@@ -20,7 +20,15 @@ export const adminUserCreateSchema = z.object({
     }),
   role: z.enum(["admin", "user"]),
   accountType: z.enum(["candidate", "employee"]),
-  image: z.string().optional().nullable(),
 });
+
+export const adminUserUpdateSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").optional(),
+  email: z.email().optional(),
+  role: z.string().optional(),
+  accountType: z.string().optional(),
+});
+
+export type AdminUserUpdateValues = z.infer<typeof adminUserUpdateSchema>;
 
 export type AdminUserCreateValues = z.infer<typeof adminUserCreateSchema>;

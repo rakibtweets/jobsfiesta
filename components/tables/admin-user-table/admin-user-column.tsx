@@ -1,9 +1,12 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreVertical, Pencil, Trash2, ShieldCheck, ShieldOff } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, ShieldCheck, ShieldOff, Lock } from "lucide-react";
 
+import AdminResetPasswordForm from "@/components/forms/auth/admin-reset-password";
+import AdminUpdateUserForm from "@/components/forms/auth/admin-update-user-form";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,7 +70,7 @@ export const adminUserColumns: ColumnDef<User>[] = [
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
-      const role = row.original?.role ?? "user";
+      const role = row.original?.role ?? "N/A";
 
       return <Badge className={getRoleColor(role)}>{role.charAt(0).toUpperCase() + role.slice(1)}</Badge>;
     },
@@ -94,24 +97,32 @@ export const adminUserColumns: ColumnDef<User>[] = [
 
           <DropdownMenuContent align="end" className="w-44">
             {/* ✅ Update User */}
-            <DropdownMenuItem onClick={() => console.log("Update user:", user.id)}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Update User
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={() => console.log("Toggle admin:", user.id)}>
-              {isAdmin ? (
-                <>
-                  <ShieldOff className="mr-2 h-4 w-4" />
-                  Remove Admin
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="mr-2 h-4 w-4" />
-                  Make Admin
-                </>
-              )}
-            </DropdownMenuItem>
+            <Dialog>
+              <DialogTrigger asChild>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Pencil className="mr-2 h-4 w-4" /> Update User
+                </DropdownMenuItem>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Update User</DialogTitle>
+                </DialogHeader>
+                <AdminUpdateUserForm data={user} />
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger asChild>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Lock className="mr-2 h-4 w-4" /> Reset Password
+                </DropdownMenuItem>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Reset Password</DialogTitle>
+                </DialogHeader>
+                <AdminResetPasswordForm userId={user.id} />
+              </DialogContent>
+            </Dialog>
 
             {/* ✅ Delete User */}
             <DropdownMenuItem
