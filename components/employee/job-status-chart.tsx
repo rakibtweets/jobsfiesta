@@ -1,25 +1,45 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import type { JobStatusBreakdown } from "@/types/employee-dashboard";
 
-const COLORS = {
-  open: "hsl(var(--chart-1))",
-  closed: "hsl(var(--chart-2))",
-  filled: "hsl(var(--chart-3))",
-};
+// ✅ CHART CONFIG (ShadCN Required)
+const chartConfig = {
+  open: {
+    label: "Open",
+    color: "var(--chart-1)",
+  },
+  closed: {
+    label: "Closed",
+    color: "var(--chart-2)",
+  },
+  filled: {
+    label: "Filled",
+    color: "var(--chart-3)",
+  },
+} satisfies ChartConfig;
 
 interface JobStatusChartProps {
   data: JobStatusBreakdown[] | undefined;
 }
 
 export function JobStatusChart({ data }: JobStatusChartProps) {
-  const chartData = data?.map((item) => ({
-    name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
-    value: item.count,
-  }));
+  const chartData =
+    data?.map((item) => ({
+      status: item._id, // key for config + legend
+      value: item.count,
+      fill: `var(--color-${item._id})`, // ✅ AUTO COLOR FROM CONFIG
+    })) || [];
 
   return (
     <Card>
@@ -27,27 +47,29 @@ export function JobStatusChart({ data }: JobStatusChartProps) {
         <CardTitle>Job Status Breakdown</CardTitle>
         <CardDescription>Distribution of job postings by status</CardDescription>
       </CardHeader>
+
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
+        <ChartContainer config={chartConfig} className="mx-auto min-h-[300px] max-w-[300px]">
+          <PieChart accessibilityLayer>
             <Pie
               data={chartData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={({ name, value }) => `${name}: ${value}`}
-              outerRadius={100}
-              fill="#8884d8"
               dataKey="value"
+              nameKey="status"
+              outerRadius={110}
+              label={({ name, value }) => `${chartConfig[name as keyof typeof chartConfig]?.label}: ${value}`}
             >
-              {chartData?.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[entry.name.toLowerCase() as keyof typeof COLORS]} />
+              {chartData.map((entry) => (
+                <Cell key={entry.status} fill={entry.fill} />
               ))}
             </Pie>
-            <Tooltip />
-            <Legend />
+
+            {/* ✅ SHADCN TOOLTIP */}
+            <ChartTooltip content={<ChartTooltipContent nameKey="status" />} />
+
+            {/* ✅ SHADCN LEGEND */}
+            <ChartLegend content={<ChartLegendContent nameKey="status" />} />
           </PieChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
