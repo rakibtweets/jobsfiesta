@@ -4,10 +4,15 @@ import { APIError } from "better-auth";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
+import { Application } from "@/database/applicaton.model";
+import { Candidate } from "@/database/candidate.model";
+import { Employee } from "@/database/employee.model";
+import { Job } from "@/database/job.model";
 import { auth, User } from "@/lib/auth";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
+import dbConnect from "../mongoose";
 import {
   adminUserCreateSchema,
   AdminUserCreateValues,
@@ -245,6 +250,109 @@ export async function updateUserPassword(userId: string, password: string): Prom
       };
     }
 
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+interface JobStatusCount {
+  _id: "open" | "closed" | "filled";
+  count: number;
+}
+
+interface ApplicationStatusCount {
+  _id: "submitted" | "reviewed" | "interviewing" | "offered" | "rejected" | "withdrawn";
+  count: number;
+}
+
+interface TopJob {
+  jobId: string;
+  title: string;
+  applicationsCount: number;
+}
+
+export interface AdminDashboardStats {
+  totalCandidates: number;
+  totalEmployers: number;
+  totalJobs: number;
+  totalApplications: number;
+  jobsByStatus: JobStatusCount[];
+  applicationsByStatus: ApplicationStatusCount[];
+  topJobs: TopJob[];
+}
+
+export async function getAdminDashboardStats(): Promise<ActionResponse<AdminDashboardStats>> {
+  try {
+    await dbConnect();
+    // Total counts
+    const totalCandidates = await Candidate.countDocuments();
+    const totalEmployers = await Employee.countDocuments();
+    const totalJobs = await Job.countDocuments();
+    const totalApplications = await Application.countDocuments();
+
+    // Jobs by status
+    const jobsByStatus: JobStatusCount[] = await Job.aggregate<JobStatusCount>([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Applications by status
+    const applicationsByStatus: ApplicationStatusCount[] = await Application.aggregate<ApplicationStatusCount>([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Top 5 most applied jobs
+    const topJobs: TopJob[] = await Application.aggregate<TopJob>([
+      {
+        $group: {
+          _id: "$job",
+          applicationsCount: { $sum: 1 },
+        },
+      },
+      { $sort: { applicationsCount: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "_id",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+      { $unwind: "$job" },
+      {
+        $project: {
+          _id: 0,
+          jobId: "$job._id",
+          title: "$job.title",
+          applicationsCount: 1,
+        },
+      },
+    ]);
+
+    return {
+      success: true,
+      data: JSON.parse(
+        JSON.stringify({
+          totalCandidates,
+          totalEmployers,
+          totalJobs,
+          totalApplications,
+          jobsByStatus,
+          applicationsByStatus,
+          topJobs,
+        })
+      ),
+    };
+  } catch (error) {
     return handleError(error) as ErrorResponse;
   }
 }
