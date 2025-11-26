@@ -100,7 +100,6 @@ export async function updateUserById(
       },
     };
   } catch (error) {
-    console.log("🚀 ~ updateUserById ~ error:", error);
     if (error instanceof APIError) {
       return {
         success: false,
@@ -118,16 +117,36 @@ export async function updateUserById(
 // -----------------------------
 // Delete User
 // -----------------------------
-export async function deleteUser(userId: string) {
+export async function deleteUserByAdmin(userId: string): Promise<ActionResponse> {
+  const validationResult = await action({
+    role: "admin",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
   try {
-    const deletedUser = await auth.api.removeUser({
+    await auth.api.removeUser({
       body: { userId },
+      headers: await headers(),
     });
     revalidatePath("/admin/users");
-    return deletedUser;
-  } catch (err) {
-    console.error("Error deleting user:", err);
-    throw err;
+    return {
+      success: true,
+      message: "User deleted successfully",
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message || `${error.statusCode} Error: ${error.status || ""}`,
+        },
+      };
+    }
+
+    return handleError(error) as ErrorResponse;
   }
 }
 
@@ -216,7 +235,6 @@ export async function updateUserPassword(userId: string, password: string): Prom
       },
     };
   } catch (error) {
-    console.log("🚀 ~ updateUserById ~ error:", error);
     if (error instanceof APIError) {
       return {
         success: false,

@@ -3,6 +3,7 @@ import { MoreVertical, Pencil, Trash2, ShieldCheck, ShieldOff, Lock } from "luci
 
 import AdminResetPasswordForm from "@/components/forms/auth/admin-reset-password";
 import AdminUpdateUserForm from "@/components/forms/auth/admin-update-user-form";
+import { ActionButton } from "@/components/ui/action-button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteUserByAdmin } from "@/lib/actions/admin.action";
 import { User } from "@/lib/auth";
 
 // type User = {
@@ -125,12 +127,16 @@ export const adminUserColumns: ColumnDef<User>[] = [
             </Dialog>
 
             {/* ✅ Delete User */}
-            <DropdownMenuItem
-              onClick={() => console.log("Delete user:", user.id)}
-              className="text-red-600 focus:text-red-600"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete User
+            <DropdownMenuItem variant="destructive" onSelect={(e) => e.preventDefault()}>
+              <ActionButton
+                action={() => deleteUserByAdmin(user.id)}
+                variant="destructive"
+                requireAreYouSure
+                areYouSureDescription="Do you want to delete this user? This action cannot be undone."
+                className="w-full justify-start bg-transparent"
+              >
+                <Trash2 className="mr-2 h-4 w-4" /> Delete User
+              </ActionButton>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

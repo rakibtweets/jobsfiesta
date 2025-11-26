@@ -5,7 +5,7 @@ export default async function UsersPage() {
   const { data } = await getAllUsers();
   // console.log("🚀 ~ UsersPage ~ data:", data);
   return (
-    <main className="p-8">
+    <main>
       <AdminUsers users={data?.users as User[]} />
     </main>
   );
