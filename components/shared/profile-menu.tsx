@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  BookOpenIcon,
-  ChevronDownIcon,
-  LayoutDashboardIcon,
-  LogOutIcon,
-  Plus,
-  Save,
-  Settings,
-  UserCheck,
-} from "lucide-react";
+import { BookOpenIcon, LayoutDashboardIcon, LogOutIcon, Plus, Save, Settings, UserCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -37,18 +29,23 @@ interface IProfileMenuProps {
 
 export default function ProfileMenu({ name, email, role, image, accountType }: IProfileMenuProps) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleLogOut = async () => {
+    setIsLoading(true);
     try {
       const { error } = await authClient.signOut();
 
       if (error) {
+        setIsLoading(false);
         toast.error(error.message);
       }
 
+      setIsLoading(false);
       return router.push("/auth/sign-in");
     } catch (error) {
       console.log("Logut error", error);
+      setIsLoading(false);
       toast.error("Unknown Logut unsuccessfull");
     }
   };
@@ -142,9 +139,9 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => handleLogOut()} variant="destructive">
+        <DropdownMenuItem disabled={isLoading} onClick={() => handleLogOut()} variant="destructive">
           <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
-          <span>Logout</span>
+          <span>{isLoading ? "Logging out.." : "Logout"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

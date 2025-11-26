@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { ApplicationsPerJobChart } from "@/components/employee/application-per-job-chart";
 import { ApplicationStatusChart } from "@/components/employee/application-status-chart";
 import { JobStatusChart } from "@/components/employee/job-status-chart";
@@ -11,6 +13,9 @@ const EmployeeDashboardPage = async () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   const employeeId = me?.user?.employee;
+  if (!employeeId) {
+    redirect("/auth/sign-in");
+  }
   const { data } = await getEmployeeDashboardStats(employeeId);
   const stats = data?.stats;
   const barChartData = data?.barChartData;

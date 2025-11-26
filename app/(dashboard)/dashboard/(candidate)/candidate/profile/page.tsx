@@ -1,5 +1,6 @@
 import { BookOpen, Briefcase, FileStack, FileText, MapPin, Plus, User } from "lucide-react";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 import UploadImagButton from "@/components/action-buttion/upload-image-button";
 import UploadPDFButton from "@/components/action-buttion/upload-pdf-button";
@@ -20,6 +21,7 @@ import { getServerSession } from "@/lib/get-session";
 const CandidateProfilePage = async () => {
   const data = await getServerSession();
   const user = data?.user;
+  if (!data?.session) redirect("/auth/sign-in");
   const { data: candidateData } = await getCandidateProfileByUserId(String(user?.id));
   const candidate = candidateData?.candidate;
 
