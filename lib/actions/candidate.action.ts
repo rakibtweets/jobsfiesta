@@ -279,6 +279,13 @@ export const updateExperienceInCandidateProfile = async (
 export const getCandidateProfileByUserId = async (
   userId: string
 ): Promise<ActionResponse<{ candidate: ICandidateProfile }>> => {
+  const validationResult = await action({
+    authorizeRole: "candidate",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
   try {
     await dbConnect();
 

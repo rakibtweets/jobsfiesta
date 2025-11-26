@@ -27,7 +27,7 @@ export interface IEmployerProfile extends Document {
 }
 
 // ------------------------------
-// 2. SCHEMA
+// Employee SCHEMAA
 // ------------------------------
 const employerProfileSchema = new Schema<IEmployerProfile>(
   {

@@ -1,4 +1,4 @@
-import { AnalyticsCard } from "@/components/dashboard/analytics-card";
+// import { AnalyticsCard } from "@/components/dashboard/analytics-card";
 import { DailyJoinsChart } from "@/components/dashboard/daily-joins-cart";
 
 const AdminDashboardPage = () => {
@@ -10,7 +10,7 @@ const AdminDashboardPage = () => {
       </div>
 
       {/* Analytics Cards */}
-      <AnalyticsCard />
+      {/* <AnalyticsCard /> */}
 
       {/* Charts Section */}
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">

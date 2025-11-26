@@ -40,11 +40,6 @@ const items = [
     icon: CirclePlus,
   },
   {
-    title: "Applications",
-    url: "/dashboard/employee/jobs/1/applies",
-    icon: CirclePlus,
-  },
-  {
     title: "Saved candidates",
     url: "/dashboard/employee/saved-candidates",
     icon: Heart,

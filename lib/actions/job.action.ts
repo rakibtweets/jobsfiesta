@@ -38,8 +38,6 @@ export const createNewJob = async (
     const employee = await Employee.findById(employeeId);
     if (!employee) throw new Error("Employee profile not found");
 
-    console.log(validationResult.params);
-
     // Create job
     const [job] = await Job.create([
       {
@@ -233,7 +231,6 @@ export const getJobsByEmployeeId = async (
   employeeId: string,
   query: PaginatedSearchParams
 ): Promise<ActionResponse<{ jobs: IJob[]; pagination: PaginationResponse }>> => {
-  console.log(employeeId);
   try {
     await dbConnect();
 

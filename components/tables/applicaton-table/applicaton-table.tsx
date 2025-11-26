@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -24,7 +25,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-export function AppliedJobTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function ApplicatonCandidateTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -48,21 +49,27 @@ export function AppliedJobTable<TData, TValue>({ columns, data }: DataTableProps
       const original = row.original;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      const title = original?.title.toLowerCase() || "";
+      const name = original?.candidate.name.toLowerCase() || "";
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      const company = original?.companyName.toLowerCase() || "";
+      const email = original?.candidate.email.toLowerCase() || "";
       const search = filterValue.toLowerCase();
 
-      return title.includes(search) || company.includes(search);
+      return name.includes(search) || email.includes(search);
     },
   });
   return (
     <div className="mt-6 rounded-md border">
+      {/* Show Job Tile and companry Name */}
+      <div className="bg-muted/40 border-b p-4">
+        <h2 className="text-xl font-semibold">{(data[0] as any)?.job?.title}</h2>
+        <p className="text-muted-foreground text-sm">{(data[0] as any).job?.companyName}</p>
+      </div>
+
       {/* Search and Page Size */}
       <div className="space-y-4 p-4">
         <Input
-          placeholder="Search applied jobs..."
+          placeholder="Search by name and email..."
           value={table.getState().globalFilter || ""}
           onChange={(e) => table.setGlobalFilter(e.target.value)}
           className="max-w-sm"
@@ -101,7 +108,7 @@ export function AppliedJobTable<TData, TValue>({ columns, data }: DataTableProps
           </TableBody>
         </Table>
 
-        <DataTablePagination tableName="Applied Job" table={table} />
+        <DataTablePagination tableName="candidates" table={table} />
       </div>
     </div>
   );
