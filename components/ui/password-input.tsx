@@ -9,7 +9,8 @@ import { Button } from "./button";
 import { Input } from "./input";
 
 const PasswordInput = ({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => {
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  console.log("🚀 ~ PasswordInput ~ showPassword:", showPassword);
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);

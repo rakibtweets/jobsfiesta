@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { nextCookies } from "better-auth/next-js";
 import { customSession } from "better-auth/plugins";
+import { admin } from "better-auth/plugins";
 import { MongoClient } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
@@ -74,6 +75,7 @@ export const auth = betterAuth({
   },
   //...your config
   plugins: [
+    admin(),
     customSession(async ({ user, session }) => {
       // let employeeId = "";
 

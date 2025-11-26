@@ -6,14 +6,21 @@ import { useTheme } from "next-themes";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
 
 import ProfileMenu from "./shared/profile-menu";
 
-export default function Header() {
+interface IProfileMenuProps {
+  name: string | undefined;
+  email: string | undefined;
+  image?: string | null | undefined;
+  accountType: "candidate" | "employee" | undefined;
+  role: "admin" | "user" | undefined;
+}
+export default function Header({ name, email, role, image, accountType }: IProfileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { data } = authClient.useSession();
+  // const { data } = authClient.useSession();
+  // console.log("🚀 ~ Header ~ data:", data);
 
   // console.log(data);
 
@@ -64,16 +71,8 @@ export default function Header() {
             )}
           </button>
 
-          {data?.user ? (
-            <ProfileMenu
-              name={data?.user?.name}
-              email={data?.user.email}
-              image={data?.user?.image as string}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              role={(data?.user as any)?.role}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              accountType={(data?.user as any)?.accountType}
-            />
+          {email ? (
+            <ProfileMenu name={name} email={email} image={image as string} role={role} accountType={accountType} />
           ) : (
             <div className="hidden gap-2 sm:flex">
               <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
@@ -103,7 +102,7 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            {!data?.user ? (
+            {!email ? (
               <div className="flex flex-col gap-2 pt-4">
                 <Button variant="outline" className="w-full bg-transparent">
                   <Link href="/login">Login</Link>

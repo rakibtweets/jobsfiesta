@@ -129,7 +129,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
               <FormItem>
                 <FormLabel>Comfirm Password</FormLabel>
                 <FormControl>
-                  <PasswordInput disabled={isSubmitting} placeholder="confirm your password" {...field} />
+                  <PasswordInput {...field} disabled={isSubmitting} placeholder="confirm your password" />
                 </FormControl>
 
                 <FormMessage />

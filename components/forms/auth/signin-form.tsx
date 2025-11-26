@@ -41,7 +41,7 @@ const SignInForm = () => {
 
       if (data?.user) {
         toast.success("Login Successful");
-        router.push("/");
+        router.replace("/");
       }
 
       // toast(
@@ -58,6 +58,7 @@ const SignInForm = () => {
   const signInWithGoogle = async () => {
     const { error } = await authClient.signIn.social({
       provider: "google",
+      callbackURL: `/`,
     });
 
     if (error) {
