@@ -5,9 +5,12 @@ import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
+import { Application } from "@/database/applicaton.model";
 import { Candidate, ICandidateProfile } from "@/database/candidate.model";
 import { Employee, IEmployerProfile } from "@/database/employee.model";
+import { Job } from "@/database/job.model";
 import { auth } from "@/lib/auth";
+import { IRecentApplication } from "@/types/employee-dashboard";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
@@ -392,3 +395,160 @@ export async function getEmployeeById(employeeId: string): Promise<ActionRespons
     return handleError(error) as ErrorResponse;
   }
 }
+
+export interface JobStatusBreakdown {
+  _id: "open" | "closed" | "filled";
+  count: number;
+}
+
+// ✅ Application Status Breakdown
+export interface ApplicationStatusBreakdown {
+  _id: "submitted" | "reviewed" | "interviewing" | "offered" | "rejected" | "withdrawn";
+  count: number;
+}
+
+// ✅ Bar Chart Data Type
+export interface EmployeeBarChartData {
+  jobTitle: string;
+  applications: number;
+}
+
+// ✅ Full Stats Object
+export interface EmployeeDashboardStats {
+  totalJobs: number;
+  jobStatusBreakdown: JobStatusBreakdown[];
+  totalApplications: number;
+  applicationStatusBreakdown: ApplicationStatusBreakdown[];
+  recentApplications: IRecentApplication[];
+}
+
+// employee dashbaoar stats
+export const getEmployeeDashboardStats = async (
+  employeeId: string
+): Promise<
+  ActionResponse<{
+    stats: EmployeeDashboardStats;
+    barChartData: EmployeeBarChartData[];
+  }>
+> => {
+  const validationResult = await action({
+    params: { employeeId },
+    authorizeRole: "employee",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  try {
+    await dbConnect();
+
+    const employerObjectId = new mongoose.Types.ObjectId(employeeId);
+
+    // ✅ 1. TOTAL JOB STATS
+    const jobStats = await Job.aggregate([
+      { $match: { employer: employerObjectId } },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const totalJobs = await Job.countDocuments({ employer: employerObjectId });
+
+    // ✅ 2. TOTAL APPLICATIONS (All jobs under employer)
+    const totalApplications = await Application.aggregate([
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobData",
+        },
+      },
+      { $unwind: "$jobData" },
+      { $match: { "jobData.employer": employerObjectId } },
+      {
+        $group: {
+          _id: null,
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // ✅ 3. APPLICATION STATUS BREAKDOWN
+    const applicationStatus = await Application.aggregate([
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobData",
+        },
+      },
+      { $unwind: "$jobData" },
+      { $match: { "jobData.employer": employerObjectId } },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // ✅ 4. APPLICATION COUNT PER JOB (🔥 BAR CHART)
+    const applicationsPerJob = await Application.aggregate([
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "job",
+          foreignField: "_id",
+          as: "jobData",
+        },
+      },
+      { $unwind: "$jobData" },
+      { $match: { "jobData.employer": employerObjectId } },
+      {
+        $group: {
+          _id: "$job",
+          jobTitle: { $first: "$jobData.title" },
+          applicationCount: { $sum: 1 },
+        },
+      },
+      { $sort: { applicationCount: -1 } },
+    ]);
+
+    // ✅ 5. RECENT 5 APPLICATIONS
+    const recentApplications = await Application.find()
+      .populate({
+        path: "job",
+        match: { employer: employerObjectId },
+        select: "title",
+      })
+      .populate("candidate", "name email")
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    return {
+      success: true,
+      data: {
+        stats: {
+          totalJobs,
+          jobStatusBreakdown: jobStats,
+          totalApplications: totalApplications[0]?.count || 0,
+          applicationStatusBreakdown: applicationStatus,
+          recentApplications: JSON.parse(JSON.stringify(recentApplications)) as IRecentApplication[],
+        },
+
+        // ✅ BAR CHART READY FORMAT
+        barChartData: applicationsPerJob.map((item) => ({
+          jobTitle: item.jobTitle,
+          applications: item.applicationCount,
+        })),
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
