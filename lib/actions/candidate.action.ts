@@ -7,9 +7,11 @@ import { headers } from "next/headers";
 import { cache } from "react";
 import z from "zod";
 
+import { Application, IApplication } from "@/database/applicaton.model";
 import { Candidate, ICandidateProfile, IExperience, IEducation } from "@/database/candidate.model";
 import { IJob, Job } from "@/database/job.model";
 import { auth } from "@/lib/auth";
+import { CandidateDashboardStats, PaginationResponse, PaginatedSearchParams, RecentApplication } from "@/types/action";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
@@ -913,3 +915,97 @@ export async function getSavedJobsCandidateId(candidateId: string): Promise<Acti
     return handleError(error) as ErrorResponse;
   }
 }
+
+export const getSingleCandidateStats = async (
+  candidateId: string
+): Promise<ActionResponse<CandidateDashboardStats>> => {
+  const validationResult = await action({
+    authorizeRole: "candidate",
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+  try {
+    await dbConnect();
+
+    // 1. Get Candidate Profile
+    const candidate = await Candidate.findById(candidateId).lean();
+    if (!candidate) throw new Error("Candidate not found");
+
+    // 2. Total Applications
+    const totalApplications = await Application.countDocuments({
+      candidate: candidateId,
+    });
+
+    // 3. Applications By Status
+    const statusAggregation = await Application.aggregate([
+      { $match: { candidate: new mongoose.Types.ObjectId(candidateId) } },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const applicationStatusBreakdown = {
+      submitted: 0,
+      reviewed: 0,
+      interviewing: 0,
+      offered: 0,
+      rejected: 0,
+      withdrawn: 0,
+    };
+
+    statusAggregation.forEach((item) => {
+      applicationStatusBreakdown[item._id as keyof typeof applicationStatusBreakdown] = item.count;
+    });
+
+    // 4. Saved Jobs Count
+    const savedJobsCount = candidate.savedJob?.length || 0;
+
+    // 5. Profile Strength Calculation (Smart Logic)
+    let completedFields = 0;
+    const totalFields = 10;
+
+    if (candidate.name) completedFields++;
+    if (candidate.email) completedFields++;
+    if (candidate.phone) completedFields++;
+    if (candidate.photo?.url) completedFields++;
+    if (candidate.bio) completedFields++;
+    if (candidate.headline) completedFields++;
+    if (candidate.skills?.length) completedFields++;
+    if (candidate.languages?.length) completedFields++;
+    if (candidate.experience?.length) completedFields++;
+    if (candidate.education?.length) completedFields++;
+
+    const profileStrength = Math.round((completedFields / totalFields) * 100);
+
+    // 6. Recent Applications (Last 5)
+    const recentApplications = (await Application.find({
+      candidate: candidateId,
+    })
+      .populate("job", "title companyName location _id")
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean()) as unknown as RecentApplication[];
+
+    // ✅ Final Response
+    return {
+      success: true,
+      message: "Candidate dashboard stats loaded successfully",
+      data: JSON.parse(
+        JSON.stringify({
+          totalApplications,
+          applicationStatusBreakdown,
+          savedJobsCount,
+          profileStrength,
+          recentApplications,
+        })
+      ),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};
