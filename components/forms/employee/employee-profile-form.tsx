@@ -67,7 +67,7 @@ export function EmployeeProfileForm({
           const { success, error } = await createEmployeeProfile(userMongoId, accountType, { ...data });
           if (success) {
             toast.success(`Your ${accountType} is created successfully`);
-            router.push("/dashboard/employee");
+            router.replace("/dashboard/employee/profile");
           } else {
             toast.error(error?.message);
           }

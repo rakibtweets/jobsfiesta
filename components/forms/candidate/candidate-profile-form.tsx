@@ -91,8 +91,8 @@ export function CandidateProfileForm({
       try {
         const { success, error } = await createCandidateProfile(userMongoId, accountType, { ...data });
         if (success) {
-          toast.success(`Your ${accountType} is created successfully`);
-          router.push("/dashboard/candidate/profile");
+          toast.success(`Your ${accountType} profile created successfully`);
+          router.replace("/dashboard/candidate/profile");
         } else {
           toast.error(error?.message);
         }
@@ -104,7 +104,7 @@ export function CandidateProfileForm({
     if (formType === "update") {
       const { success, error } = await updateCandidateProfile(String(userMongoId), { ...data });
       if (success) {
-        toast.success(`Your data is upddated successfully`);
+        toast.success(`Your data is updated successfully`);
       } else {
         toast.error(error?.message);
       }
