@@ -15,9 +15,9 @@ export const JobGridList = async () => {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {data?.jobs?.map((job, idx) => (
-        <Link key={job.id} href={`/jobs/${job._id}`}>
+        <Link key={String(job._id)} href={`/jobs/${job._id}`}>
           <div className="animate-fade-in" style={{ animationDelay: `${idx * 100}ms` }}>
-            <Card className="group border-border hover:border-primary/50 from-background to-card/50 h-full cursor-pointer border bg-gradient-to-br p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+            <Card className="group border-border hover:border-primary/50 from-background to-card/50 h-full cursor-pointer border bg-linear-to-br p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
               <div className="space-y-4">
                 <div>
                   <h3 className="group-hover:text-primary line-clamp-2 text-lg font-semibold transition-colors">

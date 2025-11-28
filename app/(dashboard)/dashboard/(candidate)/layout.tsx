@@ -14,6 +14,7 @@ const CandidateDashboardLayout = async ({ children }: { children: React.ReactNod
   if (!me?.session || me.user.accountType !== "candidate") {
     redirect("/unauthorize");
   }
+
   return (
     <SidebarProvider>
       <CandidateDashboardSidebar />

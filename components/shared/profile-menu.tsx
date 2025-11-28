@@ -25,9 +25,19 @@ interface IProfileMenuProps {
   image?: string | null | undefined;
   accountType: "candidate" | "employee" | undefined;
   role: "admin" | "user" | undefined;
+  isCandiateProfileCreated?: boolean | undefined;
+  isEmployeeProfileCreated?: boolean | undefined;
 }
 
-export default function ProfileMenu({ name, email, role, image, accountType }: IProfileMenuProps) {
+export default function ProfileMenu({
+  name,
+  email,
+  role,
+  image,
+  accountType,
+  isEmployeeProfileCreated,
+  isCandiateProfileCreated,
+}: IProfileMenuProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -68,7 +78,7 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
 
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {accountType === "employee" && (
+          {accountType === "employee" && isEmployeeProfileCreated && (
             <>
               <DropdownMenuItem asChild>
                 <Link className="cursor-pointer" href="/dashboard/employee">
@@ -96,7 +106,17 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
               </DropdownMenuItem>
             </>
           )}
-          {accountType === "candidate" && (
+
+          {accountType === "employee" && !isEmployeeProfileCreated && (
+            <DropdownMenuItem asChild>
+              <Link className="cursor-pointer" href="/onboarding/profile">
+                <UserCheck className="mr-2 size-4" aria-hidden="true" />
+                {`Complete ${accountType} Profile`}
+              </Link>
+            </DropdownMenuItem>
+          )}
+
+          {accountType === "candidate" && isCandiateProfileCreated && (
             <>
               <DropdownMenuItem asChild>
                 <Link className="cursor-pointer" href="/dashboard/candidate">
@@ -129,6 +149,15 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
                 </Link>
               </DropdownMenuItem>
             </>
+          )}
+
+          {accountType === "candidate" && !isCandiateProfileCreated && (
+            <DropdownMenuItem asChild>
+              <Link className="cursor-pointer" href="/onboarding/profile">
+                <UserCheck className="mr-2 size-4" aria-hidden="true" />
+                {`Complete ${accountType} Profile`}
+              </Link>
+            </DropdownMenuItem>
           )}
           {role === "admin" && (
             <>

@@ -36,6 +36,10 @@ const SignInForm = () => {
       // console.log(values);
       const { error, data } = await authClient.signIn.email(values);
       if (error) {
+        // console.log("🚀 ~ onSubmit ~ error:", error);
+        if (error.code === "EMAIL_NOT_VERIFIED") {
+          return toast.error(`Your email is not verified. An email has been sent for verification.`);
+        }
         toast.error(error.message);
       }
 

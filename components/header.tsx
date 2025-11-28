@@ -15,8 +15,18 @@ interface IProfileMenuProps {
   image?: string | null | undefined;
   accountType: "candidate" | "employee" | undefined;
   role: "admin" | "user" | undefined;
+  isCandiateProfileCreated?: boolean | undefined;
+  isEmployeeProfileCreated?: boolean | undefined;
 }
-export default function Header({ name, email, role, image, accountType }: IProfileMenuProps) {
+export default function Header({
+  name,
+  email,
+  role,
+  image,
+  accountType,
+  isCandiateProfileCreated,
+  isEmployeeProfileCreated,
+}: IProfileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   // const { data } = authClient.useSession();
@@ -72,7 +82,15 @@ export default function Header({ name, email, role, image, accountType }: IProfi
           </button>
 
           {email ? (
-            <ProfileMenu name={name} email={email} image={image as string} role={role} accountType={accountType} />
+            <ProfileMenu
+              name={name}
+              email={email}
+              image={image as string}
+              role={role}
+              accountType={accountType}
+              isCandiateProfileCreated={isCandiateProfileCreated}
+              isEmployeeProfileCreated={isEmployeeProfileCreated}
+            />
           ) : (
             <div className="hidden gap-2 sm:flex">
               <Button variant="outline" asChild className="hover:bg-secondary bg-transparent">
