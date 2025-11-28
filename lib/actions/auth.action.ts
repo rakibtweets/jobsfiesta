@@ -2,8 +2,10 @@
 
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
+import { ISignInEmailParams, ISignUpEmailParams } from "@/types/action";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
@@ -115,12 +117,111 @@ export const loginWithEmailPassword = async (
 
 export const logoutUser = async (): Promise<ActionResponse> => {
   try {
+    console.log("loggingg... out");
     await auth.api.signOut({
+      headers: await headers(),
+    });
+
+    console.log("logged out");
+
+    redirect("/sign-in");
+
+    return {
+      success: true,
+      message: "User logged out successfully.",
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message,
+        },
+      };
+    }
+
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+export const sendVerificationEmail = async (email: string, redirectURL: string): Promise<ActionResponse> => {
+  try {
+    await auth.api.sendVerificationEmail({
+      body: {
+        email: email,
+        callbackURL: redirectURL,
+      },
+      headers: await headers(),
+    });
+    return {
+      success: true,
+      message: "Verification email sent successfully.",
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message,
+        },
+      };
+    }
+
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+// forgot password request
+export const sendPasswordResetEmail = async (email: string, redirectURL: string): Promise<ActionResponse> => {
+  try {
+    await auth.api.requestPasswordReset({
+      body: {
+        email: email,
+        redirectTo: redirectURL,
+      },
       headers: await headers(),
     });
 
     return {
       success: true,
+      message: "Password reset email sent successfully.",
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message,
+        },
+      };
+    }
+
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+// reset password
+
+export const resetPassword = async (newPassword: string, token: string): Promise<ActionResponse> => {
+  try {
+    if (!token) {
+      throw new Error("Invalid token. try again");
+    }
+
+    await auth.api.resetPassword({
+      body: {
+        newPassword: newPassword,
+        token: token,
+      },
+      headers: await headers(),
+    });
+
+    return {
+      success: true,
+      message: "Password reset successfully",
     };
   } catch (error) {
     if (error instanceof APIError) {

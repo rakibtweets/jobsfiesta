@@ -57,9 +57,6 @@ export interface ICandidateProfile extends Document {
   updatedAt: Date;
 }
 
-// ------------------------------
-// 2. SCHEMA
-// ------------------------------
 const candidateProfileSchema = new Schema<ICandidateProfile>(
   {
     user: {

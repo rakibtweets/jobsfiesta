@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getAllJobs } from "@/lib/actions/job.action";
+import { PaginatedSearchParams } from "@/types/action";
 
 import { Badge } from "../ui/badge";
 

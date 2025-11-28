@@ -1,6 +1,7 @@
 "use client";
 
 import { Briefcase, Users } from "lucide-react";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 
 import Footer from "@/components/footer";
@@ -8,13 +9,30 @@ import SignUpForm from "@/components/forms/auth/signup-form";
 import Header from "@/components/header";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { User } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignupPage() {
   const [accountType, setAccountType] = useState<"candidate" | "employee">("candidate");
+  const { data } = authClient.useSession();
+  const user = data?.user as User;
+  if (data?.session) {
+    redirect("/");
+  }
 
   return (
     <section className="bg-background min-h-screen">
-      <Header />
+      <Header
+        name={user?.name}
+        email={user?.email}
+        image={user?.image as string}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        role={(user as any)?.role}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        accountType={(user as any)?.accountType}
+        isCandiateProfileCreated={user?.candidate ? true : false}
+        isEmployeeProfileCreated={user?.employee ? true : false}
+      />
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
           {/* Left side - Info */}

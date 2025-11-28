@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpenIcon, LayoutDashboardIcon, LogOutIcon, Plus, Save, Settings, UserCheck } from "lucide-react";
+import { LayoutDashboardIcon, LogOutIcon, Plus, Save, Settings, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,10 +24,20 @@ interface IProfileMenuProps {
   email: string | undefined;
   image?: string | null | undefined;
   accountType: "candidate" | "employee" | undefined;
-  role: "admin" | "editor" | "modarator" | undefined;
+  role: "admin" | "user" | undefined;
+  isCandiateProfileCreated?: boolean | undefined;
+  isEmployeeProfileCreated?: boolean | undefined;
 }
 
-export default function ProfileMenu({ name, email, role, image, accountType }: IProfileMenuProps) {
+export default function ProfileMenu({
+  name,
+  email,
+  role,
+  image,
+  accountType,
+  isEmployeeProfileCreated,
+  isCandiateProfileCreated,
+}: IProfileMenuProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -42,7 +52,7 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
       }
 
       setIsLoading(false);
-      return router.push("/auth/sign-in");
+      return router.replace("/auth/sign-in");
     } catch (error) {
       console.log("Logut error", error);
       setIsLoading(false);
@@ -68,7 +78,7 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
 
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {accountType === "employee" && (
+          {accountType === "employee" && isEmployeeProfileCreated && (
             <>
               <DropdownMenuItem asChild>
                 <Link className="cursor-pointer" href="/dashboard/employee">
@@ -96,7 +106,17 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
               </DropdownMenuItem>
             </>
           )}
-          {accountType === "candidate" && (
+
+          {accountType === "employee" && !isEmployeeProfileCreated && (
+            <DropdownMenuItem asChild>
+              <Link className="cursor-pointer" href="/onboarding/profile">
+                <UserCheck className="mr-2 size-4" aria-hidden="true" />
+                {`Complete ${accountType} Profile`}
+              </Link>
+            </DropdownMenuItem>
+          )}
+
+          {accountType === "candidate" && isCandiateProfileCreated && (
             <>
               <DropdownMenuItem asChild>
                 <Link className="cursor-pointer" href="/dashboard/candidate">
@@ -130,11 +150,43 @@ export default function ProfileMenu({ name, email, role, image, accountType }: I
               </DropdownMenuItem>
             </>
           )}
-          {role === "admin" && (
-            <DropdownMenuItem>
-              <BookOpenIcon size={16} className="opacity-60" aria-hidden="true" />
-              <span>Admin Panel</span>
+
+          {accountType === "candidate" && !isCandiateProfileCreated && (
+            <DropdownMenuItem asChild>
+              <Link className="cursor-pointer" href="/onboarding/profile">
+                <UserCheck className="mr-2 size-4" aria-hidden="true" />
+                {`Complete ${accountType} Profile`}
+              </Link>
             </DropdownMenuItem>
+          )}
+          {role === "admin" && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/admin">
+                  <LayoutDashboardIcon className="mr-2 size-4" aria-hidden="true" />
+                  Admin Dashboard
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/admin/users">
+                  <Users className="mr-2 size-4" aria-hidden="true" />
+                  Users
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/admin/candidates">
+                  <Save className="mr-2 size-4" aria-hidden="true" />
+                  Candidates
+                </Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem asChild>
+                <Link className="cursor-pointer" href="/dashboard/admin/settings">
+                  <Settings className="mr-2 size-4" aria-hidden="true" />
+                  Settings
+                </Link>
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuGroup>
 

@@ -1,7 +1,6 @@
-import { Users, Home, LayoutDashboard, Layers, MessageCircleMore, IdCardLanyard } from "lucide-react";
+import { Users, Home, LayoutDashboard, MessageCircleMore, Settings } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +12,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
+import LogOutButton from "../action-buttion/log-out-button";
 
 // import LogoutButton from "../buttons/LogoutButton";
 
@@ -28,20 +29,11 @@ const items = [
     url: "/dashboard/admin",
     icon: LayoutDashboard,
   },
-  {
-    title: "Manage Jobs",
-    url: "/dashboard/admin/jobs",
-    icon: Layers,
-  },
+
   {
     title: "Users",
     url: "/dashboard/admin/users",
     icon: Users,
-  },
-  {
-    title: "Emplyees",
-    url: "/dashboard/admin/employees",
-    icon: IdCardLanyard,
   },
   {
     title: "Message",
@@ -49,9 +41,9 @@ const items = [
     icon: MessageCircleMore,
   },
   {
-    title: "Proile",
-    url: "/dashboard/admin/profile",
-    icon: Users,
+    title: "Settings",
+    url: "/dashboard/admin/settings",
+    icon: Settings,
   },
 ];
 
@@ -80,7 +72,7 @@ export function AdminDashboardSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Button className="w-full">Log Out</Button>
+            <LogOutButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

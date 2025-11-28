@@ -5,23 +5,25 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
+import { logoutUser } from "@/lib/actions/auth.action";
+// import { authClient } from "@/lib/auth-client";
 
 const LogOutButton = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter();
+  // const router = useRouter();
+
   const handleLogOut = async () => {
     setIsLoading(true);
     try {
-      const { error } = await authClient.signOut();
-
-      if (error) {
+      const { error, success, message } = await logoutUser();
+      if (success) {
+        toast.success(message || "Logged out successfully");
         setIsLoading(false);
-        toast.error(error.message);
+        // return router.replace("/auth/sign-in");
+      } else {
+        setIsLoading(false);
+        toast.error(error?.message || "Logout failed");
       }
-
-      setIsLoading(false);
-      return router.push("/auth/sign-in");
     } catch (error) {
       console.log("Logut error", error);
       setIsLoading(false);

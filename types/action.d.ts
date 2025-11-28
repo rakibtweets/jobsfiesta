@@ -1,3 +1,5 @@
+import { IApplication } from "@/database/applicaton.model";
+
 interface ISignUpEmailParams {
   name: string;
   email: string;
@@ -31,4 +33,34 @@ interface PaginationResponse {
   page?: number;
   limit?: number;
   totalPages?: number;
+}
+interface PopulatedJob {
+  _id: string;
+  title: string;
+  companyName?: string;
+  location?: string;
+}
+
+interface RecentApplication {
+  _id: string;
+  status: IApplication["status"];
+  createdAt: Date;
+  updatedAt: Date;
+  job: PopulatedJob;
+  resumeSnapshot: string;
+}
+
+interface CandidateDashboardStats {
+  totalApplications: number;
+  applicationStatusBreakdown: {
+    submitted: number;
+    reviewed: number;
+    interviewing: number;
+    offered: number;
+    rejected: number;
+    withdrawn: number;
+  };
+  savedJobsCount: number;
+  profileStrength: number; // percentage
+  recentApplications: RecentApplication[];
 }

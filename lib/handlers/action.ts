@@ -21,7 +21,7 @@ type ActionOptions<T> = {
 // 3. Connecting to the database.
 // 4. Returning the params and session.
 
-async function action<T>({ params, schema, authorizeRole }: ActionOptions<T>) {
+async function action<T>({ params, schema, authorizeRole, role }: ActionOptions<T>) {
   if (schema && params) {
     try {
       schema.parse(params);
@@ -39,6 +39,14 @@ async function action<T>({ params, schema, authorizeRole }: ActionOptions<T>) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     if (me?.user?.accountType !== authorizeRole) {
+      return new UnauthorizedError("You do not have permission to perform this action");
+    }
+  }
+  if (role) {
+    const me = await getServerSession();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    if (me?.user?.role !== role) {
       return new UnauthorizedError("You do not have permission to perform this action");
     }
   }

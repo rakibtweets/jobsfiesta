@@ -28,18 +28,8 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/talents" className="hover:text-foreground">
-                  My Profile
+                  Talents
                 </Link>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground">
-                  Saved Jobs
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground">
-                  Applications
-                </a>
               </li>
             </ul>
           </div>
@@ -48,20 +38,20 @@ export default function Footer() {
           <div>
             <h3 className="mb-4 font-semibold">For Employers</h3>
             <ul className="text-muted-foreground space-y-2 text-sm">
-              <li>
-                <a href="#" className="hover:text-foreground">
+              {/* <li>
+                <Link href="#" className="hover:text-foreground">
                   Post a Job
-                </a>
-              </li>
+                </Link>
+              </li> */}
               <li>
                 <Link href="/talents" className="hover:text-foreground">
                   Find Talent
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
+                <Link href="/company" className="hover:text-foreground">
                   Company Page
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-foreground">
@@ -76,24 +66,29 @@ export default function Footer() {
             <h3 className="mb-4 font-semibold">Legal</h3>
             <ul className="text-muted-foreground space-y-2 text-sm">
               <li>
-                <a href="#" className="hover:text-foreground">
+                <Link href="/privacy" className="hover:text-foreground">
                   Privacy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
-                  Terms
-                </a>
+                <Link href="/terms" className="hover:text-foreground">
+                  Terms & Conditions
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
+                <Link href="/terms-of-use" className="hover:text-foreground">
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-foreground">
                   Contact
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground">
+                <Link href="/about" className="hover:text-foreground">
                   About
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

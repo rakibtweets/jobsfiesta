@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Briefcase, Search, Users } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -35,24 +35,26 @@ export default function HeroBanner() {
           </div>
 
           {/* Search Bar with hover effect */}
-          <div className="group mx-auto flex max-w-2xl gap-2">
-            <div className="relative flex-1">
-              <div className="from-primary to-accent absolute inset-0 rounded-lg bg-linear-to-r opacity-0 blur transition duration-300 group-hover:opacity-100" />
-              <div className="bg-background border-border group-hover:border-primary/50 relative flex items-center rounded-lg border transition-all">
-                <Search
-                  className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 transform"
-                  size={20}
-                />
-                <Input
-                  placeholder="Job title, keywords, or company..."
-                  className="h-12 rounded-lg border-0 bg-transparent pl-10"
-                />
-              </div>
-            </div>
-            <Button size="lg" className="group/btn relative overflow-hidden rounded-lg">
-              <span className="from-primary to-accent absolute inset-0 bg-linear-to-r opacity-0 transition duration-300 group-hover/btn:opacity-100" />
-              <Link href="/jobs" className="relative">
-                Search
+          <div className="mx-auto flex max-w-md flex-col gap-4 sm:flex-row sm:justify-center sm:gap-6">
+            <Button
+              asChild
+              size="lg"
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 sm:w-auto"
+            >
+              <Link href="/jobs" className="flex items-center gap-2">
+                <Briefcase size={20} />
+                Apply Job
+              </Link>
+            </Button>
+
+            <Button
+              asChild
+              size="lg"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 sm:w-auto"
+            >
+              <Link href="/talents" className="flex items-center gap-2">
+                <Users size={20} />
+                Hire Talents
               </Link>
             </Button>
           </div>

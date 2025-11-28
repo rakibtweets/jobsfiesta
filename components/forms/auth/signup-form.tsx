@@ -39,16 +39,22 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
 
   async function onSubmit(values: z.infer<typeof signupFormSchema>) {
     try {
-      // console.log(values);
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-expect-error
-      const { data, error } = await authClient.signUp.email({ ...values, accountType });
+      console.log(process.env.BETTER_AUTH_URL as string);
+
+      const { data, error } = await authClient.signUp.email({
+        ...values,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-expect-error
+        accountType,
+        callbackURL: `http://localhost:3000/onboarding/profile`,
+      });
       if (error) {
         toast.error(error.message);
       }
       if (data?.user) {
-        toast.success("You have successfully signed up.");
-        router.push("/onboarding/profile");
+        console.log("🚀 ~ onSubmit ~ data?.user):", data?.user);
+        toast.success("An email has been sent to your email address for verification.");
+        // router.push("/onboarding/profile");
       }
       // toast(
       //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
@@ -129,7 +135,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
               <FormItem>
                 <FormLabel>Comfirm Password</FormLabel>
                 <FormControl>
-                  <PasswordInput disabled={isSubmitting} placeholder="confirm your password" {...field} />
+                  <PasswordInput {...field} disabled={isSubmitting} placeholder="confirm your password" />
                 </FormControl>
 
                 <FormMessage />
