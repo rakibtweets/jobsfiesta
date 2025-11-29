@@ -1,7 +1,7 @@
 "use client";
 
-import { redirect, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { ChangePasswordForm } from "@/components/forms/auth/change-password-form";
@@ -9,14 +9,23 @@ import { resetPassword } from "@/lib/actions/auth.action";
 import { PasswordFormValues } from "@/lib/validations/auth";
 
 export default function ResetPasswordPage() {
+  const params = useSearchParams();
   const router = useRouter();
-  const token = new URLSearchParams(window.location.search).get("token");
-  if (!token) redirect("/auth/sign-in");
+  const token = params.get("token");
+  // if (!token) redirect("/auth/sign-in");
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    if (!token) {
+      router.replace("/auth/sign-in");
+    } else {
+    }
+  }, [token, router]);
+
   const handleResetPassword = async (data: PasswordFormValues) => {
+    if (!token) return;
     setLoading(true);
     setSuccess(false);
 
