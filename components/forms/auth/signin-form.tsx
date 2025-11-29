@@ -69,6 +69,7 @@ const SignInForm = () => {
     });
 
     if (error) {
+      setIsPending(false);
       return toast.error(error.message);
     }
     setIsPending(false);
@@ -146,7 +147,7 @@ const SignInForm = () => {
 
       {/* Google signin */}
       <Button onClick={signInWithGoogle} disabled={isPending} className="w-full">
-        Sign In With Google
+        {isPending ? "Processing..." : "Sign In With Google"}
       </Button>
 
       {/* Signup Link */}

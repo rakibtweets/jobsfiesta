@@ -76,6 +76,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
     });
 
     if (error) {
+      setIsPending(false);
       return toast.error(error.message);
     }
     setIsPending(false);
@@ -181,7 +182,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
 
       {/* Google signin */}
       <Button onClick={signInWithGoogle} disabled={isPending} className="w-full">
-        Sign In With Google
+        {isPending ? "Processing..." : "Sign In With Google"}
       </Button>
 
       {/* Signup Link */}
