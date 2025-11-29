@@ -1,10 +1,9 @@
 "use client";
 
-import { Briefcase, Search, Users } from "lucide-react";
+import { Briefcase, Users } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export default function HeroBanner() {
   return (
@@ -39,7 +38,7 @@ export default function HeroBanner() {
             <Button
               asChild
               size="lg"
-              className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 sm:w-auto"
+              className="w-full bg-linear-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 sm:w-auto"
             >
               <Link href="/jobs" className="flex items-center gap-2">
                 <Briefcase size={20} />

@@ -1,5 +1,3 @@
-import { Trash2 } from "lucide-react";
-
 import DeleteAccountSection from "@/components/dashboard/delete-account-section";
 import { EmailForm } from "@/components/forms/auth/email-form";
 import { ProfileNameForm } from "@/components/forms/auth/name-form";
@@ -7,10 +5,12 @@ import { PasswordForm } from "@/components/forms/auth/password-form";
 import { LogoutForm } from "@/components/forms/auth/signout-form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { User } from "@/lib/auth";
 import { getServerSession } from "@/lib/get-session";
 
 export default async function ProfileSettings() {
   const me = await getServerSession();
+  const user = me?.user as User;
   return (
     <div className="bg-background text-foreground flex min-h-screen justify-center p-4 md:p-8">
       <div className="w-full max-w-3xl space-y-6">
@@ -39,10 +39,10 @@ export default async function ProfileSettings() {
         </Card>
 
         {/* Name Section */}
-        <ProfileNameForm name={me?.user?.name as string} />
+        <ProfileNameForm name={user?.name as string} email={user?.email as string} accountType={user.accountType} />
 
         {/* Email Section */}
-        <EmailForm userEmail={me?.user?.email as string} />
+        <EmailForm userEmail={user?.email as string} />
 
         {/* Pss section */}
         <PasswordForm />

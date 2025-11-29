@@ -1,4 +1,4 @@
-import { MapPin, DollarSign, Clock, Share2, Bookmark, Users, CheckCircle, Heart } from "lucide-react";
+import { MapPin, DollarSign, Clock, Share2, Bookmark, Users, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

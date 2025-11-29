@@ -1,6 +1,5 @@
 import { Application, appliedColumns } from "@/components/tables/applied-job/applied-job-column";
 import { AppliedJobTable } from "@/components/tables/applied-job/applied-job-table";
-import { SavedJobTable } from "@/components/tables/save-job-table";
 import { IJob } from "@/database/job.model";
 import { getAppliedJobs } from "@/lib/actions/application.action";
 import { formatDate } from "@/lib/utils";

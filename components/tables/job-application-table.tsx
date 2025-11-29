@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, FileTextIcon, Loader2, PauseIcon, PlayIcon, Trash2Icon } from "lucide-react";
+import { FileTextIcon, Loader2, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 

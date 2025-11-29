@@ -7,10 +7,7 @@ import { authClient } from "@/lib/auth-client";
 
 import { Button } from "../ui/button";
 
-interface IDeleteIdProps {
-  accountId: string | undefined;
-}
-const DeleteAccountButton = ({ accountId }: IDeleteIdProps) => {
+const DeleteAccountButton = () => {
   const router = useRouter();
   const handleDeleteAccount = async () => {
     try {

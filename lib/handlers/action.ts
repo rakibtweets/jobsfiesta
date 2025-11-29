@@ -1,6 +1,6 @@
 "use server";
 
-import { ZodError, ZodType, type ZodSchema } from "zod";
+import { ZodError, ZodType } from "zod";
 
 import { getServerSession } from "../get-session";
 import { UnauthorizedError, ValidationError } from "../http-errors";

@@ -7,7 +7,7 @@ import { headers } from "next/headers";
 import { cache } from "react";
 import z from "zod";
 
-import { Application, IApplication } from "@/database/applicaton.model";
+import { Application } from "@/database/applicaton.model";
 import { Candidate, ICandidateProfile, IExperience, IEducation } from "@/database/candidate.model";
 import { IJob, Job } from "@/database/job.model";
 import { auth } from "@/lib/auth";

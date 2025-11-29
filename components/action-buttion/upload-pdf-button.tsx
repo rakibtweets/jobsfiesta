@@ -1,6 +1,5 @@
 "use client";
 
-import { Camera } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { toast } from "sonner";
 
