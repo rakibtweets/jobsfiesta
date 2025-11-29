@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect, useRouter, useSearchParams } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -9,10 +9,8 @@ import { resetPassword } from "@/lib/actions/auth.action";
 import { PasswordFormValues } from "@/lib/validations/auth";
 
 export default function ResetPasswordPage() {
-  const params = useSearchParams();
   const router = useRouter();
-  const token = params.get("token");
-  console.log("🚀 ~ ResetPasswordPage ~ token:", token);
+  const token = new URLSearchParams(window.location.search).get("token");
   if (!token) redirect("/auth/sign-in");
 
   const [loading, setLoading] = useState(false);
@@ -22,7 +20,6 @@ export default function ResetPasswordPage() {
     setLoading(true);
     setSuccess(false);
 
-    console.log("Reset password data:", data);
     const { success, error, message } = await resetPassword(data.confirmPassword, token);
     if (success) {
       toast.success(message);
