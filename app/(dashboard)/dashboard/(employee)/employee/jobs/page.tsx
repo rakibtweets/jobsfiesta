@@ -6,7 +6,7 @@ import EmployeeJobs from "@/components/employee/sections/employe-job";
 import JobListSkeleton from "@/components/skeletons/job-list-skeleton";
 import { Button } from "@/components/ui/button";
 
-const EmployeeJobsPage = async () => {
+const EmployeeJobsPage = () => {
   return (
     <>
       <div className="flex flex-col gap-2 md:flex-row md:justify-between">

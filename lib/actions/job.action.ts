@@ -7,6 +7,7 @@ import { cache } from "react";
 
 import { Employee } from "@/database/employee.model";
 import { IJob, Job } from "@/database/job.model";
+import { PaginatedSearchParams, PaginationResponse } from "@/types/action";
 
 import action from "../handlers/action";
 import handleError from "../handlers/error";
