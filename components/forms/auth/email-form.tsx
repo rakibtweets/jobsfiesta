@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 
 // 1. Define your validation schema
 const formSchema = z.object({
-  email: z.string().email({
+  email: z.email({
     message: "Please enter a valid email address.",
   }),
 });

@@ -34,7 +34,7 @@ const dbConnect = async (): Promise<Mongoose> => {
   if (!cached.promise) {
     cached.promise = mongoose
       .connect(MONGODB_URI, {
-        dbName: "jobsfiesta",
+        dbName: process.env.DATABASE_NAME,
       })
       .then((result) => {
         logger.info("Connected to MongoDB");

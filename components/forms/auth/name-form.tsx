@@ -2,19 +2,27 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { updateUserName } from "@/lib/actions/auth.action";
 
 // ⬇️ Validation schema
 const FormSchema = z.object({
   name: z.string().min(1, "Name is required").max(32, "Max 32 characters allowed"),
 });
 
-export function ProfileNameForm({ name }: { name: string }) {
+interface IProfileNameProps {
+  name: string;
+  email: string;
+  accountType: string | null | undefined;
+}
+
+export function ProfileNameForm({ name, accountType, email }: IProfileNameProps) {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -22,9 +30,20 @@ export function ProfileNameForm({ name }: { name: string }) {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof form>) {
-    console.log(values);
-    // your API logic here
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    try {
+      console.log(DataTransfer);
+      // your API logic here
+      const { success, message, error } = await updateUserName(data.name, email, String(accountType));
+      if (success) {
+        return toast.success(message);
+      } else {
+        return toast.error(error?.message || "Fail to update name");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("unknown error occured");
+    }
   }
 
   const {

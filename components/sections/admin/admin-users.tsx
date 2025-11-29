@@ -17,36 +17,25 @@ interface IAdminUserProps {
 }
 
 const AdminUsers = ({ users }: IAdminUserProps) => {
-  const [open, setOpen] = useState(false);
-  // const [users, setUsers] = useState([
-  //   {
-  //     id: "1",
-  //     email: "admin@example.com",
-  //     name: "Admin User",
-  //     role: "admin" as const,
-  //     image: null,
-  //   },
-  //   {
-  //     id: "2",
-  //     email: "user@example.com",
-  //     name: "Regular User",
-  //     role: "user" as const,
-  //     image: null,
-  //   },
-  // ]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleAddUser = async (newUser: AdminUserCreateValues) => {
+    setIsLoading(true);
     try {
       const { success, message, error } = await createNewUser(newUser);
       if (success) {
         toast.success(message);
         setOpen(false);
+        setIsLoading(false);
       } else {
         setOpen(false);
+        setIsLoading(false);
         toast.error(error?.message || "Failed to create user");
       }
     } catch (error) {
       setOpen(false);
+      setIsLoading(false);
       console.error("Error adding user:", error);
       toast.error("An unexpected error occurred. Please try again.");
     }
@@ -65,7 +54,7 @@ const AdminUsers = ({ users }: IAdminUserProps) => {
         </Button>
       </div>
       <AdminUsersTable columns={adminUserColumns} data={users} />
-      <AddUserSheet open={open} onOpenChange={setOpen} onAddUser={handleAddUser} />
+      <AddUserSheet isLoading={isLoading} open={open} onOpenChange={setOpen} onAddUser={handleAddUser} />
     </>
   );
 };

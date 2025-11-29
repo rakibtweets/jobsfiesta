@@ -26,9 +26,10 @@ type User = {
 interface AdminCreateUserFormProps {
   onSubmit: (data: User) => void;
   onClose: () => void;
+  isLoading?: boolean;
 }
 
-export default function AdminCreateUserForm({ onSubmit, onClose }: AdminCreateUserFormProps) {
+export default function AdminCreateUserForm({ onSubmit, onClose, isLoading }: AdminCreateUserFormProps) {
   const form = useForm<z.infer<typeof adminUserCreateSchema>>({
     resolver: zodResolver(adminUserCreateSchema),
     defaultValues: {
@@ -37,7 +38,6 @@ export default function AdminCreateUserForm({ onSubmit, onClose }: AdminCreateUs
       password: "",
       role: "user",
       accountType: "candidate",
-      image: null,
     },
   });
 
@@ -145,8 +145,8 @@ export default function AdminCreateUserForm({ onSubmit, onClose }: AdminCreateUs
           />
         </div>
         <div className="flex gap-2 pt-6">
-          <Button type="submit" className="flex-1" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create User"}
+          <Button type="submit" className="flex-1 cursor-pointer" disabled={isSubmitting || isLoading}>
+            {isSubmitting || isLoading ? "Creating..." : "Create User"}
           </Button>
           <Button type="button" variant="outline" className="flex-1" onClick={onClose}>
             Cancel

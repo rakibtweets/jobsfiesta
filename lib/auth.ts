@@ -8,9 +8,10 @@ import { MongoClient } from "mongodb";
 import { sendEmailAction } from "./actions/send-email.action";
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
+const DATABASE_NAME = process.env.DATABASE_NAME as string;
 
 const client = new MongoClient(MONGODB_URI);
-const db = client.db();
+const db = client.db(DATABASE_NAME);
 
 // Auth for server
 export const auth = betterAuth({
@@ -32,9 +33,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       const link = new URL(url);
       // console.log("🚀 ~ link:", link);
-      console.log("🚀 ~ link:", link);
       // console.log("🚀 ~ link:", link);
-      // link.searchParams.set("callbackURL", "/auth/verify");
 
       await sendEmailAction({
         to: user.email,

@@ -4,6 +4,8 @@ import { APIError } from "better-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { Candidate } from "@/database/candidate.model";
+import { Employee } from "@/database/employee.model";
 import { auth } from "@/lib/auth";
 import { ISignInEmailParams, ISignUpEmailParams } from "@/types/action";
 
@@ -222,6 +224,44 @@ export const resetPassword = async (newPassword: string, token: string): Promise
     return {
       success: true,
       message: "Password reset successfully",
+    };
+  } catch (error) {
+    if (error instanceof APIError) {
+      return {
+        success: false,
+        status: error.statusCode,
+        error: {
+          message: error.message,
+        },
+      };
+    }
+
+    return handleError(error) as ErrorResponse;
+  }
+};
+
+// update user name
+
+export const updateUserName = async (name: string, email: string, accountType: string): Promise<ActionResponse> => {
+  try {
+    await auth.api.updateUser({
+      body: {
+        name: name,
+      },
+      headers: await headers(),
+    });
+
+    if (accountType === "employee") {
+      // search on employee
+      await Employee.findOneAndUpdate({ email: email }, { $set: { name } }, { new: true });
+    } else {
+      // search on candidate
+      await Candidate.findOneAndUpdate({ email: email }, { $set: { name } }, { new: true });
+    }
+
+    return {
+      success: true,
+      message: "Name updated Successully",
     };
   } catch (error) {
     if (error instanceof APIError) {
