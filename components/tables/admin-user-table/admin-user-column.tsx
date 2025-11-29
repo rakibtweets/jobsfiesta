@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreVertical, Pencil, Trash2, ShieldCheck, ShieldOff, Lock } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, Lock } from "lucide-react";
 
 import AdminResetPasswordForm from "@/components/forms/auth/admin-reset-password";
 import AdminUpdateUserForm from "@/components/forms/auth/admin-update-user-form";
@@ -87,7 +87,7 @@ export const adminUserColumns: ColumnDef<User>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const user = row.original;
-      const isAdmin = user.role === "admin";
+      // const isAdmin = user.role === "admin";
 
       return (
         <DropdownMenu>

@@ -3,13 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { authClient } from "@/lib/auth-client";
@@ -17,7 +18,7 @@ import { signInFormSchema } from "@/lib/validations/auth";
 
 const SignInForm = () => {
   const router = useRouter();
-
+  const [isPending, setIsPending] = useState(false);
   const form = useForm<z.infer<typeof signInFormSchema>>({
     resolver: zodResolver(signInFormSchema),
     defaultValues: {
@@ -38,7 +39,8 @@ const SignInForm = () => {
       if (error) {
         // console.log("🚀 ~ onSubmit ~ error:", error);
         if (error.code === "EMAIL_NOT_VERIFIED") {
-          return toast.error(`Your email is not verified. An email has been sent for verification.`);
+          toast.error(`Your email is not verified. An email has been sent for verification.`);
+          return router.push("/auth/verify");
         }
         toast.error(error.message);
       }
@@ -60,6 +62,7 @@ const SignInForm = () => {
   }
 
   const signInWithGoogle = async () => {
+    setIsPending(true);
     const { error } = await authClient.signIn.social({
       provider: "google",
       callbackURL: `/`,
@@ -68,7 +71,7 @@ const SignInForm = () => {
     if (error) {
       return toast.error(error.message);
     }
-
+    setIsPending(false);
     toast.success("Google sign successful");
   };
   return (
@@ -142,7 +145,7 @@ const SignInForm = () => {
       </Form>
 
       {/* Google signin */}
-      <Button onClick={signInWithGoogle} className="w-full">
+      <Button onClick={signInWithGoogle} disabled={isPending} className="w-full">
         Sign In With Google
       </Button>
 

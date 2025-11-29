@@ -1,4 +1,4 @@
-import { Users, Home, LayoutDashboard, Layers, Heart, CirclePlus } from "lucide-react";
+import { Users, Home, LayoutDashboard, Layers, Heart, CirclePlus, Settings } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -48,6 +48,11 @@ const items = [
     title: "Proile",
     url: "/dashboard/employee/profile",
     icon: Users,
+  },
+  {
+    title: "Settings",
+    url: "/dashboard/employee/settings",
+    icon: Settings,
   },
 ];
 

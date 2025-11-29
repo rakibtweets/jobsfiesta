@@ -8,9 +8,10 @@ interface AddUserSheetProps {
   onOpenChange: (open: boolean) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAddUser: (user: any) => void;
+  isLoading: boolean;
 }
 
-export function AddUserSheet({ open, onOpenChange, onAddUser }: AddUserSheetProps) {
+export function AddUserSheet({ open, onOpenChange, onAddUser, isLoading }: AddUserSheetProps) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -19,7 +20,7 @@ export function AddUserSheet({ open, onOpenChange, onAddUser }: AddUserSheetProp
           <SheetDescription>Create a new user account with the form below.</SheetDescription>
         </SheetHeader>
         <div className="mt-6 p-2">
-          <AdminCreateUserForm onSubmit={onAddUser} onClose={() => onOpenChange(false)} />
+          <AdminCreateUserForm isLoading={isLoading} onSubmit={onAddUser} onClose={() => onOpenChange(false)} />
         </div>
       </SheetContent>
     </Sheet>

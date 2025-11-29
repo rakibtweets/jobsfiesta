@@ -2,6 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -20,7 +21,8 @@ interface ISignUpFormProps {
 
 export default function SignUpForm({ accountType }: ISignUpFormProps) {
   const router = useRouter();
-  console.log(accountType);
+  const [isPending, setIsPending] = useState(false);
+  // console.log(accountType);
   const form = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
@@ -37,24 +39,23 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
     formState: { isSubmitting },
   } = form;
 
+  // console.log(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding/profile`);
   async function onSubmit(values: z.infer<typeof signupFormSchema>) {
     try {
-      console.log(process.env.BETTER_AUTH_URL as string);
-
       const { data, error } = await authClient.signUp.email({
         ...values,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-expect-error
         accountType,
-        callbackURL: `http://localhost:3000/onboarding/profile`,
+        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/onboarding/profile`,
       });
       if (error) {
         toast.error(error.message);
       }
       if (data?.user) {
-        console.log("🚀 ~ onSubmit ~ data?.user):", data?.user);
+        // console.log("🚀 ~ onSubmit ~ data?.user):", data?.user);
         toast.success("An email has been sent to your email address for verification.");
-        // router.push("/onboarding/profile");
+        return router.push("/auth/verify");
       }
       // toast(
       //   <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
@@ -68,14 +69,16 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
   }
 
   const signInWithGoogle = async () => {
+    setIsPending(true);
     const { error } = await authClient.signIn.social({
       provider: "google",
+      callbackURL: `/`,
     });
 
     if (error) {
       return toast.error(error.message);
     }
-
+    setIsPending(false);
     toast.success("Google sign successful");
   };
 
@@ -171,13 +174,13 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
             )}
           />
           <Button disabled={isSubmitting} type="submit" className="w-full">
-            {isSubmitting ? "Signing up...." : "Sign Up"}
+            {isSubmitting ? "Signing up..." : "Sign Up"}
           </Button>
         </form>
       </Form>
 
       {/* Google signin */}
-      <Button onClick={signInWithGoogle} className="w-full">
+      <Button onClick={signInWithGoogle} disabled={isPending} className="w-full">
         Sign In With Google
       </Button>
 
