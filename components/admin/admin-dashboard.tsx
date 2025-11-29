@@ -51,7 +51,7 @@ export default function AdminDashboard({ data }: IDasboardProps) {
     value: item.count,
   }));
 
-  const topJobsData = data?.topJobs.map((job, index) => ({
+  const topJobsData = data?.topJobs.map((job) => ({
     name: job.title.substring(0, 15) + "...",
     applications: job.applicationsCount,
     fullTitle: job.title,

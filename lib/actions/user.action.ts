@@ -1,5 +1,6 @@
 "use server";
 
+import { APIError } from "better-auth";
 import { headers } from "next/headers";
 
 import { Application } from "@/database/applicaton.model";
@@ -28,8 +29,16 @@ export const deleteAccount = async (userId: string, password: string): Promise<A
         body: { password },
         headers: await headers(),
       });
-    } catch (err) {
-      throw new Error("Incorrect password");
+    } catch (error) {
+      if (error instanceof APIError) {
+        return {
+          success: false,
+          status: error.statusCode,
+          error: {
+            message: error.message,
+          },
+        };
+      }
     }
 
     // -----------------------------

@@ -13,7 +13,7 @@ const UpdatUserSessionButton = () => {
 
   if (isPending) return <div>Loading....</div>;
 
-  const handleAddRole = (role: string) => {};
+  // const handleAddRole = (role: string) => {};
 
   return (
     <>

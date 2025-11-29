@@ -1,19 +1,14 @@
 "use client";
 
-import { error } from "console";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserRoundIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { PasswordInput } from "@/components/ui/password-input";
 import { updateUserPassword } from "@/lib/actions/admin.action";
-import { authClient } from "@/lib/auth-client";
 
 // ⬇️ Validation schema
 const passwordSchema = z.object({

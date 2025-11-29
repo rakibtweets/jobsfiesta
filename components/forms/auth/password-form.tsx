@@ -1,7 +1,5 @@
 "use client";
 
-import { error } from "console";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
