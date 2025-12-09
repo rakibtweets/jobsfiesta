@@ -159,11 +159,11 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
                   <FormLabel className="flex cursor-pointer items-start gap-2">
                     <span className="text-muted-foreground text-sm">
                       I agree to the{" "}
-                      <Link href="#" className="text-primary hover:underline">
+                      <Link href="/terms" className="text-primary hover:underline">
                         Terms of Service
                       </Link>{" "}
                       and{" "}
-                      <Link href="#" className="text-primary hover:underline">
+                      <Link href="/privacy" className="text-primary hover:underline">
                         Privacy Policy
                       </Link>
                     </span>

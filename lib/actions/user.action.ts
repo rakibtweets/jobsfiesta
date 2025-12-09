@@ -17,13 +17,11 @@ export const deleteAccount = async (userId: string, password: string): Promise<A
   try {
     await dbConnect();
 
-    // 1. Fetch user
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
     }
 
-    // 2. Verify password (Clerk/Auth/Lucia - adapt to your system)
     try {
       await auth.api.deleteUser({
         body: { password },

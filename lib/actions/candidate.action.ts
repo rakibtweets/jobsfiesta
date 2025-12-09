@@ -280,7 +280,16 @@ export const updateExperienceInCandidateProfile = async (
 
 export const getCandidateProfileByUserId = async (
   userId: string
-): Promise<ActionResponse<{ candidate: ICandidateProfile }>> => {
+): Promise<
+  ActionResponse<{
+    candidate: ICandidateProfile;
+    stats: {
+      totalApplications: number;
+      savedJobsCount: number;
+      profileStrength: number;
+    };
+  }>
+> => {
   const validationResult = await action({
     authorizeRole: "candidate",
   });
@@ -297,12 +306,41 @@ export const getCandidateProfileByUserId = async (
     if (!profile) {
       throw new Error("Candidate profile not found");
     }
+    const totalApplications = await Application.countDocuments({
+      candidate: profile._id,
+    });
+
+    // 4. Saved Jobs Count
+    const savedJobsCount = profile.savedJob?.length || 0;
+
+    // 5. Profile Strength Calculation (Smart Logic)
+    let completedFields = 0;
+    const totalFields = 10;
+
+    if (profile.name) completedFields++;
+    if (profile.email) completedFields++;
+    if (profile.phone) completedFields++;
+    if (profile.photo?.url) completedFields++;
+    if (profile.bio) completedFields++;
+    if (profile.headline) completedFields++;
+    if (profile.skills?.length) completedFields++;
+    if (profile.languages?.length) completedFields++;
+    if (profile.experience?.length) completedFields++;
+    if (profile.education?.length) completedFields++;
+    if (profile.resume?.url) completedFields++;
+
+    const profileStrength = Math.round((completedFields / totalFields) * 100);
 
     // 2. Return
     return {
       success: true,
       data: {
         candidate: JSON.parse(JSON.stringify(profile)),
+        stats: {
+          profileStrength,
+          savedJobsCount,
+          totalApplications,
+        },
       },
     };
   } catch (error) {
@@ -505,8 +543,6 @@ export const candidateImageUpload = async (
   try {
     await dbConnect();
 
-    console.log(payload);
-
     if (!payload?.url) {
       throw new Error("Image URL is required");
     }
@@ -535,8 +571,6 @@ export const candidateImageUpload = async (
     if (!updatedProfile) {
       throw new Error("Candidate profile not found");
     }
-
-    console.log(updatedProfile);
 
     // Update better-auth user profile image
     try {
@@ -572,7 +606,6 @@ export const candidateImageUpload = async (
       success: true,
     };
   } catch (error) {
-    console.log("🚀 ~ candidateImageUplaod ~ error:", error);
     return handleError(error) as ErrorResponse;
   }
 };
@@ -583,7 +616,6 @@ export const candidateResumeUplaod = async (
 ): Promise<ActionResponse> => {
   try {
     await dbConnect();
-    console.log(payload);
     if (!payload?.url) {
       throw new Error("Image URL is required");
     }

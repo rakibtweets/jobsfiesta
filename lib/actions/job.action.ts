@@ -64,6 +64,7 @@ export const createNewJob = async (
     await Employee.findByIdAndUpdate(employee._id, { $inc: { noOfJobPost: 1 } });
 
     revalidatePath(`/dashboard/employee/jobs`);
+    revalidatePath(`/dashboard/admin`);
 
     return {
       success: true,
@@ -99,9 +100,12 @@ export const updateExistingJobById = async (
     const job = await Job.findByIdAndUpdate(jobId, updatedData, {
       new: true,
     });
+
     if (!job) throw new Error("Job not found or failed to update");
+
     revalidatePath(`/dashboard/employee/jobs/edit/${jobId}`);
     revalidatePath(`/dashboard/employee/jobs`);
+
     return {
       success: true,
       data: {
@@ -134,6 +138,8 @@ export const deleteJob = async (jobId: string): Promise<ActionResponse> => {
     await Employee.findByIdAndUpdate(job.employer, { $inc: { noOfJobPost: -1 } });
 
     revalidatePath(`/dashboard/employee/jobs`);
+    revalidatePath(`/dashboard/admin`);
+
     return {
       success: true,
     };
@@ -152,22 +158,18 @@ export const getAllJobs = async (
 
     const filter: FilterQuery<IJob> = {};
 
-    // Full-text search — title, description, skills
     if (search) {
       filter.$text = { $search: search };
     }
 
-    // Filter by location
     if (location) {
       filter.location = { $regex: location, $options: "i" };
     }
 
-    // Filter by job type
     if (jobType) {
       filter.jobType = jobType;
     }
 
-    // Filter by required skills
     if (skill) {
       filter.skillsRequired = { $in: [skill.toLowerCase().trim()] };
     }
@@ -182,8 +184,8 @@ export const getAllJobs = async (
 
     // Priority Sorting:
     const sortPriority: Record<string, 1 | -1> = {
-      countApplicatons: -1, // most popular first
-      createdAt: -1, // newest jobs first
+      countApplicatons: -1,
+      createdAt: -1,
     };
 
     const pipeline: PipelineStage[] = [
@@ -246,7 +248,7 @@ export const getJobsByEmployeeId = async (
       filter.$or = [{ title: { $regex: search, $options: "i" } }, { description: { $regex: search, $options: "i" } }];
     }
 
-    // Filter by status: "open" | "closed" | "filled"
+    //? Filter by status: "open" | "closed" | "filled"
     if (status) {
       filter.status = status;
     }
@@ -259,7 +261,7 @@ export const getJobsByEmployeeId = async (
     };
 
     const sortPriority: Record<string, 1 | -1> = {
-      createdAt: -1, // latest job first
+      createdAt: -1,
     };
 
     const pipeline: PipelineStage[] = [
@@ -299,7 +301,6 @@ export const getJobsByEmployeeId = async (
       },
     };
   } catch (error) {
-    console.log("🚀 ~ getJobsByEmployeeId ~ error:", error);
     return handleError(error) as ErrorResponse;
   }
 };
@@ -332,7 +333,6 @@ export const getJobById = cache(async (jobId: string): Promise<ActionResponse<{ 
       },
     };
   } catch (error) {
-    console.log("🚀 ~ getJobById ~ error:", error);
     return handleError(error) as ErrorResponse;
   }
 });
