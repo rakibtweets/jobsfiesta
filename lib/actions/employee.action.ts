@@ -22,7 +22,6 @@ export const createEmployeeProfile = async (
   accountType: string,
   payload: EmployeeProfileFormValues
 ): Promise<ActionResponse<{ employee: IEmployerProfile }>> => {
-  console.log({ userId, accountType, payload });
   const validationResult = await action({
     params: payload,
     schema: employeeFormSchema,
@@ -296,8 +295,6 @@ export const employeeLogoUpload = async (
   try {
     await dbConnect();
 
-    console.log(payload);
-
     if (!payload?.url) {
       throw new Error("Image URL is required");
     }
@@ -327,8 +324,6 @@ export const employeeLogoUpload = async (
       throw new Error("Candidate profile not found");
     }
 
-    console.log(updatedProfile);
-
     // Update better-auth user profile image
     try {
       if (updatedProfile?.companyLogo?.url as string) {
@@ -338,6 +333,8 @@ export const employeeLogoUpload = async (
           },
           headers: await headers(),
         });
+
+        revalidatePath("/dashboard/employee/profile");
 
         return {
           success: true,

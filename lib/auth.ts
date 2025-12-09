@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { betterAuth, type GenericEndpointContext } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { nextCookies } from "better-auth/next-js";
 import { customSession } from "better-auth/plugins";
@@ -29,7 +29,6 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     expiresIn: 60 * 60,
     autoSignInAfterVerification: true,
-    sendOnSignIn: true,
     sendVerificationEmail: async ({ user, url }) => {
       const link = new URL(url);
       // console.log("🚀 ~ link:", link);
@@ -110,6 +109,14 @@ export const auth = betterAuth({
             },
           };
         },
+        after: async (user, ctx?: GenericEndpointContext) => {
+          if (!ctx) return;
+          if (ctx?.path === "/admin/create-user") {
+            return await ctx?.context?.internalAdapter?.updateUser(user.id, {
+              emailVerified: true,
+            });
+          }
+        },
       },
     },
   },
@@ -117,12 +124,6 @@ export const auth = betterAuth({
   plugins: [
     admin(),
     customSession(async ({ user, session }) => {
-      // let employeeId = "";
-
-      // //@ts-ignore
-      // if (user?.accountType === "employee") {
-      //   employeeId = "askdjhkasdf";
-      // }
       return {
         user,
         session,

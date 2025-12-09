@@ -24,6 +24,7 @@ const CandidateProfilePage = async () => {
   if (!data?.session) redirect("/auth/sign-in");
   const { data: candidateData } = await getCandidateProfileByUserId(String(user?.id));
   const candidate = candidateData?.candidate;
+  const stats = candidateData?.stats;
 
   return (
     <>
@@ -62,24 +63,24 @@ const CandidateProfilePage = async () => {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
           <div className="text-center">
-            <div className="text-primary text-2xl font-bold sm:text-3xl">8</div>
+            <div className="text-primary text-2xl font-bold sm:text-3xl">{stats?.totalApplications || 0}</div>
             <div className="text-muted-foreground text-xs sm:text-sm">Applications</div>
           </div>
 
           <div className="text-center">
-            <div className="text-primary text-2xl font-bold sm:text-3xl">12</div>
+            <div className="text-primary text-2xl font-bold sm:text-3xl">{stats?.savedJobsCount || 0}</div>
             <div className="text-muted-foreground text-xs sm:text-sm">Saved Jobs</div>
           </div>
 
-          <div className="text-center">
-            <div className="text-primary text-2xl font-bold sm:text-3xl">2</div>
+          {/* <div className="text-center">
+            <div className="text-primary text-2xl font-bold sm:text-3xl">{stats?.profileStrength || 0}</div>
             <div className="text-muted-foreground text-xs sm:text-sm">Interview Offers</div>
-          </div>
+          </div> */}
 
           <div className="text-center">
-            <div className="text-primary text-2xl font-bold sm:text-3xl">95%</div>
+            <div className="text-primary text-2xl font-bold sm:text-3xl">{stats?.profileStrength || 0}</div>
             <div className="text-muted-foreground text-xs sm:text-sm">Profile Completion</div>
           </div>
         </div>

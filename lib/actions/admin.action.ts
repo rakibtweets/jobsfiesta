@@ -10,6 +10,7 @@ import { Employee } from "@/database/employee.model";
 import { Job } from "@/database/job.model";
 import { auth, User } from "@/lib/auth";
 
+import { deleteCloudinaryImage } from "../delete-cloudinary-image";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import dbConnect from "../mongoose";
@@ -133,26 +134,100 @@ export async function deleteUserByAdmin(userId: string): Promise<ActionResponse>
   }
 
   try {
-    await auth.api.removeUser({
-      body: { userId },
+    const user = (await auth.api.getUser({
+      query: {
+        id: userId,
+      },
       headers: await headers(),
-    });
-    revalidatePath("/admin/users");
+    })) as User;
+
+    // -----------------------------
+    // 3. Delete Candidate Account
+    // -----------------------------
+    if (user.accountType === "candidate") {
+      const candidateProfile = await Candidate.findById(user.candidate);
+
+      if (candidateProfile) {
+        if (candidateProfile.photo?.id) {
+          await deleteCloudinaryImage(candidateProfile.photo.id, "image");
+        }
+        if (candidateProfile.resume?.id) {
+          await deleteCloudinaryImage(candidateProfile.resume.id, "raw");
+        }
+
+        // Delete all applications by this candidate
+        await Application.deleteMany({ candidate: candidateProfile._id });
+
+        // Remove candidate from employer.savedCandidate
+        await Employee.updateMany(
+          { savedCandidate: candidateProfile._id },
+          { $pull: { savedCandidate: candidateProfile._id } }
+        );
+
+        // Remove candidate from any job's application list
+        await Job.updateMany({ applications: candidateProfile._id }, { $pull: { applications: candidateProfile._id } });
+
+        // Finally delete profile
+        await Candidate.findByIdAndDelete(candidateProfile._id);
+      }
+    }
+
+    // -----------------------------
+    // 4. Delete Employer Account
+    // -----------------------------
+    if (user.accountType === "employee") {
+      const employerProfile = await Employee.findById(user.employee);
+
+      if (employerProfile) {
+        // Delete companyLogo
+        if (employerProfile.companyLogo?.id) {
+          await deleteCloudinaryImage(employerProfile.companyLogo.id, "image");
+        }
+
+        // Get jobs posted by employer
+        const jobs = await Job.find({ employer: employerProfile._id });
+
+        for (const job of jobs) {
+          // Delete all applications related to this job
+          await Application.deleteMany({ job: job._id });
+
+          // Remove job from candidate.savedJob
+          await Candidate.updateMany({ savedJob: job._id }, { $pull: { savedJob: job._id } });
+        }
+
+        // Delete all jobs
+        await Job.deleteMany({ employer: employerProfile._id });
+
+        // Delete employer profile
+        await Employee.findByIdAndDelete(employerProfile._id);
+        console.log("employee account deleted");
+      }
+    }
+
+    try {
+      await auth.api.removeUser({
+        body: { userId: user.id },
+        headers: await headers(),
+      });
+
+      revalidatePath("/admin/users");
+    } catch (error) {
+      if (error instanceof APIError) {
+        return {
+          success: false,
+          status: error.statusCode,
+          error: {
+            message: error.message || `${error.statusCode} Error: ${error.status || ""}`,
+          },
+        };
+      }
+    }
+
     return {
       success: true,
       message: "User deleted successfully",
     };
   } catch (error) {
-    if (error instanceof APIError) {
-      return {
-        success: false,
-        status: error.statusCode,
-        error: {
-          message: error.message || `${error.statusCode} Error: ${error.status || ""}`,
-        },
-      };
-    }
-
     return handleError(error) as ErrorResponse;
   }
 }
@@ -174,6 +249,8 @@ export async function getAllUsers(): Promise<ActionResponse<{ users: User[] }>> 
       headers: await headers(),
       query: {
         limit: 10000,
+        sortDirection: "desc",
+        sortBy: "createdAt",
       },
     });
 
