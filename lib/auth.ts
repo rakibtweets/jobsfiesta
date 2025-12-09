@@ -33,7 +33,6 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       const link = new URL(url);
       // console.log("🚀 ~ link:", link);
-      // console.log("🚀 ~ link:", link);
 
       await sendEmailAction({
         to: user.email,
@@ -50,7 +49,6 @@ export const auth = betterAuth({
     autoSignIn: false,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      console.log("🚀 ~ url:", url);
       await sendEmailAction({
         to: user.email,
         subject: "Reset your password",

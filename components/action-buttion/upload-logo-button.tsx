@@ -18,7 +18,7 @@ const UploadLogoButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =
 
   return (
     <CldUploadWidget
-      uploadPreset="jobfiesta_rakibtweets"
+      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string}
       signatureEndpoint={`/api/signed-image`}
       options={{
         folder: "employee",
@@ -44,11 +44,6 @@ const UploadLogoButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =
 
           console.log({ accountType, loggedInUserId });
           if (loggedInUserId) {
-            //todo: update image to
-            console.log({
-              id: publicId,
-              url: secureUrl,
-            });
             const { success, error } = await employeeLogoUpload(loggedInUserId, {
               id: publicId,
               url: secureUrl,

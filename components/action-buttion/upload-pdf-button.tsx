@@ -17,7 +17,7 @@ const UploadPDFButton = ({ accountType, loggedInUserId }: IUploadButtonProps) =>
   // console.log("🚀 ~ UploadImagButton ~ resource:", resource);
   return (
     <CldUploadWidget
-      uploadPreset="jobfiesta_rakibtweets"
+      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_PRESET as string}
       signatureEndpoint={`/api/signed-image`}
       options={{
         folder: "resume",
