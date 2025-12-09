@@ -35,6 +35,7 @@ export async function createNewUser(params: AdminUserCreateValues): Promise<Acti
   }
 
   const { name, email, password, role, accountType } = validationResult.params!;
+
   try {
     const newUser = await auth.api.createUser({
       body: {
@@ -130,6 +131,7 @@ export async function deleteUserByAdmin(userId: string): Promise<ActionResponse>
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
   }
+
   try {
     await auth.api.removeUser({
       body: { userId },

@@ -123,10 +123,10 @@ export default function Header({
             {!email ? (
               <div className="flex flex-col gap-2 pt-4">
                 <Button variant="outline" className="w-full bg-transparent">
-                  <Link href="/login">Login</Link>
+                  <Link href="/auth/sign-in">Sign In</Link>
                 </Button>
                 <Button className="from-primary to-accent w-full bg-linear-to-r">
-                  <Link href="/signup">Sign Up</Link>
+                  <Link href="/auth/sign-up">Sign Up</Link>
                 </Button>
               </div>
             ) : null}
