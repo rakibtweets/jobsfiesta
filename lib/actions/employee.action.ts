@@ -12,6 +12,7 @@ import { Job } from "@/database/job.model";
 import { auth } from "@/lib/auth";
 import { IRecentApplication } from "@/types/employee-dashboard";
 
+import { deleteCloudinaryImage } from "../delete-cloudinary-image";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import dbConnect from "../mongoose";
@@ -301,6 +302,10 @@ export const employeeLogoUpload = async (
     const employee = await Employee.findOne({ user: userId });
     if (!employee) {
       throw new Error("Employee profile not found");
+    }
+
+    if (employee.companyLogo?.id && employee.companyLogo.id !== payload.id) {
+      await deleteCloudinaryImage(employee.companyLogo.id, "image");
     }
 
     // Update photo atomically
