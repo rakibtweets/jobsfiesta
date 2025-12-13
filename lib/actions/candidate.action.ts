@@ -13,6 +13,7 @@ import { IJob, Job } from "@/database/job.model";
 import { auth } from "@/lib/auth";
 import { CandidateDashboardStats, PaginationResponse, PaginatedSearchParams, RecentApplication } from "@/types/action";
 
+import { deleteCloudinaryImage } from "../delete-cloudinary-image";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import dbConnect from "../mongoose";
@@ -550,6 +551,10 @@ export const candidateImageUpload = async (
     if (!candidate) {
       throw new Error("Candidate profile not found");
     }
+    
+    if (candidate.photo?.id && candidate.photo.id !== payload.id) {
+      await deleteCloudinaryImage(candidate.photo.id, "image");
+    }
 
     // Update photo atomically
     const updatedProfile = await Candidate.findOneAndUpdate(
@@ -618,6 +623,14 @@ export const candidateResumeUplaod = async (
     await dbConnect();
     if (!payload?.url) {
       throw new Error("Image URL is required");
+    }
+
+    const candidate = await Candidate.findOne({ user: userId });
+    if (!candidate) {
+      throw new Error("Candidate profile not found");
+    }
+    if (candidate.resume?.id && candidate.resume.id !== payload.id) {
+      await deleteCloudinaryImage(candidate.resume.id, "raw");
     }
 
     // Update resume atomically
