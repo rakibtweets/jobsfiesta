@@ -3,6 +3,7 @@
 import { Briefcase, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import router from "next/router";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -41,27 +42,37 @@ const RoleCard = ({ role, selectedRole, onSelect }: RoleCardProps) => {
 const SelectProfilePage = () => {
   const [selectedRole, setSelectedRole] = useState<Role>("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  //   const router = useRouter();
 
   const ROLE_ROUTES: Record<"employee" | "candidate", string> = {
     employee: "/new-employee",
     candidate: "/new-candidate",
   };
 
-  const handleContinue = () => {
-    if (!selectedRole) return;
-
-    try {
+  const handleButtonClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!selectedRole) {
+      e.preventDefault();
+      toast.error("Please select a role to continue");
+    } else {
       setLoading(true);
-      router.push(ROLE_ROUTES[selectedRole]);
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
     }
   };
 
+  //   const handleContinue = () => {
+  //     if (!selectedRole) return;
+
+  //     try {
+  //       setLoading(true);
+  //       router.push(ROLE_ROUTES[selectedRole]);
+  //     } catch (error) {
+  //       console.error(error);
+  //       toast.error("Something went wrong");
+  //     }
+  //   };
+
   return (
     <div className="container mx-auto py-16">
+      <h1 className="mb-10 text-center text-3xl font-bold tracking-tight">Join as a client or jobseeker</h1>
       {/* Role Selection */}
       <div className="mx-auto grid max-w-3xl gap-6 md:grid-cols-2">
         <RoleCard role="employee" selectedRole={selectedRole} onSelect={setSelectedRole} />
@@ -70,15 +81,31 @@ const SelectProfilePage = () => {
 
       {/* Action Area */}
       <div className="mt-10 flex flex-col items-center gap-4">
-        <Button size="lg" className="rounded-full px-10" disabled={!selectedRole || loading} onClick={handleContinue}>
-          {loading
-            ? "Loading..."
-            : !selectedRole
-              ? "Create Account"
-              : selectedRole === "employee"
-                ? "Continue as Employee"
-                : "Continue as Jobseeker"}
+        <Button
+          size="lg"
+          //   variant={!selectedRole || loading ? "outline" : "default"}
+          className="rounded-full px-10"
+          disabled={!selectedRole || loading}
+          asChild
+        >
+          <Link
+            href={selectedRole ? ROLE_ROUTES[selectedRole] : "#"}
+            onClick={handleButtonClick}
+            aria-disabled={!selectedRole || loading}
+          >
+            {loading
+              ? "Loading..."
+              : !selectedRole
+                ? "Create Account"
+                : selectedRole === "employee"
+                  ? "Continue as Employee"
+                  : "Continue as Jobseeker"}
+          </Link>
         </Button>
+
+        <Link href="/" className="text-muted-foreground text-sm font-medium transition-colors hover:text-green-500">
+          Skip for now
+        </Link>
 
         <p className="text-muted-foreground text-sm">
           Already have an account?{" "}
