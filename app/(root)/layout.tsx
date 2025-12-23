@@ -8,6 +8,7 @@ import { getServerSession } from "@/lib/get-session";
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const data = await getServerSession();
   const user = data?.user as User;
+  console.log("🚀 ~ Layout ~ user:", user);
   return (
     <section className="bg-background min-h-screen">
       <Header

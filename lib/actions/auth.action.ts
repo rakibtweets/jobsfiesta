@@ -26,7 +26,7 @@ export const signUpWithEmailPassword = async (
     return handleError(validationResult) as ErrorResponse;
   }
 
-  const { name, email, password, confirmPassword, agreeOnTerms, accountType } = validationResult.params!;
+  const { name, email, password, confirmPassword, agreeOnTerms } = validationResult.params!;
 
   if (password !== confirmPassword) {
     throw new Error("Password does not match");
@@ -43,7 +43,6 @@ export const signUpWithEmailPassword = async (
         email,
         password,
         agreeOnTerms,
-        accountType,
       },
     });
 

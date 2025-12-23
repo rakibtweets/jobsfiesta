@@ -35,7 +35,7 @@ const CandidateProfilePage = async () => {
           {/* Avatar + Info */}
           <div className="flex gap-4">
             <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-              <AvatarImage src={candidate?.photo?.url || "https://github.com/shadcn.png"} alt="@shadcn" />
+              <AvatarImage src={user?.image || "https://github.com/shadcn.png"} alt="@shadcn" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
 

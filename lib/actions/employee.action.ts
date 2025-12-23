@@ -26,7 +26,7 @@ export const createEmployeeProfile = async (
   const validationResult = await action({
     params: payload,
     schema: employeeFormSchema,
-    authorizeRole: "employee",
+    role: "user",
   });
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
@@ -66,6 +66,7 @@ export const createEmployeeProfile = async (
         body: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           employee: (profile._id as any).toString(),
+          accountType: accountType,
         },
         headers: await headers(),
       });

@@ -4,7 +4,6 @@ export const signupFormSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
     email: z.email().min(1, "Email is required"),
-    accountType: z.enum(["candidate", "employee"]),
     password: z
       .string()
       .refine((val) => /.{8,}/.test(val), {
