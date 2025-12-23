@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -9,7 +10,7 @@ import { logoutUser } from "@/lib/actions/auth.action";
 
 const LogOutButton = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const router = useRouter();
+  const router = useRouter();
 
   const handleLogOut = async () => {
     setIsLoading(true);
@@ -18,7 +19,7 @@ const LogOutButton = () => {
       if (success) {
         toast.success(message || "Logged out successfully");
         setIsLoading(false);
-        // return router.replace("/auth/sign-in");
+        return router.replace("/auth/sign-in");
       } else {
         setIsLoading(false);
         toast.error(error?.message || "Logout failed");
