@@ -67,10 +67,17 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-3">
-          <button
+          {!accountType && email ? (
+            <Button variant="link" asChild className="hover:bg-secondary hidden bg-transparent md:inline-block">
+              <Link href="/auth/select-profile">Join As</Link>
+            </Button>
+          ) : null}
+
+          <Button
             onClick={() => {
               setTheme(theme === "dark" ? "light" : "dark");
             }}
+            variant="ghost"
             className="hover:bg-secondary rounded-lg p-2 transition-all duration-200 hover:scale-110"
             aria-label="Toggle theme"
           >
@@ -79,7 +86,7 @@ export default function Header({
             ) : (
               <Moon size={20} className="text-blue-600" />
             )}
-          </button>
+          </Button>
 
           {email ? (
             <ProfileMenu

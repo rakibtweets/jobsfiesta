@@ -45,8 +45,8 @@ const SelectProfilePage = () => {
   //   const router = useRouter();
 
   const ROLE_ROUTES: Record<"employee" | "candidate", string> = {
-    employee: "/new-employee",
-    candidate: "/new-candidate",
+    employee: "/account/new-employee",
+    candidate: "/account/new-candidate",
   };
 
   const handleButtonClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -94,7 +94,7 @@ const SelectProfilePage = () => {
             aria-disabled={!selectedRole || loading}
           >
             {loading
-              ? "Loading..."
+              ? "Processing..."
               : !selectedRole
                 ? "Create Account"
                 : selectedRole === "employee"

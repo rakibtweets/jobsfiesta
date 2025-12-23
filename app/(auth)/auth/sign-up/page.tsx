@@ -2,18 +2,15 @@
 
 import { Briefcase, Users } from "lucide-react";
 import { redirect } from "next/navigation";
-import { useState } from "react";
 
 import Footer from "@/components/footer";
 import SignUpForm from "@/components/forms/auth/signup-form";
 import Header from "@/components/header";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { User } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 
 export default function SignupPage() {
-  const [accountType, setAccountType] = useState<"candidate" | "employee">("candidate");
   const { data } = authClient.useSession();
   const user = data?.user as User;
   if (data?.session) {
@@ -72,41 +69,9 @@ export default function SignupPage() {
 
           {/* Right side - Signup Form */}
           <Card className="border-2 p-8">
+            <h2 className="text-center text-2xl font-bold">Sign Up</h2>
             <div className="space-y-6">
-              {/* Role Selection */}
-              <div>
-                <Label className="mb-4 block text-base font-semibold">
-                  I&apos;m a {accountType ? accountType : "..."}
-                </Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setAccountType("candidate")}
-                    className={`rounded-lg border-2 p-4 transition-all ${
-                      accountType === "candidate"
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="font-semibold">Candidate</div>
-                    <div className="text-muted-foreground text-xs">Looking for jobs</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAccountType("employee")}
-                    className={`rounded-lg border-2 p-4 transition-all ${
-                      accountType === "employee"
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="font-semibold">Employer</div>
-                    <div className="text-muted-foreground text-xs">Hiring talents</div>
-                  </button>
-                </div>
-              </div>
-
-              <SignUpForm accountType={accountType} />
+              <SignUpForm />
             </div>
           </Card>
         </div>

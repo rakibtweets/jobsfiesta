@@ -65,7 +65,7 @@ const SignInForm = () => {
     setIsPending(true);
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `/`,
+      callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/auth/select-profile`,
     });
 
     if (error) {
@@ -87,7 +87,7 @@ const SignInForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input disabled={isSubmitting} placeholder="email@example.com" type="email" {...field} />
+                  <Input disabled={isSubmitting} placeholder="Enter email" type="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

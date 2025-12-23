@@ -17,7 +17,7 @@ export default function VerifyEmailPage() {
     setSuccess(false);
 
     // console.log("Resend verification to:", email);
-    const { success, error, message } = await sendVerificationEmail(email, "/onboarding/profile");
+    const { success, error, message } = await sendVerificationEmail(email, "/auth/select-profile");
     if (success) {
       toast.success(message);
       setSuccess(true);

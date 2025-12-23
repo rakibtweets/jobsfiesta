@@ -26,11 +26,10 @@ export const createCandidateProfile = async (
 ): Promise<ActionResponse<{ candidate: ICandidateProfile }>> => {
   // 1. Validate input
 
-  console.log(params);
   const validationResult = await action({
     params,
     schema: createCandidateProfileSchema,
-    authorizeRole: "candidate",
+    role: "user",
   });
 
   if (validationResult instanceof Error) {
@@ -73,8 +72,9 @@ export const createCandidateProfile = async (
     try {
       await auth.api.updateUser({
         body: {
+          accountType: accountType,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          candidate: (profile._id as any).toString(),
+          candidate: (profile?._id as any).toString(),
         },
         headers: await headers(),
       });
@@ -551,7 +551,7 @@ export const candidateImageUpload = async (
     if (!candidate) {
       throw new Error("Candidate profile not found");
     }
-    
+
     if (candidate.photo?.id && candidate.photo.id !== payload.id) {
       await deleteCloudinaryImage(candidate.photo.id, "image");
     }
@@ -592,7 +592,6 @@ export const candidateImageUpload = async (
         };
       }
     } catch (error) {
-      console.log("🚀 ~ candidateImageUplaod ~ error:", error);
       if (error instanceof APIError) {
         return {
           success: false,

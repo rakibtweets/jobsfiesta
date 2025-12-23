@@ -189,6 +189,14 @@ export default function ProfileMenu({
             </>
           )}
         </DropdownMenuGroup>
+        {!accountType && (
+          <DropdownMenuItem asChild>
+            <Link className="cursor-pointer" href="/auth/select-profile">
+              <UserCheck className="mr-2 size-4" aria-hidden="true" />
+              create account
+            </Link>
+          </DropdownMenuItem>
+        )}
 
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled={isLoading} onClick={() => handleLogOut()} variant="destructive">

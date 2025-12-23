@@ -15,11 +15,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { authClient } from "@/lib/auth-client";
 import { signupFormSchema } from "@/lib/validations/auth";
 
-interface ISignUpFormProps {
-  accountType: "candidate" | "employee";
-}
-
-export default function SignUpForm({ accountType }: ISignUpFormProps) {
+export default function SignUpForm() {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   // console.log(accountType);
@@ -29,7 +25,6 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
       name: "",
       email: "",
       password: "",
-      accountType: accountType,
       confirmPassword: "",
       agreeOnTerms: false,
     },
@@ -44,10 +39,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
     try {
       const { data, error } = await authClient.signUp.email({
         ...values,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-expect-error
-        accountType,
-        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/onboarding/profile`,
+        callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/auth/select-profile`,
       });
       if (error) {
         toast.error(error.message);
@@ -72,7 +64,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
     setIsPending(true);
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `/`,
+      callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/auth/select-profile`,
     });
 
     if (error) {
@@ -109,7 +101,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input disabled={isSubmitting} placeholder="email@exaple.com" type="email" {...field} />
+                  <Input disabled={isSubmitting} placeholder="Enter Your Email" type="email" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -124,7 +116,7 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <PasswordInput disabled={isSubmitting} placeholder="Enter Password" {...field} />
+                  <PasswordInput disabled={isSubmitting} placeholder="Enter Your Password" {...field} />
                 </FormControl>
                 <FormDescription>Enter your password.</FormDescription>
                 <FormMessage />
@@ -137,9 +129,9 @@ export default function SignUpForm({ accountType }: ISignUpFormProps) {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Comfirm Password</FormLabel>
+                <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <PasswordInput {...field} disabled={isSubmitting} placeholder="confirm your password" />
+                  <PasswordInput {...field} disabled={isSubmitting} placeholder="Confirm Your Password" />
                 </FormControl>
 
                 <FormMessage />
