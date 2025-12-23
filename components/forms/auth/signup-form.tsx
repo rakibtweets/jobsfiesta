@@ -64,7 +64,8 @@ export default function SignUpForm() {
     setIsPending(true);
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/auth/select-profile`,
+      newUserCallbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/auth/select-profile`,
+      callbackURL: `${process.env.NEXT_PUBLIC_APP_URL}/`,
     });
 
     if (error) {

@@ -17,7 +17,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { authClient } from "@/lib/auth-client";
+import { logoutUser } from "@/lib/actions/auth.action";
+import { getCompanyInitials } from "@/lib/utils";
 
 interface IProfileMenuProps {
   name: string | undefined;
@@ -44,15 +45,15 @@ export default function ProfileMenu({
   const handleLogOut = async () => {
     setIsLoading(true);
     try {
-      const { error } = await authClient.signOut();
-
-      if (error) {
+      const { error, success, message } = await logoutUser();
+      if (success) {
+        toast.success(message || "Logged out successfully");
         setIsLoading(false);
-        toast.error(error.message);
+        return router.replace("/auth/sign-in");
+      } else {
+        setIsLoading(false);
+        toast.error(error?.message || "Logout failed");
       }
-
-      setIsLoading(false);
-      return router.replace("/auth/sign-in");
     } catch (error) {
       console.log("Logut error", error);
       setIsLoading(false);
@@ -66,7 +67,7 @@ export default function ProfileMenu({
         <Button variant={"ghost"} className="rounded-full p-0">
           <Avatar>
             <AvatarImage src={image || "https://github.com/shadcn.png"} alt="Profile image" />
-            <AvatarFallback>{"kk"}</AvatarFallback>
+            <AvatarFallback>{getCompanyInitials(name)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

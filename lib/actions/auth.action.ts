@@ -118,14 +118,11 @@ export const loginWithEmailPassword = async (
 
 export const logoutUser = async (): Promise<ActionResponse> => {
   try {
-    console.log("loggingg... out");
     await auth.api.signOut({
       headers: await headers(),
     });
 
-    console.log("logged out");
-
-    redirect("/sign-in");
+    // redirect("/auth/sign-in");
 
     return {
       success: true,
