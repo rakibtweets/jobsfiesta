@@ -127,6 +127,13 @@ export default function Header({
                 {link.label}
               </Link>
             ))}
+
+            {!accountType && email ? (
+              <Button variant="link" asChild className="hover:bg-secondary w-full bg-transparent md:flex">
+                <Link href="/auth/select-profile">Join As</Link>
+              </Button>
+            ) : null}
+
             {!email ? (
               <div className="flex flex-col gap-2 pt-4">
                 <Button variant="outline" className="w-full bg-transparent">

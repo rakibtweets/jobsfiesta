@@ -6,16 +6,13 @@ import { EmployeeProfileForm } from "@/components/forms/employee/employee-profil
 import { getEmployeeById } from "@/lib/actions/employee.action";
 import { getServerSession } from "@/lib/get-session";
 
-// Dummy Employee Data
 
 export default async function EmployeeProfilePage() {
-  // const employee = await getDummyEmployee();
 
   const me = await getServerSession();
 
   if (!me?.session) redirect("/auth/sign-in");
 
-  //@ts-ignore
 
   //@ts-ignore
   const employeeId = me?.user?.employee as string;
