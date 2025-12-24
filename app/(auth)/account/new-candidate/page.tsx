@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-// import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { CandidateProfileForm } from "@/components/forms/candidate/candidate-profile-form";
 import { User } from "@/lib/auth";
@@ -9,9 +9,9 @@ const CreateNewCandidatePage = async () => {
   const me = await getServerSession();
   const user = me?.user as User;
   //@ts-ignore
-  //   if (me?.user?.candidate || me?.user?.employee) {
-  //     redirect("/");
-  //   }
+  if (me?.user?.candidate || me?.user?.employee) {
+    redirect("/");
+  }
 
   return (
     <section className="mx-auto min-h-screen w-full max-w-lg p-7">
