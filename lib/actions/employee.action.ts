@@ -16,7 +16,7 @@ import { deleteCloudinaryImage } from "../delete-cloudinary-image";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import dbConnect from "../mongoose";
-import { EmployeeProfileFormValues, employeeFormSchema } from "../validations/employee.validatoin";
+import { EmployeeProfileFormValues, employeeFormSchema } from "../validations/employee.validate";
 
 export const createEmployeeProfile = async (
   userId: string,

@@ -36,8 +36,8 @@ const items = [
     icon: Users,
   },
   {
-    title: "Message",
-    url: "/admin/orders",
+    title: "Messages",
+    url: "/dashboard/admin/messages",
     icon: MessageCircleMore,
   },
   {

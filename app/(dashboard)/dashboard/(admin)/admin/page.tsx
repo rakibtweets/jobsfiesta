@@ -5,7 +5,6 @@ import { getAdminDashboardStats } from "@/lib/actions/admin.action";
 
 const AdminDashboardPage = async () => {
   const data = await getAdminDashboardStats();
-  console.log("🚀 ~ AdminDashboard ~ data:", data);
   return (
     <>
       <AdminDashboard data={data?.data} />
