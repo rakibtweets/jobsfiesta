@@ -6,6 +6,8 @@ export interface IContact extends Document {
   email: string;
   subject?: string;
   message: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const ContactFormSchema = new Schema<IContact>(

@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import Contact, { IContact } from "@/database/contact.model";
 
 import action from "../handlers/action";
@@ -44,7 +46,7 @@ export async function createNewContactMessage(
 }
 
 // all all contact messages only for admin users
-export async function getAllContacts(): Promise<ActionResponse<{ contacts: IContact[] }>> {
+export async function getAllContactsMessages(): Promise<ActionResponse<{ contacts: IContact[] }>> {
   const validationResult = await action({
     role: "admin",
   });
@@ -67,7 +69,7 @@ export async function getAllContacts(): Promise<ActionResponse<{ contacts: ICont
 }
 
 // delete a contact message by id only for admin users
-export async function deleteContactById(id: string): Promise<ActionResponse<null>> {
+export async function deleteContactMessageById(id: string): Promise<ActionResponse<null>> {
   const validationResult = await action({
     role: "admin",
     params: { id },
@@ -78,6 +80,8 @@ export async function deleteContactById(id: string): Promise<ActionResponse<null
   try {
     await dbConnect();
     await Contact.findByIdAndDelete(id);
+
+    revalidatePath("/dashboard/admin/messages");
     return {
       success: true,
       message: "Contact message deleted successfully.",
