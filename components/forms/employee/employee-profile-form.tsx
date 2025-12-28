@@ -15,7 +15,7 @@ import { companySizeOps, industries } from "@/constants/data";
 import { IEmployerProfile } from "@/database/employee.model";
 import { createEmployeeProfile, updateEmployeeProfile } from "@/lib/actions/employee.action";
 import { getCountries } from "@/lib/utils";
-import { employeeFormSchema, EmployeeProfileFormValues } from "@/lib/validations/employee.validatoin";
+import { employeeFormSchema, EmployeeProfileFormValues } from "@/lib/validations/employee.validate";
 
 interface ICandidateEmployeeFromProps {
   name?: string | undefined;

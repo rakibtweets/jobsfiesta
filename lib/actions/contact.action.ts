@@ -5,12 +5,14 @@ import Contact, { IContact } from "@/database/contact.model";
 import action from "../handlers/action";
 import handleError from "../handlers/error";
 import dbConnect from "../mongoose";
-import { ContactFormValues, contactSchema } from "../validations/contact.schema";
+import { ContactFormValues, contactSchema } from "../validations/contact.validate";
 
-export async function submitContactForm(params: ContactFormValues): Promise<ActionResponse<{ contact: IContact }>> {
+export async function createNewContactMessage(
+  params: ContactFormValues
+): Promise<ActionResponse<{ contact: IContact }>> {
   // Here you can handle the form submission, e.g., send an email or store in a database
   const validationResult = await action({
-    role: "user",
+    // role: "user",
     params,
     schema: contactSchema,
   });

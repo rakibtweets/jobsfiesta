@@ -2,12 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ContactFormValues, contactSchema } from "@/lib/validations/contact.schema";
+import { createNewContactMessage } from "@/lib/actions/contact.action";
+import { ContactFormValues, contactSchema } from "@/lib/validations/contact.validate";
 
 export default function ContactForm() {
   const form = useForm<ContactFormValues>({
@@ -25,8 +27,18 @@ export default function ContactForm() {
   } = form;
 
   const onSubmit = async (values: ContactFormValues) => {
-    console.log(values);
-    // 👉 call API / server action here
+    try {
+      const { success, error } = await createNewContactMessage(values);
+      if (success) {
+        toast.success(`Message sent successfully`);
+        form.reset();
+      } else {
+        toast.error(error?.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Fail to sent message. Try again");
+    }
   };
 
   return (
